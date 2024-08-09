@@ -1,0 +1,12 @@
+{
+    "name": "project-root",
+    "version": "1.0.0",
+    "scripts": {
+        "start:frontend": "npm start --prefix frontend",
+        "start:backend": "node backend/server.js",
+        "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

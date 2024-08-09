@@ -1,0 +1,65 @@
+.input {
+    background-color: #010201;
+    border: none;
+    /* padding:7px; */
+    width: 301px;
+    height: 56px;
+    border-radius: 10px;
+    color: white;
+    padding-inline: 59px;
+    font-size: 18px;
+}
+
+.input::placeholder {
+    color: #c0b9c0;
+}
+
+.input:focus {
+    outline: none;
+}
+
+#main {
+    position: relative;
+}
+
+#search-icon {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+}
+
+#messageInput:focus~#sendButton svg path,
+#messageInput:valid~#sendButton svg path {
+    fill: #3c3c3c;
+    stroke: white;
+}
+
+#sendButton {
+    width: fit-content;
+    height: 100%;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: absolute;
+    top: 0;
+    right: 10px;
+}
+
+#sendButton svg {
+    height: 18px;
+    transition: all 0.3s;
+}
+
+#sendButton svg path {
+    transition: all 0.3s;
+}
+
+#sendButton:hover svg path {
+    fill: #3c3c3c;
+    stroke: white;
+}
