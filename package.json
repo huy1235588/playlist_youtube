@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "start:frontend": "npm start --prefix frontend",
-        "start:backend": "node backend/server.js",
+        "start:backend": "node --watch backend/server.js",
         "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
     },
     "devDependencies": {

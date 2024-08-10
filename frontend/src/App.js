@@ -4,31 +4,36 @@ import axios from 'axios'
 import './App.css';
 import ErrorPage from './component/ErrorPage';
 import LoaderPage from './component/LoaderPage';
-import InputForm from './component/input/InputForm'
+import InputForm from './component/input/InputForm';
 
 function App() {
     const [input, setInput] = useState('');
-    const [content, setContent] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const [titleVideo, setTitleVideo] = useState('');
+    const [channelVideo, setChannelVideo] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [urlVideo, setUrlVideo] = useState('');
+    const [urlChannel, setUrlChannel] = useState('');
+
+    // Lấy content
     const fetchData = async (event) => {
         event.preventDefault();
-        setContent("");
         setLoading(true);
         try {
             // Gọi API backend
-            const response = await axios.get('http://192.168.1.13:3001/api/data', {
+            const response = await axios.get("/api/content", {
                 params: { input }
             }); // URL
 
-            // if (!response.ok) {
-            //     throw new Error(`HTTP error! status: ${response.status}`);
-            // }
+            const fetch = await response.data;
 
-            const data = await response.data;
-
-            setContent(data.titleVideoContent || "Not found");
+            setTitleVideo(fetch.data.titleVideo || "Not found");
+            setChannelVideo(fetch.data.channelVideo || "Not found");
+            setImageUrl(fetch.data.imageUrl || "Not found")
+            setUrlVideo(fetch.data.urlVideo || "Not found");
+            setUrlChannel(fetch.data.urlChannel || "Not found");
 
         } catch (error) {
             setError(error);
@@ -65,8 +70,50 @@ function App() {
                     onSubmit={fetchData}
                 />
 
-                <p>
-                    Title of video is: {content}
+                {/* Hiển thị tên tiêu đề video */}
+                <p className='content'>
+                    Title of video is: {titleVideo}
+                </p>
+
+                {/* Hiển thị kênh channel */}
+                <p className='content'>
+                    Channel of video is: {channelVideo}
+                </p>
+
+                {/* Hiển thị link hình ảnh */}
+                <p className='content'>
+                    <span className='span-content'>
+                        Link of image video is:
+                    </span>
+                    <a className='a-content'
+                        href={imageUrl}
+                    >
+                        {imageUrl}
+                    </a>
+                </p>
+
+                {/* Hiển thị link video */}
+                <p className='content'>
+                    <span className='span-content'>
+                        Link of video is:
+                    </span>
+                    <a className='a-content'
+                        href={`https://www.youtube.com/${urlVideo}`}
+                    >
+                        {`https://www.youtube.com/${urlVideo}`}
+                    </a>
+                </p>
+
+                {/* Hiển thị link channel */}
+                <p className='content'>
+                    <span className='span-content'>
+                        Link Channel of video is:
+                    </span>
+                    <a className='a-content'
+                        href={`https://www.youtube.com/${urlChannel}`}
+                    >
+                        {`https://www.youtube.com/${urlChannel}`}
+                    </a>
                 </p>
 
                 <a
