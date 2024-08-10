@@ -38,6 +38,11 @@
     color: #61dafb;
 }
 
+.content-not-found{
+    margin-left: 10px;
+    color: #e83b46;
+}
+
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);
