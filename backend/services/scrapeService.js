@@ -1,5 +1,17 @@
 const { chromium, errors } = require('playwright');
 
+// Hàm lướt đến cuối trang
+const scrollByPageDown = async (page) => {
+    await page.evaluate(async () => {
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const scrollHeight = document.body.scrollHeight;
+        while (window.scrollY + window.innerHeight < scrollHeight) {
+            window.scrollBy(0, window.innerHeight);
+            await delay(1000); // Chờ một chút để trang tải thêm nội dung
+        }
+    });
+}
+
 const scrapeData = async (url) => {
     if (!url) {
         throw new Error('URL is required');
@@ -13,7 +25,7 @@ const scrapeData = async (url) => {
             // Đường dần đến file thực thi Chrome
             executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
             // Chế độ dòng lệnh
-            headless: true,
+            headless: false,
             // Chế độ Chrome
             channel: 'chrome',
         }
@@ -36,8 +48,10 @@ const scrapeData = async (url) => {
         const hiddenVideo = page.locator("#items > ytd-menu-navigation-item-renderer > a > tp-yt-paper-item > yt-formatted-string");
         await hiddenVideo.click();
 
-        // Đợi 1 giây (1000 milliseconds)
+        // // Đợi 1 giây (1000 milliseconds)
         await page.waitForTimeout(1000);
+        // Cuộn đến cuối trang
+        await scrollByPageDown(page);
 
         // Lấy playlist video
         const playlistVideo = page.locator('#contents > ytd-playlist-video-renderer');
@@ -49,7 +63,7 @@ const scrapeData = async (url) => {
         });
         */
 
-        const parentElementNth = playlistVideo.nth(1);
+        const parentElementNth = playlistVideo.nth(13);
 
         // Lấy phần tử tiêu đề video
         const titleVideoElement = parentElementNth.locator('a#video-title');
