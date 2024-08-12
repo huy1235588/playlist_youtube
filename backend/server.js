@@ -16,11 +16,11 @@ app.get('/api/content', async (req, res) => {
     }
 
     try {
-        const data = await scrapeData(url);
+        const content = await scrapeData(url);
 
         // Gửi dữ liệu về client
-        res.json({ data });
-        console.log(data);
+        res.json({ content });
+        console.log(content);
 
     } catch (error) {
         console.error('Error when fetching content:', error);

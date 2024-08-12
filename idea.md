@@ -7,3 +7,6 @@ duyệt video như trong python
 
 thêm id cho video
 ![Diagram](screenshots/index_video.PNG)
+
+nếu không có thuộc tính aria-label thì trả về { channelVideo, imageUrl, urlChannel } null
+[alt text](screenshots/h3_aria-label.png)

@@ -31,11 +31,11 @@ function App() {
 
             const fetch = await response.data;
 
-            setTitleVideo(fetch.data.titleVideo || "Not Found");
-            setChannelVideo(fetch.data.channelVideo || "Not Found");
-            setImageUrl(fetch.data.imageUrl || "Not Found")
-            setUrlVideo(fetch.data.urlVideo || "Not Found");
-            setUrlChannel(fetch.data.urlChannel || "Not Found");
+            setTitleVideo(fetch.content.titleVideo || "Not Found");
+            setChannelVideo(fetch.content.channelVideo || "Not Found");
+            setImageUrl(fetch.content.imageUrl || "Not Found")
+            setUrlVideo(fetch.content.urlVideo || "Not Found");
+            setUrlChannel(fetch.content.urlChannel || "Not Found");
 
         } catch (error) {
             setError(error);
