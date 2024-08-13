@@ -42,3 +42,5 @@ next-env.d.ts
 
 **/README.md
 !/README.md
+
+database/*
