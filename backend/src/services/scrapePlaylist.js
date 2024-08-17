@@ -4,16 +4,7 @@ const sql = require('mssql');
 const { scrapeContent } = require('./scrapeContent');
 
 // Cấu hình kết nối đến SQL Server
-const sqlConfig = {
-    user: 'ha',
-    password: 'ha',
-    database: 'playlist_video',
-    server: 'Admin-PC',
-    options: {
-        encrypt: true, // mã hóa ssl
-        trustServerCertificate: true,
-    },
-};
+const sqlConfig = require('../config/db');
 
 // Hàm lưu dũ liệu vào database
 const saveContentToDB = async (content) => {

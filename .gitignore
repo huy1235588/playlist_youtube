@@ -44,3 +44,6 @@ next-env.d.ts
 !/README.md
 
 database/*
+backend/src/config/*
+#Biến môi trường
+.env

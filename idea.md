@@ -1,12 +1,21 @@
-Bỏ imgUrl trong scrapeData để tách nó ra thành một file riêng
-
-duyệt video như trong python
-
 Đảo chiều ngày thêm
 ![Diagram](screenshots/daochieu.png)
 
-thêm id cho video
-![Diagram](screenshots/index_video.PNG)
+Api youtube: https://developers.google.com/youtube/v3/docs/videos#snippet.channelTitle
 
-nếu không có thuộc tính aria-label thì trả về { channelVideo, imageUrl, urlChannel } null
-[alt text](screenshots/h3_aria-label.png)
+Youtube API chỉ cho tối đa 50 video mỗi yêu cầu, 
+Viết lại code để lấy toàn bộ video
+
+Chỉnh lại request trong videoController
+![Diagram](screenshots/request.PNG)
+
+Thiết kế lại table trong database
+![Diagram](screenshots/database.PNG)
+
+Vì youtube API không thể lấy video bị xóa nên có thể đi theo 2 cách:
+
+Cách 1: Thực hiện yêu cầu lấy playlistvideo lần nữa rồi so sánh trong database 
+(tìm hiểu có chế hoạt động của https://text-compare.com/)
+
+Cách 2: Scrape như thường để lấy VideoID của video bị xóa
+rồi lấy thông tin chi tiết trong database
