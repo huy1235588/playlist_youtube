@@ -1,34 +1,35 @@
 
 const sql = require('mssql');
-const { poolPromise } = require('../config/db');
+const { sqlConfig } = require('../config/db');
 
 // Hàm lưu dũ liệu vào database
 const addVideo = async (video) => {
+    let pool;
     try {
         // Kết nối đến SQL Server
-        const pool = await poolPromise;
-        const request = new pool.Request();
+        pool = await sql.connect(sqlConfig);
+        const request = pool.request();
 
         // Chèn dữ liệu vào bảng
         const result = await request
-            .input('VideoID', sql.NVarChar(50), video.VideoID)
-            .input('Title', sql.NVarChar(255), video.Title)
-            .input('ChannelID', sql.NVarChar(255), video.ChannelID)
-            .input('ChannelTitle', sql.NVarChar(255), video.ChannelTitle)
-            .input('PublishedAt', sql.DateTime, new Date(video.PublishedAt))
-            .input('Thumbnail', sql.NVarChar(255), video.Thumbnail)
-            .input('ThumbnailsMaxRes', sql.NVarChar(255), video.ThumbnailsMaxRes)
+            .input('VideoId', sql.NVarChar(50), video.videoId)
+            .input('Title', sql.NVarChar(255), video.title)
+            .input('ChannelId', sql.NVarChar(255), video.channelId)
+            .input('ChannelTitle', sql.NVarChar(255), video.channelTitle)
+            .input('PublishedAt', sql.DateTime, new Date(video.publishedAt).toISOString().slice(0, 19).replace('T', ' '))
+            .input('Thumbnail', sql.NVarChar(255), video.thumbnails)
             .query(
-                `INSERT INTO Video VALUES (@VideoID, @Title, @ChannelID, @ChannelTitle, @PublishedAt, @Thumbnail, @ThumbnailsMaxRes)`,
+                `INSERT INTO Videos
+                VALUES (@VideoId, @Title, @ChannelId, @ChannelTitle, @PublishedAt, @Thumbnail)`,
             );
-
-        // Trả về true nếu ít nhất một hàng đã được chèn
-        return result.rowAffected[0] > 0;
 
     } catch (error) {
         throw new Error(`Error saving to SQL Server: ${error.message}`);
     } finally {
-        sql.close();
+        // Đóng kết nối khi không còn cần thiết
+        if (pool && pool.close) {
+            await pool.close();
+        }
     }
 };
 

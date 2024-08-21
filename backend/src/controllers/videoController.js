@@ -4,14 +4,13 @@ const videoModel = require('../models/videoModel');
 
 const fetchAndSaveVideos = async (req, res) => {
     try {
-        const playlistID = req.query.input; // Lấy playlistID từ input
-        // const playlistVideos = await youtubeService.getPlaylistVideos(playlistID);
+        const playlistId = req.query.input; // Lấy playlistId từ input
+        const playlistVideos = await youtubeService.getPlaylistVideos(playlistId.split("?list=")[1]);
 
-        console.log(playlistID);
         // Lưu các video vào database
-        // for (const video of playlistVideos) {
-        //     await videoModel.addVideo(video);
-        // }
+        for (const video of playlistVideos) {
+            await videoModel.addVideo(video);
+        }
 
         res.status(200).json({ message: 'Videos fetched and saved successfully' });
 
