@@ -2,9 +2,9 @@
     "name": "project-root",
     "version": "1.0.0",
     "scripts": {
+        "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
         "start:frontend": "npm start --prefix frontend",
-        "start:backend": "node --watch backend/server.js",
-        "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
+        "start:backend": "node --watch backend/server.js"
     },
     "devDependencies": {
         "concurrently": "^8.2.2"

@@ -1,6 +1,7 @@
 import './InputForm.css'
 
 function InputForm({
+    placeholder,
     type,
     input,
     setInput,
@@ -41,7 +42,8 @@ function InputForm({
                 </svg>
             </div>
 
-            <input placeholder="Search..." className="input"
+            <input className="input"
+                placeholder={placeholder}
                 type={type}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
