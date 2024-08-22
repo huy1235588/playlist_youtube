@@ -26,21 +26,7 @@
 
 .App-link {
     color: #61dafb;
-    margin-top: 10px;
-}
-
-.content{
-    margin: 10px 0;
-}
-
-.a-content{
-    margin-left: 10px;
-    color: #61dafb;
-}
-
-.content-not-found{
-    margin-left: 10px;
-    color: #e83b46;
+    margin-top: auto;
 }
 
 @keyframes App-logo-spin {
@@ -61,4 +47,3 @@
     align-items: center;
     background-color: #282c34;
 }
-

@@ -1,3 +1,17 @@
+<!-- src/components/Loader.vue -->
+<template>
+    <div className="loader">
+        <div data-glitch="Loading..." className="loader-glitch">Loading...</div>
+    </div>
+</template>
+
+<script>
+export default {
+    name: 'LoadingPage'
+}
+</script>
+
+<style scoped>
 .loader-glitch {
     position: relative;
     font-size: 25px;
@@ -99,3 +113,4 @@
         transform: skewX(10deg) skewY(-10deg);
     }
 }
+</style>

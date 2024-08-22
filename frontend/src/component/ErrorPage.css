@@ -1,4 +1,4 @@
-article {
+#error-page {
     width: 100vw;
     height: 100vh;
     color: white;
@@ -13,7 +13,7 @@ article {
     font-size: 8em;
 }
 
-.eye {
+.error-eye {
     background: #fff;
     border-radius: 50%;
     display: inline-block;
@@ -22,7 +22,7 @@ article {
     width: 100px;
 }
 
-.eye::after {
+.error-eye::after {
     background: #000;
     border-radius: 50%;
     bottom: 56.1px;
@@ -33,16 +33,14 @@ article {
     width: 33px;
 }
 
-.sub-tex {
+.error-text {
     margin-bottom: 4em;
 }
-
-
 
 /* button */
 /* From Uiverse.io by zjssun */
 /* From Uiverse.io by mrhyddenn */
-#home {
+#error-home-link {
     position: relative;
     padding: 10px 20px;
     border-radius: 7px;

@@ -1,45 +1,58 @@
 .input {
     background-color: #010201;
     border: none;
-    /* padding:7px; */
-    width: 301px;
+    padding: 7px;
+    width: 450px;
     height: 56px;
     border-radius: 10px;
     color: white;
-    padding-inline: 59px;
+    padding-inline: 30px 50px;
     font-size: 18px;
+
+    &::placeholder {
+        color: #c0b9c0;
+    }
+
+    &:focus {
+        outline: none;
+    }
 }
 
-.input::placeholder {
-    color: #c0b9c0;
-}
 
-.input:focus {
-    outline: none;
-}
-
-#main {
+#form-input {
     position: relative;
 }
 
-#search-icon {
+#resetButton {
     position: absolute;
-    left: 20px;
-    top: 15px;
-}
+    top: 20%;
+    right: 3.5rem;
+    background-color: transparent;
+    cursor: pointer;
 
-#messageInput:focus~#sendButton svg path,
-#messageInput:valid~#sendButton svg path {
-    fill: #3c3c3c;
-    stroke: white;
+    & svg {
+        height: 18px;
+        transition: all 0.3s;
+        width: 40px;
+        height: 40px;
+    }
+
+    & svg path {
+        transition: all 0.3s;
+        fill: #3c3c3c;
+        stroke: rgb(63, 63, 63);    
+    }
+
+    &:hover svg path {
+        fill: #3c3c3c;
+        stroke: white;
+    }
 }
 
 #sendButton {
     width: fit-content;
     height: 100%;
     background-color: transparent;
-    outline: none;
-    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,18 +61,18 @@
     position: absolute;
     top: 0;
     right: 10px;
-}
 
-#sendButton svg {
-    height: 18px;
-    transition: all 0.3s;
-}
+    & svg {
+        height: 18px;
+        transition: all 0.3s;
+    }
 
-#sendButton svg path {
-    transition: all 0.3s;
-}
+    & svg path {
+        transition: all 0.3s;
+    }
 
-#sendButton:hover svg path {
-    fill: #3c3c3c;
-    stroke: white;
+    &:hover svg path {
+        fill: #3c3c3c;
+        stroke: white;
+    }
 }

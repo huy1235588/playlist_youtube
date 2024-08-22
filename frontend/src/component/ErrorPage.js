@@ -30,15 +30,15 @@ function ErrorPage({ errorMessage }) {
     }, []);
 
     return (
-        <article>
+        <div id="error-page">
             <div>
                 <span className='error-num'>5</span>
-                <div className='eye' ref={eyeRef1}></div>
-                <div className='eye' ref={eyeRef2}></div>
-                <p className='sub-text'>Error: {errorMessage}.</p>
-                <a id="home" href='./' draggable="false">Go back</a>
+                <div className='error-eye' ref={eyeRef1}></div>
+                <div className='error-eye' ref={eyeRef2}></div>
+                <p className='error-text'>Error: {errorMessage}.</p>
+                <a id="error-home-link" href='./' draggable="false">Go back</a>
             </div>
-        </article>
+        </div>
     )
 }
 

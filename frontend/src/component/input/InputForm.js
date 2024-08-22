@@ -1,4 +1,5 @@
 import './InputForm.css'
+import { useRef, useState } from 'react';
 
 function InputForm({
     placeholder,
@@ -7,48 +8,48 @@ function InputForm({
     setInput,
     onSubmit
 }) {
-    return (
-        <form id='main' onSubmit={onSubmit}>
-            <div id="search-icon">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    height="24"
-                    fill="none"
-                    className="feather feather-search"
-                >
-                    <circle stroke="url(#search)" r="8" cy="11" cx="11"></circle>
-                    <line
-                        stroke="url(#searchl)"
-                        y2="16.65"
-                        y1="22"
-                        x2="16.65"
-                        x1="22"
-                    ></line>
-                    <defs>
-                        <linearGradient gradientTransform="rotate(50)" id="search">
-                            <stop stopColor="#f8e7f8" offset="0%"></stop>
-                            <stop stopColor="#b6a9b7" offset="50%"></stop>
-                        </linearGradient>
-                        <linearGradient id="searchl">
-                            <stop stopColor="#b6a9b7" offset="0%"></stop>
-                            <stop stopColor="#837484" offset="50%"></stop>
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
+    const [showReset, setShowReset] = useState(false);
+    const inputRef = useRef(null);
 
-            <input className="input"
+    const handleInputChange = (e) => {
+        setInput(e.target.value);
+        setShowReset(e.target.value.length > 0);
+    };
+
+    const handleReset = () => {
+        setInput('');
+        setShowReset(false);
+        inputRef.current.focus();
+    };
+
+    return (
+        <form id='form-input' onSubmit={onSubmit}>
+            <input id="messageInput"
+                className="input"
                 placeholder={placeholder}
                 type={type}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
+                ref={inputRef}
                 required
             />
+
+            {showReset && (
+                <button id="resetButton" type='button' onClick={handleReset}>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                    </svg>
+                </button>
+            )}
 
             <button id="sendButton" type='submit'>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 664 663">

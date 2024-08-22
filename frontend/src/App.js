@@ -5,6 +5,7 @@ import './App.css';
 import ErrorPage from './component/ErrorPage';
 import LoaderPage from './component/LoaderPage';
 import InputForm from './component/input/InputForm';
+import PlaylistVideo from './component/contents/PlaylistVideo';
 
 function App() {
     const [input, setInput] = useState('');
@@ -30,7 +31,7 @@ function App() {
             setLoading(false);
         }
     };
-
+      
     if (loading) {
         return (
             <main className="container">
@@ -52,13 +53,18 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                {/* Đầu vào  */}
+                {/* Đầu vào 
                 <InputForm
                     placeholder="Enter PlaylistID..."
                     type='text'
                     input={input}
                     setInput={setInput}
                     onSubmit={fetchData}
+                /> */}
+
+                {/* Main Content */}
+                <PlaylistVideo 
+                
                 />
 
                 {/* HEHE */}
