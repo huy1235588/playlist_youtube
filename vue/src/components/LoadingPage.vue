@@ -7,8 +7,8 @@
 
 <script>
 export default {
-    name: 'LoadingPage'
-}
+    name: "LoadingPage",
+};
 </script>
 
 <style scoped>
@@ -21,16 +21,15 @@ export default {
     letter-spacing: 5px;
     z-index: 1;
     animation: shift 1s ease-in-out infinite alternate;
-
-    &:before,
-    &:after {
-        display: block;
-        content: attr(data-glitch);
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0.8;
-    }
+}
+.loader-glitch:before,
+.loader-glitch:after {
+    display: block;
+    content: attr(data-glitch);
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.8;
 }
 
 .loader-glitch:before {
@@ -40,7 +39,8 @@ export default {
 }
 
 .loader-glitch:after {
-    animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+    animation: glitch 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both
+        infinite;
     color: #00e571;
     z-index: -2;
 }
@@ -72,7 +72,6 @@ export default {
 }
 
 @keyframes shift {
-
     0%,
     40%,
     44%,

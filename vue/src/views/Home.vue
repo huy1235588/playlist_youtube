@@ -4,18 +4,23 @@
         <LoadingPage v-if="loading" />
         <div v-else>
             <HelloWorld msg="Vite + Vue" />
-
+            <input>
         </div>
     </div>
 </template>
 
 <script>
-import HelloWorld from '../components/HelloWorld.vue';
-import LoadingPage from '../components/LoadingPage.vue';
+import HelloWorld from "../components/HelloWorld.vue";
+import LoadingPage from "../components/LoadingPage.vue";
+import Input from "../components/input/Input.vue";
 
 export default {
-    name: 'Home',
-    components: { LoadingPage, HelloWorld },
+    name: "Home",
+    components: {
+        LoadingPage,
+        HelloWorld,
+        Input,
+    },
     data() {
         return {
             loading: false,
@@ -31,17 +36,16 @@ export default {
             this.loading = true;
             this.error = null;
 
-            try {               
+            try {
                 // Khi thành công, cập nhật dữ liệu ở đây
-                this.data = "Dữ liệu đã được tải";
+                this.data = "The data has been loaded";
             } catch (error) {
                 // Xử lý lỗi mạng
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.";
+                this.error = "An error occurred while loading data";
             } finally {
                 this.loading = false;
             }
         },
-
     },
 };
 </script>
