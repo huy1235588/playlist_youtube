@@ -3,8 +3,8 @@
     <div>
         <LoadingPage v-if="loading" />
         <div v-else>
+            <Input />
             <HelloWorld msg="Vite + Vue" />
-            <input>
         </div>
     </div>
 </template>

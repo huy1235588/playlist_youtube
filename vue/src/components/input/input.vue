@@ -1,4 +1,3 @@
-<!-- src/components/Loader.vue -->
 <template>
     <form id="form-input" @submit.prevent="onSubmit">
         <input
@@ -25,8 +24,8 @@
                 stroke="currentColor"
             >
                 <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
                     d="M6 18L18 6M6 6l12 12"
                 ></path>
             </svg>
@@ -43,9 +42,9 @@
                     d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
                 ></path>
                 <path
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    strokeWidth="33.67"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                    stroke-width="33.67"
                     stroke="#6c6c6c"
                     d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
                 ></path>
@@ -55,14 +54,24 @@
 </template>
 
 <script>
-defineProps({
-    placeholder: String,
-    type: String,
-    onSubmit: Function,
-});
+import { ref } from "vue";
 
 export default {
     name: "Input",
+    props: {
+        placeholder: {
+            type: String,
+            default: "",
+        },
+        type: {
+            type: String,
+            default: "",
+        },
+        onSubmit: {
+            type: Function,
+            required: false,
+        },
+    },
     data() {
         return {
             inputValue: "",
@@ -87,13 +96,14 @@ export default {
     background-color: #010201;
     border: none;
     padding: 7px;
-    width: 450px;
+    width: 27rem;
     height: 56px;
     border-radius: 10px;
     color: white;
-    padding-inline: 30px 50px;
+    padding-inline: 1.5rem 6.5rem;
     font-size: 18px;
 }
+
 .input::placeholder {
     color: #c0b9c0;
 }
@@ -103,16 +113,19 @@ export default {
 }
 
 #form-input {
+    width: 35rem;
     position: relative;
 }
 
 #resetButton {
     position: absolute;
-    top: 20%;
-    right: 3.5rem;
+    height: 100%;
+    top: 2px;
+    right: 3.25rem;
     background-color: transparent;
     cursor: pointer;
 }
+
 #resetButton svg {
     height: 18px;
     transition: all 0.3s;
@@ -142,8 +155,10 @@ export default {
     transition: all 0.3s;
     position: absolute;
     top: 0;
-    right: 10px;
+    right: 0;
+    padding: 0 1rem;
 }
+
 #sendButton svg {
     height: 18px;
     transition: all 0.3s;
@@ -156,73 +171,5 @@ export default {
 #sendButton:hover svg path {
     fill: #3c3c3c;
     stroke: white;
-}
-
-@keyframes glitch {
-    0% {
-        transform: translate(0);
-    }
-
-    20% {
-        transform: translate(-3px, 3px);
-    }
-
-    40% {
-        transform: translate(-3px, -3px);
-    }
-
-    60% {
-        transform: translate(3px, 3px);
-    }
-
-    80% {
-        transform: translate(3px, -3px);
-    }
-
-    to {
-        transform: translate(0);
-    }
-}
-
-@keyframes shift {
-    0%,
-    40%,
-    44%,
-    58%,
-    61%,
-    65%,
-    69%,
-    73%,
-    100% {
-        transform: skewX(0deg);
-    }
-
-    41% {
-        transform: skewX(10deg);
-    }
-
-    42% {
-        transform: skewX(-10deg);
-    }
-
-    59% {
-        transform: skewX(40deg) skewY(10deg);
-    }
-
-    60% {
-        transform: skewX(-40deg) skewY(-10deg);
-    }
-
-    63% {
-        transform: skewX(10deg) skewY(-5deg);
-    }
-
-    70% {
-        transform: skewX(-50deg) skewY(-20deg);
-    }
-
-    71% {
-        transform: skewX(10deg) skewY(-10deg);
-    }
 }
 </style>
