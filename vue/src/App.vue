@@ -1,32 +1,31 @@
 <template>
     <div>
         <LoadingPage v-if="loading" />
-        <route-view v-else />
-        <Home />
+        <router-view v-else />
     </div>
 </template>
 
 
-<script>
-import LoadingPage from './components/LoadingPage.vue';
-import Home from './views/Home.vue';
+<script setup>
+import { ref, watch, nextTick } from 'vue';
+import { useRoute } from 'vue-router'; 
 
-export default {
-    components: { LoadingPage, Home },
-    data() {
-        return {
-            loading: false,
-        };
-    },
-    watch: {
-        $route(to, from) {
-            this.loading = true;
-            this.$nextTick(() => {
-                this.loading = false;
-            })
-        }
-    }
-}
+import LoadingPage from './components/LoadingPage.vue';
+
+// Khai báo state với ref
+const loading = ref(false);
+
+// Lấy thông tin về route
+const route = useRoute();
+
+// Theo dõi sự thay đổi của route
+watch(route, () => {
+    loading.value = true;
+    nextTick(() => {
+        loading.value = false;
+    });
+});
+
 </script>
 
 <style scoped>

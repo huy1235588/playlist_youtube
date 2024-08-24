@@ -3,10 +3,14 @@
         <input
             id="messageInput"
             className="input"
+            
             :placeholder="placeholder"
             :type="type"
+            :autocomplete="autocomplete"
+
             v-model="inputValue"
             @input="sendInputValue"
+            
             ref="inputField"
             required
         />
@@ -54,10 +58,10 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 
 export default {
-    name: "Input",
+    name: "InputForm",
     props: {
         placeholder: {
             type: String,
@@ -65,29 +69,40 @@ export default {
         },
         type: {
             type: String,
-            default: "",
+            default: "text",
         },
         onSubmit: {
             type: Function,
             required: false,
         },
+        autocomplete: {
+            type: String,
+            default: "off"
+        }
     },
-    data() {
-        return {
-            inputValue: "",
+
+    setup(props, { emit }){
+        const inputValue = ref("");
+        const inputField = ref(null); // Tham chiếu đến input field
+
+        const sendInputValue = (event) => {
+            emit("updateInputValue", inputValue.value);
         };
-    },
-    methods: {
-        sendInputValue() {
-            this.$emit("updateValue", this.inputValue);
-        },
-        resetInput() {
-            this.inputValue = ""; // Xóa giá trị trong intput
-            this.$nextTick(() => {
-                this.$refs.inputField.focus(); // Đặt con trỏ vào ô input
+        
+        const resetInput = () => {
+            inputValue.value = ""; // Xóa giá trị trong intput
+            nextTick(() => {
+                inputField.value.focus(); // Đặt con trỏ vào ô input
             });
-        },
-    },
+        };
+
+        return{
+            inputValue,
+            sendInputValue,
+            resetInput,
+            inputField
+        };
+    }
 };
 </script>
 
