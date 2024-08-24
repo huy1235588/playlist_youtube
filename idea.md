@@ -3,14 +3,9 @@
 
 Api youtube: https://developers.google.com/youtube/v3/docs/videos#snippet.channelTitle
 
-Youtube API chỉ cho tối đa 50 video mỗi yêu cầu, 
-Viết lại code để lấy toàn bộ video
+Thiết kế lại database:
+![Diagram](screenshots/database_25_08_24.png)
 
-Chỉnh lại request trong videoController
-![Diagram](screenshots/request.PNG)
-
-Thiết kế lại table trong database
-![Diagram](screenshots/database.PNG)
 
 Vì youtube API không thể lấy video bị xóa nên có thể đi theo 2 cách:
 

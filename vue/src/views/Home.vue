@@ -10,6 +10,7 @@
                 :onSubmit="fetchData"
                 @updateInputValue="receiveInputValue"
             />
+            <PlaylistVideo />
             <HelloWorld :msg="outputValue" />
         </div>
     </div>
@@ -23,6 +24,7 @@ import axios from "axios";
 import HelloWorld from "../components/HelloWorld.vue";
 import LoadingPage from "../components/LoadingPage.vue";
 import InputForm from "../components/input/InputForm.vue";
+import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
 
 export default {
     name: "Home",
@@ -30,6 +32,7 @@ export default {
         LoadingPage,
         HelloWorld,
         InputForm,
+        PlaylistVideo
     },
     setup() {
         const data = ref(null);
