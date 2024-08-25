@@ -5,6 +5,7 @@ Api youtube: https://developers.google.com/youtube/v3/docs/videos#snippet.channe
 
 Thiết kế lại database:
 ![Diagram](screenshots/database_25_08_24.png)
+Thêm Duration cho bảng videos
 
 
 Vì youtube API không thể lấy video bị xóa nên có thể đi theo 2 cách:
