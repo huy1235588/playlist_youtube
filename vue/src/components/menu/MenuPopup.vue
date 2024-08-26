@@ -101,11 +101,11 @@ export default{
             type: Boolean,
             require: true,
         }
-    }
+    },
 }
 </script>
 
-<style>
+<style scoped>
 .menu-popup-container {
     outline: none;
     position: fixed;

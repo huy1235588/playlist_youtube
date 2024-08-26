@@ -11,9 +11,9 @@
         />
         <PlaylistVideo @show-popup="togglePopup" @click.native="togglePopup" />
         <HelloWorld :msg="outputValue" />
-        <!-- <section id="popup-container">
-            <MenuPopup :isMenuVisible="isMenuVisible" />
-        </section> -->
+        <section id="popup-container">
+            <MenuPopup :isVisible="isMenuVisible" />
+        </section>
     </div>
 </template>
 
@@ -26,6 +26,7 @@ import HelloWorld from "../components/HelloWorld.vue";
 import LoadingPage from "../components/LoadingPage.vue";
 import InputForm from "../components/input/InputForm.vue";
 import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
+import MenuPopup from "../components/menu/MenuPopup.vue";
 
 export default {
     name: "Home",
@@ -33,7 +34,8 @@ export default {
         LoadingPage,
         HelloWorld,
         InputForm,
-        PlaylistVideo
+        PlaylistVideo,
+        MenuPopup
     },
     setup() {
         const data = ref(null);
@@ -69,6 +71,7 @@ export default {
             }
         };
 
+        // Hàm hiển thị popup menu
         const togglePopup = () => {
             isMenuVisible.value = !isMenuVisible.value;
         }

@@ -70,24 +70,14 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask @show-popup="togglePopup" />
+            <MenuTask />
         </div>
-        <section id="popup-container">
-            <MenuPopup :isVisible="isMenuVisible" />
-        </section>
     </section>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import MenuTask from '../menu/MenuTask.vue';
-import MenuPopup from '../menu/MenuPopup.vue';
 
-const isMenuVisible = ref(false);
-
-const togglePopup = () => {
-    isMenuVisible.value = !isMenuVisible.value;
-}
 </script>
 
 <style scoped>
