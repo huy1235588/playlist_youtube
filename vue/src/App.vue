@@ -1,8 +1,6 @@
 <template>
-    <div>
-        <LoadingPage v-if="loading" />
-        <router-view v-else />
-    </div>
+    <LoadingPage v-if="loading" />
+    <router-view v-else />
 </template>
 
 

@@ -37,6 +37,13 @@ h1 {
   line-height: 1.1;
 }
 
+h3, span{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
 button {
   font-size: 1em;
   font-weight: 500;
@@ -55,7 +62,6 @@ button {
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  /* padding: 2rem; */
   text-align: center;
 }
 
@@ -70,4 +76,11 @@ button {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* custom */
+.flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }

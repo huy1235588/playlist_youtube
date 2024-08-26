@@ -1,18 +1,16 @@
 <!-- src/pages/Home.vue -->
 <template>
-    <div>
-        <LoadingPage v-if="loading" />
-        <div v-else>
-            <InputForm
-                placeholder="Search. . ."
-                type="text"
-                autocomplete="off"
-                :onSubmit="fetchData"
-                @updateInputValue="receiveInputValue"
-            />
-            <PlaylistVideo />
-            <HelloWorld :msg="outputValue" />
-        </div>
+    <LoadingPage v-if="loading" />
+    <div v-else id="content">
+        <InputForm
+            placeholder="Search. . ."
+            type="text"
+            autocomplete="off"
+            :onSubmit="fetchData"
+            @updateInputValue="receiveInputValue"
+        />
+        <PlaylistVideo />
+        <HelloWorld :msg="outputValue" />
     </div>
 </template>
 
@@ -85,3 +83,9 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+#content {
+    width: 90vw;
+}
+</style>
