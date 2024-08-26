@@ -1,7 +1,7 @@
 <template>
     <section id="video" class="video flex">
         <div id="index-container">
-            <div id="reoder">
+            <div id="icon">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24"
@@ -69,12 +69,14 @@
                 </div>
             </div>
         </div>
-        <div id="menu"></div>
+        <div id="menu">
+            <MenuTask />
+        </div>
     </section>
 </template>
 
-<script>
-
+<script setup>
+import MenuTask from '../MenuTask.vue';
 </script>
 
 <style scoped>
@@ -89,19 +91,19 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 /* Index */
-#index-container #reoder{
+#index-container #icon {
     padding: 0 6px;
     fill: #fff;
 }
 /* Content */
-#content{
+#content {
     display: flex;
     flex: 1;
     padding: 8px 0;
     cursor: pointer;
 }
 /* Menu */
-#menu{
+#menu {
     width: 40px;
 }
 /* Thumbnail */
@@ -143,11 +145,11 @@
 }
 /* Title video */
 .video-title-container {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 #video-title {
     color: #29911f;
-    font-size: 2rem;
+    font-size: 2.2rem;
     line-height: 2.2rem;
 }
 /* Metadata */
@@ -166,7 +168,7 @@
 /* Video info */
 #video-info,
 #channel-name {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     line-height: 1.8rem;
     font-weight: 400;
 }
