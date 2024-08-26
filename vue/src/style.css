@@ -37,11 +37,16 @@ h1 {
   line-height: 1.1;
 }
 
-h3, span{
+h3, span, ul, li{
     margin: 0;
     padding: 0;
     border: 0;
     background: transparent;
+}
+
+ul, li{
+    text-align: unset;
+    list-style: none;
 }
 
 button {

@@ -38,31 +38,45 @@
     </label>
 </template>
 
-<script setup>
+<script>
 import { ref } from "vue";
+import { defineComponent } from 'vue';
 
-const isActiveStroke = ref(false);
-const isActiveFill = ref(false);
+export default defineComponent({
+    setup(_, { emit }) {
 
-const handleClick = () => {
-    setTimeout(() => {
-        isActiveStroke.value = true;
-        setTimeout(() => {
-            isActiveStroke.value = false;
-        }, 200);
-    }, 50);
+        const isActiveStroke = ref(false);
+        const isActiveFill = ref(false);
 
-    isActiveFill.value = true;
-    setTimeout(() => {
-        isActiveFill.value = false;
-    }, 100);
-};
+        // Hiệu ứng
+        const handleClick = () => {
+            setTimeout(() => {
+                isActiveStroke.value = true;
+                setTimeout(() => {
+                    isActiveStroke.value = false;
+                }, 200);
+            }, 50);
+
+            isActiveFill.value = true;
+            setTimeout(() => {
+                isActiveFill.value = false;
+            }, 100);
+
+            // Hiển thị popup
+            emit('show-popup')
+        };
+
+        return {
+            isActiveStroke,
+            isActiveFill,
+            handleClick,
+        };
+    },
+});
+
 </script>
 
 <style scoped>
-/* From Uiverse.io by Galahhad */
-/* The design is inspired from the mockapi.io */
-
 .menu {
     --menu-diameter: 40px;
     --button-line-width: 0.25em;
@@ -126,12 +140,6 @@ const handleClick = () => {
 
 #button .icon {
     fill: #ffffff;
-    height: var(--burger-line-height);
-    width: var(--burger-line-width);
-    background: var(--burger-color);
-    border-radius: var(--burger-line-border-radius);
-    position: absolute;
-    transition: var(--burger-line-transition);
     margin-bottom: 10px;
 }
 

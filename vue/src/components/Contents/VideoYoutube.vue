@@ -70,13 +70,24 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask />
+            <MenuTask @show-popup="togglePopup" />
         </div>
+        <section id="popup-container">
+            <MenuPopup :isVisible="isMenuVisible" />
+        </section>
     </section>
 </template>
 
 <script setup>
-import MenuTask from '../MenuTask.vue';
+import { ref } from 'vue';
+import MenuTask from '../menu/MenuTask.vue';
+import MenuPopup from '../menu/MenuPopup.vue';
+
+const isMenuVisible = ref(false);
+
+const togglePopup = () => {
+    isMenuVisible.value = !isMenuVisible.value;
+}
 </script>
 
 <style scoped>
@@ -87,14 +98,17 @@ import MenuTask from '../MenuTask.vue';
     text-align: start;
     /* transition: all 0.3s ease-in-out; */
 }
+
 #video:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+
 /* Index */
 #index-container #icon {
     padding: 0 6px;
     fill: #fff;
 }
+
 /* Content */
 #content {
     display: flex;
@@ -102,26 +116,31 @@ import MenuTask from '../MenuTask.vue';
     padding: 8px 0;
     cursor: pointer;
 }
+
 /* Menu */
 #menu {
     width: 40px;
 }
+
 /* Thumbnail */
 #thumbnail-container {
     width: 240px;
     height: 135px;
     margin-right: 8px;
 }
+
 #thumbnail {
     display: block;
     height: 100%;
     cursor: pointer;
     position: relative;
 }
+
 #thumbnail img {
     width: 100%;
     height: 100%;
 }
+
 /* Time status */
 #time-status {
     position: absolute;
@@ -129,34 +148,41 @@ import MenuTask from '../MenuTask.vue';
     right: 0;
     margin: 4px;
 }
+
 #time-status .badge-shape {
     background-color: rgba(0, 0, 0, 0.6);
 }
+
 #time-status .text {
     color: #fff;
     font-size: 1.2rem;
     line-height: 1.5rem;
     font-weight: 500;
 }
+
 /* Meta */
 #meta {
     flex: 1;
     flex-basis: 0.0000001px;
 }
+
 /* Title video */
 .video-title-container {
     margin-bottom: 10px;
 }
+
 #video-title {
     color: #29911f;
     font-size: 2.2rem;
     line-height: 2.2rem;
 }
+
 /* Metadata */
 #byline-container {
     align-items: center;
     color: #aaa;
 }
+
 /* Separator */
 #separator {
     display: inline-block;
@@ -165,6 +191,7 @@ import MenuTask from '../MenuTask.vue';
     line-height: 1.8rem;
     font-weight: 400;
 }
+
 /* Video info */
 #video-info,
 #channel-name {

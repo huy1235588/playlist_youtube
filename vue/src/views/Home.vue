@@ -9,8 +9,11 @@
             :onSubmit="fetchData"
             @updateInputValue="receiveInputValue"
         />
-        <PlaylistVideo />
+        <PlaylistVideo @show-popup="togglePopup" @click.native="togglePopup" />
         <HelloWorld :msg="outputValue" />
+        <!-- <section id="popup-container">
+            <MenuPopup :isMenuVisible="isMenuVisible" />
+        </section> -->
     </div>
 </template>
 
@@ -38,9 +41,11 @@ export default {
         const error = ref(null);
         const inputValue = ref("");
         const outputValue =ref("");
+        const isMenuVisible = ref(false);
 
         const router = useRouter();
 
+        // Hàm gọi api
         const fetchData = async () => {
             loading.value = true;
             error.value = null;
@@ -64,11 +69,14 @@ export default {
             }
         };
 
+        const togglePopup = () => {
+            isMenuVisible.value = !isMenuVisible.value;
+        }
+
         // Nhận giá trị từ input
         const receiveInputValue = (value) => {
             inputValue.value = value;
         };
-
 
 
         return {
@@ -77,8 +85,10 @@ export default {
             error, // Lỗi trong khi gọi api
             inputValue, // Giá trị input
             outputValue,
+            isMenuVisible, // Toggle popup menu
             fetchData,
             receiveInputValue, // Hàm nhận giá trị input
+            togglePopup, // Hàm hiển thị popup menu
         };
     },
 };
