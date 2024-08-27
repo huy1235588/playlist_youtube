@@ -1,16 +1,19 @@
 <template>
     <main id="contents" className="contents">
         <VideoYoutube
-            v-for="(item, index) in items"
-            :key="index"
-            :index="index + 1"
+            v-for="(item) in items"
+            :key="item"
+            :index="item"
         />
     </main>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
 import VideoYoutube from './VideoYoutube.vue';
-const items =  ['item1', 'item2', 'item3'];
+
+const items = ref(Array.from({ length: 5 }, (_, index) => index + 1));
 
 </script>
 

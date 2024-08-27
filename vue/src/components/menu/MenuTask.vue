@@ -50,7 +50,6 @@ const props = defineProps({
 
 const isActiveStroke = ref(false);
 const isActiveFill = ref(false);
-const showPopup = ref(true);
 
 // Hiệu ứng
 const handleClick = (event) => {
@@ -70,9 +69,7 @@ const handleClick = (event) => {
     emitter.emit('show-popup', {
         event: event,
         index: props.index,
-        showPopup: showPopup.value,
     });
-    showPopup.value = !showPopup.value;
 };
 
 
