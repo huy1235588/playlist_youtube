@@ -50,6 +50,7 @@ const props = defineProps({
 
 const isActiveStroke = ref(false);
 const isActiveFill = ref(false);
+const showPopup = ref(true);
 
 // Hiệu ứng
 const handleClick = (event) => {
@@ -57,20 +58,21 @@ const handleClick = (event) => {
         isActiveStroke.value = true;
         setTimeout(() => {
             isActiveStroke.value = false;
-        }, 250);
+        }, 180);
     }, 100);
 
     isActiveFill.value = true;
     setTimeout(() => {
         isActiveFill.value = false;
-    }, 150);
+    }, 120);
 
     // Hiển thị popup
     emitter.emit('show-popup', {
         event: event,
         index: props.index,
-        showPopup: true
+        showPopup: showPopup.value,
     });
+    showPopup.value = !showPopup.value;
 };
 
 
