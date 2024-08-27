@@ -1,5 +1,5 @@
 <template>
-    <aside v-if="isVisible" class="menu-popup-container">
+    <aside v-if="isVisible" class="menu-popup-container" :style="popupStyle">
         <ul id="items">
             <!-- Delete video -->
             <li class="menu-item">
@@ -95,14 +95,29 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import emitter from '../../eventBus';
 
 const isVisible = ref(false);
+const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
+const index = ref("");
 
 // Hàm hiện menu popup
-const showPopup = () => {
+const showPopup = (event) => {
     isVisible.value = true;
+
+    index.value = event.index;
+
+    nextTick(() => {
+        const targetElement = event.event.target; // Element được nhấn để hiển thị popup
+        const rect = targetElement.getBoundingClientRect();
+
+        popupStyle.value = {
+            top: `${rect.bottom}px`, // Vị trí ngay dưới thẻ
+            left: `${rect.left}px + 50px`,  // Canh trái theo thẻ
+        };
+    });
+
     //  Ngăn chặn việc hidePopup được gọi ngay lập tức
     setTimeout(() => {
         // Check nếu popup đã hiện
@@ -113,9 +128,14 @@ const showPopup = () => {
 }
 
 // Hàm ẩn menu popup
-const hidePopup = () => {
-    isVisible.value = false;
+const hidePopup = (event) => {
     document.removeEventListener('click', hidePopup);
+
+    const button = document.querySelector(`#button-${index.value}`);
+
+    if (!button.contains(event.target) && event.target !== button) {
+        isVisible.value = false;
+    }
 }
 
 onMounted(() => {
@@ -133,8 +153,6 @@ onUnmounted(() => {
 .menu-popup-container {
     outline: none;
     position: fixed;
-    left: 778.655px;
-    top: 184.46px;
     background-color: #000;
     border-radius: 12px;
     z-index: 2202;

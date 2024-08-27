@@ -1,7 +1,7 @@
 <template>
     <label class="menu">
         <input type="checkbox" />
-        <button id="button" @click="handleClick">
+        <button :id="'button-' + index" class="button" @click="handleClick">
             <div id="icon">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -42,11 +42,18 @@
 import { ref } from "vue";
 import emitter from "../../eventBus";
 
+const props = defineProps({
+    index: {
+        type: Number,
+        require: true
+    }
+})
+
 const isActiveStroke = ref(false);
 const isActiveFill = ref(false);
 
 // Hiệu ứng
-const handleClick = () => {
+const handleClick = (event) => {
     setTimeout(() => {
         isActiveStroke.value = true;
         setTimeout(() => {
@@ -60,7 +67,7 @@ const handleClick = () => {
     }, 100);
 
     // Hiển thị popup
-    emitter.emit('show-popup');
+    emitter.emit('show-popup', { event: event, index: props.index});
 };
 
 
@@ -110,7 +117,7 @@ const handleClick = () => {
     height: var(--menu-diameter);
 }
 
-#button {
+.button {
     display: flex;
     position: relative;
     align-items: center;
@@ -128,7 +135,7 @@ const handleClick = () => {
     z-index: 500;
 }
 
-#button .icon {
+.button .icon {
     fill: #ffffff;
     margin-bottom: 10px;
 }
