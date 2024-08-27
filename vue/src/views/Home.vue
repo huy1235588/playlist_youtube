@@ -2,27 +2,20 @@
 <template>
     <LoadingPage v-if="loading" />
     <div v-else id="content">
-        <InputForm placeholder="Search. . ." type="text" autocomplete="off" :onSubmit="fetchData"
-            @updateInputValue="receiveInputValue" />
-        <PlaylistVideo @show-popup="togglePopup" />
-
-        <div id="test">
-            <h3>
-                Increment:
-                <IncrementButton />
-            </h3>
-            <h3>
-                Counter:
-                <CounterDisplay />
-            </h3>
-        </div>
+        <InputForm
+            placeholder="Search. . ."
+            type="text"
+            autocomplete="off"
+            :onSubmit="fetchData"
+            @updateInputValue="receiveInputValue"
+        />
+        <PlaylistVideo />
 
         <HelloWorld :msg="outputValue" />
-
-        <section id="popup-container">
-            <MenuPopup />
-        </section>
     </div>
+    <section id="popup-container">
+        <MenuPopup />
+    </section>
 </template>
 
 <script setup>

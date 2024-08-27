@@ -100,8 +100,22 @@ import emitter from '../../eventBus';
 
 const isVisible = ref(false);
 
+// Hàm hiện menu popup
 const showPopup = () => {
     isVisible.value = true;
+    //  Ngăn chặn việc hidePopup được gọi ngay lập tức
+    setTimeout(() => {
+        // Check nếu popup đã hiện
+        if (isVisible.value) {
+            document.addEventListener('click', hidePopup);
+        };
+    }, 0);
+}
+
+// Hàm ẩn menu popup
+const hidePopup = () => {
+    isVisible.value = false;
+    document.removeEventListener('click', hidePopup);
 }
 
 onMounted(() => {
@@ -109,7 +123,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    emitter.off("show-popup", showPopup);
+    emitter.on("show-popup", showPopup);
+    document.removeEventListener('click', hidePopup);
 })
 
 </script>
