@@ -2,22 +2,30 @@
 <template>
     <LoadingPage v-if="loading" />
     <div v-else id="content">
-        <InputForm
-            placeholder="Search. . ."
-            type="text"
-            autocomplete="off"
-            :onSubmit="fetchData"
-            @updateInputValue="receiveInputValue"
-        />
-        <PlaylistVideo @show-popup="togglePopup" @click.native="togglePopup" />
+        <InputForm placeholder="Search. . ." type="text" autocomplete="off" :onSubmit="fetchData"
+            @updateInputValue="receiveInputValue" />
+        <PlaylistVideo @show-popup="togglePopup" />
+
+        <div id="test">
+            <h3>
+                Increment:
+                <IncrementButton />
+            </h3>
+            <h3>
+                Counter:
+                <CounterDisplay />
+            </h3>
+        </div>
+
         <HelloWorld :msg="outputValue" />
+
         <section id="popup-container">
-            <MenuPopup :isVisible="isMenuVisible" />
+            <MenuPopup />
         </section>
     </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router';
 import axios from "axios";
@@ -28,73 +36,45 @@ import InputForm from "../components/input/InputForm.vue";
 import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
 import MenuPopup from "../components/menu/MenuPopup.vue";
 
-export default {
-    name: "Home",
-    components: {
-        LoadingPage,
-        HelloWorld,
-        InputForm,
-        PlaylistVideo,
-        MenuPopup
-    },
-    setup() {
-        const data = ref(null);
-        const loading = ref(false);
-        const error = ref(null);
-        const inputValue = ref("");
-        const outputValue =ref("");
-        const isMenuVisible = ref(false);
 
-        const router = useRouter();
+const loading = ref(false);
+const error = ref(null);
 
-        // Hàm gọi api
-        const fetchData = async () => {
-            loading.value = true;
-            error.value = null;
+const data = ref(null);
+const inputValue = ref("");
+const outputValue = ref("");
 
-            try {
-                // Gọi API backend
-                const response = await axios.get("/api/videos/fetch", {
-                    params: { inputValue: inputValue.value }
-                });
+const router = useRouter();
 
-                const data = await response.data;
+// Hàm gọi api
+const fetchData = async () => {
+    loading.value = true;
+    error.value = null;
 
-                outputValue.value = data;
+    try {
+        // Gọi API backend
+        const response = await axios.get("/api/videos/fetch", {
+            params: { inputValue: inputValue.value }
+        });
 
-            } catch (err) {
-                // Xử lý lỗi mạng
-                error.value = err.message;
-                router.push({ path: '/error', query: { error: error.value } });
-            } finally {
-                loading.value = false;
-            }
-        };
+        const data = await response.data;
 
-        // Hàm hiển thị popup menu
-        const togglePopup = () => {
-            isMenuVisible.value = !isMenuVisible.value;
-        }
+        outputValue.value = data;
 
-        // Nhận giá trị từ input
-        const receiveInputValue = (value) => {
-            inputValue.value = value;
-        };
-
-
-        return {
-            data, // Dữ liệu từ api
-            loading, // Loading trang
-            error, // Lỗi trong khi gọi api
-            inputValue, // Giá trị input
-            outputValue,
-            isMenuVisible, // Toggle popup menu
-            fetchData,
-            receiveInputValue, // Hàm nhận giá trị input
-            togglePopup, // Hàm hiển thị popup menu
-        };
-    },
+    } catch (err) {
+        // Xử lý lỗi mạng
+        error.value = err.message;
+        router.push({ path: '/error', query: { error: error.value } });
+    } finally {
+        loading.value = false;
+    }
 };
+
+// Nhận giá trị từ input
+const receiveInputValue = (value) => {
+    inputValue.value = value;
+};
+
 </script>
 
 <style scoped>

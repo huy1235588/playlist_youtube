@@ -38,41 +38,31 @@
     </label>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
-import { defineComponent } from 'vue';
+import emitter from "../../eventBus";
 
-export default defineComponent({
-    setup(_, { emit }) {
+const isActiveStroke = ref(false);
+const isActiveFill = ref(false);
 
-        const isActiveStroke = ref(false);
-        const isActiveFill = ref(false);
+// Hiệu ứng
+const handleClick = () => {
+    setTimeout(() => {
+        isActiveStroke.value = true;
+        setTimeout(() => {
+            isActiveStroke.value = false;
+        }, 200);
+    }, 50);
 
-        // Hiệu ứng
-        const handleClick = () => {
-            setTimeout(() => {
-                isActiveStroke.value = true;
-                setTimeout(() => {
-                    isActiveStroke.value = false;
-                }, 200);
-            }, 50);
+    isActiveFill.value = true;
+    setTimeout(() => {
+        isActiveFill.value = false;
+    }, 100);
 
-            isActiveFill.value = true;
-            setTimeout(() => {
-                isActiveFill.value = false;
-            }, 100);
+    // Hiển thị popup
+    emitter.emit('show-popup');
+};
 
-            // Hiển thị popup
-            emit('show-popup')
-        };
-
-        return {
-            isActiveStroke,
-            isActiveFill,
-            handleClick,
-        };
-    },
-});
 
 </script>
 

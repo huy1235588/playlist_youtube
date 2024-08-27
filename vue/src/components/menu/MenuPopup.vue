@@ -94,15 +94,24 @@
     </aside>
 </template>
 
-<script>
-export default{
-    props: {
-        isVisible: {
-            type: Boolean,
-            require: true,
-        }
-    },
+<script setup>
+import { onMounted, onUnmounted, ref } from 'vue';
+import emitter from '../../eventBus';
+
+const isVisible = ref(false);
+
+const showPopup = () => {
+    isVisible.value = true;
 }
+
+onMounted(() => {
+    emitter.on("show-popup", showPopup);
+});
+
+onUnmounted(() => {
+    emitter.off("show-popup", showPopup);
+})
+
 </script>
 
 <style scoped>
