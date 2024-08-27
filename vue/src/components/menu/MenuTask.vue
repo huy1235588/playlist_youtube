@@ -1,6 +1,5 @@
 <template>
-    <label class="menu">
-        <input type="checkbox" />
+    <section class="menu">
         <button :id="'button-' + index" class="button" @click="handleClick">
             <div id="icon">
                 <svg
@@ -14,8 +13,8 @@
                     style="
                         pointer-events: none;
                         display: inherit;
-                        width: 100%;
-                        height: 100%;
+                        width: 24px;
+                        height: 24px;
                         fill: currentColor;
                     "
                 >
@@ -35,7 +34,7 @@
                 :class="{ active: isActiveFill }"
             ></div>
         </div>
-    </label>
+    </section>
 </template>
 
 <script setup>
@@ -58,16 +57,20 @@ const handleClick = (event) => {
         isActiveStroke.value = true;
         setTimeout(() => {
             isActiveStroke.value = false;
-        }, 200);
-    }, 50);
+        }, 250);
+    }, 100);
 
     isActiveFill.value = true;
     setTimeout(() => {
         isActiveFill.value = false;
-    }, 100);
+    }, 150);
 
     // Hiển thị popup
-    emitter.emit('show-popup', { event: event, index: props.index});
+    emitter.emit('show-popup', {
+        event: event,
+        index: props.index,
+        showPopup: true
+    });
 };
 
 
@@ -107,10 +110,6 @@ const handleClick = (event) => {
     position: relative;
 }
 
-.menu input {
-    display: none;
-}
-
 .menu {
     display: inline-block;
     width: var(--menu-diameter);
@@ -118,11 +117,9 @@ const handleClick = (event) => {
 }
 
 .button {
-    display: flex;
     position: relative;
-    align-items: center;
-    justify-content: center;
     background: transparent;
+    vertical-align: middle;
     width: var(--button-diameter);
     height: var(--button-diameter);
     border-radius: var(--button-btn-border-radius);
@@ -135,9 +132,15 @@ const handleClick = (event) => {
     z-index: 500;
 }
 
-.button .icon {
+.button #icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: var(--button-diameter);
+    height: var(--button-diameter);
+    vertical-align: middle;
     fill: #ffffff;
-    margin-bottom: 10px;
 }
 
 .interaction {
@@ -167,8 +170,6 @@ const handleClick = (event) => {
 }
 
 /* Action */
-#button:active ~ #interaction .fill,
-#button:active ~ #interaction .stroke,
 .active {
     opacity: 1;
 }

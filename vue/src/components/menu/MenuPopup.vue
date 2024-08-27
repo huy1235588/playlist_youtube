@@ -98,23 +98,27 @@
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import emitter from '../../eventBus';
 
-const isVisible = ref(false);
+const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const index = ref("");
 
 // Hàm hiện menu popup
 const showPopup = (event) => {
-    isVisible.value = true;
+    if (isVisible.value === false) {
+        isVisible.value = true;        
+    }
 
-    index.value = event.index;
+    index.value = event.index; // Lấy index của button đang click
 
     nextTick(() => {
         const targetElement = event.event.target; // Element được nhấn để hiển thị popup
         const rect = targetElement.getBoundingClientRect();
 
+        console.log(rect);
+
         popupStyle.value = {
-            top: `${rect.bottom}px`, // Vị trí ngay dưới thẻ
-            left: `${rect.left}px + 50px`,  // Canh trái theo thẻ
+            top: `${rect.bottom}px`, // Cộng với vị trí cuộn
+            left: `${rect.left - 365}px`, // Cộng với vị trí cuộn và 50px
         };
     });
 
@@ -129,13 +133,13 @@ const showPopup = (event) => {
 
 // Hàm ẩn menu popup
 const hidePopup = (event) => {
-    document.removeEventListener('click', hidePopup);
-
+    
     const button = document.querySelector(`#button-${index.value}`);
-
+    
     if (!button.contains(event.target) && event.target !== button) {
         isVisible.value = false;
     }
+    document.removeEventListener('click', hidePopup);
 }
 
 onMounted(() => {
@@ -143,7 +147,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    emitter.on("show-popup", showPopup);
+    emitter.off("show-popup", showPopup);
     document.removeEventListener('click', hidePopup);
 })
 
