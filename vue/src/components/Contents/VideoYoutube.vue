@@ -19,9 +19,6 @@
                     <path d="M21 10H3V9h18v1Zm0 4H3v1h18v-1Z"></path>
                 </svg>
             </div>
-            <div index>
-                {{ index }}
-            </div>
         </div>
         <div id="content">
             <div id="thumbnail-container">

@@ -1,5 +1,5 @@
 <template>
-    <section class="menu">
+    <section class="menu" ref="sectionRefEl">
         <button :id="'button-' + index" class="button" @click="handleClick">
             <div id="icon">
                 <svg
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import emitter from "../../eventBus";
 
 const props = defineProps({
@@ -50,6 +50,9 @@ const props = defineProps({
 
 const isActiveStroke = ref(false);
 const isActiveFill = ref(false);
+
+const sectionRefEl = ref(null);
+const scrollPosition = ref(0);
 
 // Hiệu ứng
 const handleClick = (event) => {
@@ -70,8 +73,24 @@ const handleClick = (event) => {
         event: event,
         index: props.index,
     });
+
+    // // Lưu vị trí thanh cuộn
+    // if (sectionRefEl.value) {
+    //     scrollPosition.value = sectionRefEl.value.scrollTop;
+    //     console.log(sectionRefEl.value.scrollTop)
+    // }
+    // window.addEventListener("scroll", handleScroll)
 };
 
+// Theo dõi vị trí thanh cuộn và tự động cuộn lại
+// const handleScroll = (e) => {
+//     if (sectionRefEl.value !== 0) {
+//         sectionRefEl.value.scrollIntoView({ behavior: 'smooth' })
+//     }
+//     document.addEventListener("click", function () {
+//         window.removeEventListener("scroll", handleScroll)
+//     })
+// };
 
 </script>
 
@@ -128,7 +147,7 @@ const handleClick = (event) => {
     transition: var(--button-transition);
     outline: var(--button-enable-outline-width) solid transparent;
     outline-offset: 0;
-    z-index: 500;
+    z-index: 1;
 }
 
 .button #icon {

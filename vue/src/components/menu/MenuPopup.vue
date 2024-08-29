@@ -3,6 +3,7 @@
         id="menu-popup"
         v-if="isVisible"
         class="menu-popup-container"
+        ref="menuPopup"
         :style="popupStyle"
     >
         <ul id="items">
@@ -106,6 +107,48 @@ import emitter from '../../eventBus';
 const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const pressedButton = ref(""); // Lưu lại nút đã nhấn
+const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
+
+// Hàm tính toán và cập nhật vị trí popup
+const updatePopupPosition = (targetElement) => {
+    nextTick(() => {
+        // Lấy kích thước và vị trí của đối tượng mục tiêu
+        const rect = targetElement.getBoundingClientRect();
+        // Chiều cao của viewport
+        const viewportHeight = window.innerHeight;
+        // Chiều cao của popup (thay đổi theo chiều cao của menu)
+        let popupHeight;
+        if (menuPopup.value) {
+            popupHeight = menuPopup.value.offsetHeight;
+        }
+
+        // Vị trí hiện tại của popup dựa trên vị trí của đối tượng mục tiêu
+        let topPosition = rect.bottom;
+        let leftPosition = rect.left - 380;
+
+        // Kiểm tra nếu menu nằm ngoài viewport
+        if (topPosition + popupHeight > viewportHeight) {
+            // Điều chỉnh vị trí để menu nằm trong viewport
+            topPosition = rect.top - popupHeight; // 10px padding
+        }
+
+        // Cập nhật style của popup với các vị trí đã điều chỉnh
+        popupStyle.value = {
+            top: `${topPosition}px`,
+            left: `${leftPosition}px`,
+        };
+    });
+}
+
+// Hàm xử lý sự kiện resize
+const handleResize = () => {
+    if (isVisible.value) {
+        const targetElement = document.getElementById(pressedButton.value);
+        if (targetElement) {
+            updatePopupPosition(targetElement);
+        }
+    }
+}
 
 // Hàm hiện menu popup
 const showPopup = (payload) => {
@@ -121,15 +164,12 @@ const showPopup = (payload) => {
             pressedButton.value = elementTarget; // Lưu lại ID Element của nút đã được nhấn
         }
 
-        // Vị trí hiện menu
-        nextTick(() => {
-            const targetElement = payload.event.target;
-            const rect = targetElement.getBoundingClientRect();
-            popupStyle.value = {
-                top: `${rect.bottom}px`,
-                left: `${rect.left - 365}px`,
-            };
-        });
+        // Cập nhật vị trí hiện menu
+        const targetElement = payload.event.target;
+        updatePopupPosition(targetElement);
+
+        // Lắng nghe sự kiện resize
+        window.addEventListener('resize', handleResize); 
 
         // Thêm sự kiện click để ẩn popup
         document.addEventListener('click', hidePopup);
@@ -141,11 +181,13 @@ const hidePopup = (event) => {
     if (!event.target.closest('#menu-popup') && !event.target.closest('button[id^="button-"]')) {
         isVisible.value = false;
         document.removeEventListener('click', hidePopup);
+        window.removeEventListener('resize', handleResize);
     }
 }
 
 onMounted(() => {
     emitter.on("show-popup", showPopup);
+
 });
 
 onUnmounted(() => {
@@ -161,7 +203,7 @@ onUnmounted(() => {
     position: fixed;
     background-color: #000;
     border-radius: 12px;
-    z-index: 2202;
+    z-index: 2;
 }
 
 #items {
@@ -172,14 +214,14 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     text-align: start;
-    min-height: 36px;
+    height: 40px;
     padding: 0 12px 0 16px;
     line-height: 24px;
     cursor: pointer;
 }
 
 .menu-item-container:hover {
-    background-color: #242424;
+    background-color: #333333;
 }
 
 /* Separator */
@@ -200,8 +242,8 @@ onUnmounted(() => {
     flex: 1;
     margin-right: 24px;
     color: #cccccc;
-    font-size: 1.2rem;
-    line-height: 2.4rem;
+    font-size: 20px;
+    line-height: 40px;
     font-weight: 400;
 }
 </style>
