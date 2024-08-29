@@ -1,5 +1,5 @@
 <template>
-    <section class="menu" ref="sectionRefEl">
+    <section class="menu">
         <button :id="'button-' + index" class="button" @click="handleClick">
             <div id="icon">
                 <svg
@@ -41,56 +41,41 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import emitter from "../../eventBus";
 
+// Định nghĩa các props mà component nhận vào
 const props = defineProps({
     index: {
         type: Number,
-        require: true
+        required: true
     }
 })
 
+// Khởi tạo các biến trạng thái
 const isActiveStroke = ref(false);
 const isActiveFill = ref(false);
 
-const sectionRefEl = ref(null);
-const scrollPosition = ref(0);
-
-// Hiệu ứng
+// Hàm xử lý sự kiện click
 const handleClick = (event) => {
+    // Tạo hiệu ứng stroke (viền) cho phần tử
     setTimeout(() => {
-        isActiveStroke.value = true;
+        isActiveStroke.value = true; // Bật hiệu ứng viền
         setTimeout(() => {
-            isActiveStroke.value = false;
+            isActiveStroke.value = false; // Tắt hiệu ứng viền sau 180ms
         }, 180);
     }, 100);
 
+    // Tạo hiệu ứng fill (đổ màu) cho phần tử
     isActiveFill.value = true;
     setTimeout(() => {
-        isActiveFill.value = false;
+        isActiveFill.value = false; // Tắt hiệu ứng đổ màu sau 120ms
     }, 120);
 
-    // Hiển thị popup
+    // Hiển thị popup thông qua emitter
     emitter.emit('show-popup', {
         event: event,
-        index: props.index,
+        index: props.index, // Truyền index
     });
 
-    // // Lưu vị trí thanh cuộn
-    // if (sectionRefEl.value) {
-    //     scrollPosition.value = sectionRefEl.value.scrollTop;
-    //     console.log(sectionRefEl.value.scrollTop)
-    // }
-    // window.addEventListener("scroll", handleScroll)
 };
-
-// Theo dõi vị trí thanh cuộn và tự động cuộn lại
-// const handleScroll = (e) => {
-//     if (sectionRefEl.value !== 0) {
-//         sectionRefEl.value.scrollIntoView({ behavior: 'smooth' })
-//     }
-//     document.addEventListener("click", function () {
-//         window.removeEventListener("scroll", handleScroll)
-//     })
-// };
 
 </script>
 
