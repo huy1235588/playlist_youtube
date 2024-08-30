@@ -56,11 +56,12 @@ const addVideo = async (video) => {
             .input('Thumbnail', sql.NVarChar(255), video.thumbnails)
             .input('ViewCount', sql.BigInt, video.viewCount)
             .input('Duration', sql.VarChar(20), video.duration)
+            .input('AddAt', sql.DateTime, new Date(video.addAt).toISOString().slice(0, 19).replace('T', ' '))
             .input('ChannelId', sql.NVarChar(50), video.channelId)
             .input('PlaylistId', sql.VarChar(50), video.playlistId)
             .query(
                 `INSERT INTO Videos
-                VALUES (@VideoId, @Title, @PublishedAt, @Thumbnail, @ViewCount, @Duration, @ChannelId, @PlaylistId)`,
+                VALUES (@VideoId, @Title, @PublishedAt, @Thumbnail, @ViewCount, @Duration, @AddAt, @ChannelId, @PlaylistId)`,
             );
 
     } catch (error) {

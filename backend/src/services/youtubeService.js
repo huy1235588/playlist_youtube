@@ -120,7 +120,7 @@ const getPlaylistVideos = async (playlistId) => {
                     // snippet (bao gồm tiêu đề, mô tả, và hình thu nhỏ) 
                     // contentDetails (bao gồm videoId và thời gian phát hành)
                     // https://developers.google.com/youtube/v3/docs/playlistItems#snippet
-                    part: 'contentDetails',
+                    part: 'snippet, contentDetails',
                     maxResults: 50, // Tối đa 50 video mỗi lượt yêu cầu
                     playlistId: playlistId, // Id playlist muốn lấy
                     pageToken: nextPageToken, // Khi nextPageToken tồn tại,thì còn video chưa được lấy.
@@ -136,8 +136,8 @@ const getPlaylistVideos = async (playlistId) => {
                 const videoId = item.contentDetails.videoId;
                 // Lấy ngày phát hành của video
                 const videoPublishedAt = item.contentDetails.videoPublishedAt;
-
-                // console.log(videoPublishedAt)
+                // Lấy ngày thêm của vào playlist
+                const publishedAt = item.snippet.publishedAt;
 
                 // Lấy thông tin chi tiết của video
                 if (videoPublishedAt !== undefined) {
@@ -184,6 +184,7 @@ const getPlaylistVideos = async (playlistId) => {
                     thumbnails: detailVideo.thumbnails,
                     viewCount: detailVideo.viewCount,
                     duration: detailVideo.duration,
+                    addAt: publishedAt,
                     channelId: detailChannel.channelId,
                     playlistId: playlistId
                 });
