@@ -22,16 +22,18 @@ class QueryModel {
     }
 
     // Selct 50 Video đầu tiên theo thứ tự thêm vào 
-    async select50Video() {
+    async select50VideoBySortColumn(start, end, column, order) {
         try {
             await this.connect();
             const request = this.pool.request();
 
             // Chọn dữ liệu từ View Display50Video
             const result = await request
-                .query(`Select *
-                        From Display50Video`
-                );
+                .input('start', sql.Int, start)
+                .input('end', sql.Int, end)
+                .input('column', sql.VarChar, column)
+                .input('order', sql.VarChar, order)
+                .query(`exec [Get 50 Videos By Sort Column] @start, @end, @column, @order`);
 
             // Trả về dữ liệu nếu có
             if (result.recordset.length > 0) {

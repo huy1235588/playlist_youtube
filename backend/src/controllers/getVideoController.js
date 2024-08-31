@@ -6,7 +6,12 @@ const getVideoInfo = async (req, res) => {
         const queryModel = new QueryModel();
 
         // Lấy video từ datbase
-        const videos = await queryModel.select50Video()
+        const videos = await queryModel.select50VideoBySortColumn(
+            req.query.start,
+            req.query.end,
+            req.query.column,
+            req.query.order
+        )
 
         // Trả về giá trị
         res.json({

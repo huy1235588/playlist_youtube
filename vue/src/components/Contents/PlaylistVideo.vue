@@ -18,7 +18,14 @@ const data = ref([]);
 const fetchData = async () => {
     try {
         // Gọi API backend 
-        const response = await axios.get("/api/video/get");
+        const response = await axios.get("/api/video/get", {
+            params: {
+                start: 1,
+                end: 50,
+                column: "AddedAt",
+                order: "Desc",
+            }
+        });
     
         data.value =  await response.data.videos;
 
