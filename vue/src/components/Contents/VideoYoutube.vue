@@ -25,14 +25,16 @@
                 <a id="thumbnail">
                     <!-- Hình ảnh video -->
                     <img
-                        src="https://i.ytimg.com/vi/F_kv67JHhmw/maxresdefault.jpg"
+                        v-if="notFound"
+                        src="https://i.ytimg.com/img/no_thumbnail.jpg"
                         alt=""
                     />
+                    <img v-else :src="data.Thumbnails" alt="" />
                     <div id="overplay">
                         <!-- Thời lượng video -->
                         <div id="time-status">
                             <div class="badge-shape">
-                                <span class="text"> 2:97 </span>
+                                <span class="text">{{ data.Duration }}</span>
                             </div>
                         </div>
                     </div>
@@ -41,7 +43,12 @@
             <div id="meta">
                 <!-- Tên video -->
                 <h3 class="video-title-container">
-                    <a href="" id="video-title"> AViVA - SCREAM </a>
+                    <a v-if="notFound" href="" id="video-title" class="error"
+                        >[Not Found]</a
+                    >
+                    <a v-else href="" id="video-title">
+                        {{ data.VideoTile }}
+                    </a>
                 </h3>
                 <div class="flex">
                     <div id="metadata" class="flex">
@@ -51,18 +58,26 @@
                                 <div id="container">
                                     <div id="text-container">
                                         <div id="text">
-                                            <a href="">Nightblue Music</a>
+                                            <a v-if="notFound" href=""></a>
+                                            <a v-else href="">
+                                                {{ data.ChannelTitle }}
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Khoảng cách -->
-                            <div id="separator">•</div>
                             <!-- Thông tin video -->
-                            <div id="video-info">
-                                <span id="view-count">480M</span>
+                            <div v-if="notFound" href=""></div>
+                            <div v-else id="video-info">
+                                <!-- Khoảng cách -->
+                                <div id="separator">•</div>
+                                <span id="view-count">
+                                    {{ data.ViewCount }} lượt xem</span
+                                >
                                 <span id="separator"> • </span>
-                                <span id="published-at">1 tháng trước</span>
+                                <span id="published-at">{{
+                                    data.PublishedAt
+                                }}</span>
                             </div>
                         </div>
                     </div>
@@ -70,19 +85,86 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :index="index" />
+            <MenuTask :index="data.IndexVideo" />
         </div>
     </section>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import MenuTask from '../menu/MenuTask.vue';
-defineProps({
-    index: {
-        type: Number,
+
+const notFound = ref(false);
+
+const props = defineProps({
+    data: {
+        type: Object,
         require: true
     }
 })
+
+// Hàm chuyển đổi một chuỗi thành định dạng theo các đơn vị "K", "M", hoặc "B".
+function formatViewCount(count) {
+    if (count >= 1_000_000_000) {
+        return (count >= 10_000_000_000 ? (count / 1_000_000_000).toFixed(0) : (count / 1_000_000_000).toFixed(1)) + " B";
+    } else if (count >= 1_000_000) {
+        return (count >= 10_000_000 ? (count / 1_000_000).toFixed(0) : (count / 1_000_000).toFixed(1)) + " M";
+    } else if (count >= 1_000) {
+        return (count >= 10_000 ? (count / 1_000).toFixed(0) : (count / 1_000).toFixed(1)) + " K";
+    } else {
+        return count; // trả về một số nếu nó ít hơn 1.000
+    }
+}
+
+// Hàm tính khoảng cách thời gian
+function timeAgo(dateString) {
+    const now = new Date();
+    const pastDate = new Date(dateString);
+
+    const diffInMs = now - pastDate;
+    const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (years > 0) {
+        return `${years} năm trước`;
+    } else if (months >= 0) {
+        return `${months} tháng trước`;
+    } else if (days > 0) {
+        return `${days} ngày trước`;
+    } else {
+        return 'Hôm nay';
+    }
+}
+
+function formatDuration(duration) {
+    // Tạo đối tượng RegExp để trích xuất phút và giây
+    const match = duration.match(/PT(\d+)M(\d+)S/);
+    if (match) {
+        // Trích xuất phút và giây
+        const minutes = match[1];
+        const seconds = match[2];
+
+        // Định dạng kết quả thành "phút:giây"
+        return `${minutes}:${seconds.padStart(2, '0')}`;
+    }
+
+    return 'Invalid format'; // Hoặc có thể trả về một giá trị mặc định
+}
+
+// Kiểm tra video bị xóa
+if (props.data.VideoTile === null) {
+    notFound.value = true;
+}
+else {
+    // Định dạng lượt xem
+    props.data.ViewCount = formatViewCount(props.data.ViewCount);
+    // Định dạng thời lượng video
+    props.data.Duration = formatDuration(props.data.Duration);
+    // Lấy khoảng thời gian phát hành đến hiện tại
+    props.data.PublishedAt = timeAgo(props.data.PublishedAt);
+}
+
 </script>
 
 <style scoped>
@@ -119,21 +201,24 @@ defineProps({
 
 /* Thumbnail */
 #thumbnail-container {
-    width: 240px;
-    height: 135px;
+    width: 320px;
+    height: 180px;
     margin-right: 8px;
 }
 
 #thumbnail {
     display: block;
+    width: 100%;
     height: 100%;
+    overflow: hidden;
     cursor: pointer;
     position: relative;
 }
 
 #thumbnail img {
-    width: 100%;
-    height: 100%;
+    width: 320px;
+    height: 240px;
+    margin: -30px 0 0 0;
 }
 
 /* Time status */
@@ -193,5 +278,10 @@ defineProps({
     font-size: 1.6rem;
     line-height: 1.8rem;
     font-weight: 400;
+}
+
+/* Video error */
+#video-title.error {
+    color: rgb(189, 9, 9);
 }
 </style>

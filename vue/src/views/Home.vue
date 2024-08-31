@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from 'vue-router';
 import axios from "axios";
 
@@ -29,6 +29,7 @@ import InputForm from "../components/input/InputForm.vue";
 import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
 import MenuPopup from "../components/menu/MenuPopup.vue";
 
+import emitter from "../eventBus";
 
 const loading = ref(false);
 const error = ref(null);
@@ -41,7 +42,7 @@ const router = useRouter();
 
 // Hàm gọi api
 const fetchData = async () => {
-    loading.value = true;
+    loadingPage();
     error.value = null;
 
     try {
@@ -59,14 +60,37 @@ const fetchData = async () => {
         error.value = err.message;
         router.push({ path: '/error', query: { error: error.value } });
     } finally {
-        loading.value = false;
+        loadingPage();
     }
 };
+
+// Hàm để loading page khi gọi api
+const loadingPage = () => {
+    loading.value = !loading.value;
+}
+
+// Hàm để hiển thị error page khi gọi api
+const errorPage = (payload) => {
+    error.value = !error.value;
+    if (error.value !== null) {
+        router.push({ path: '/error', query: { error: payload.errorMessage } });
+    }
+}
 
 // Nhận giá trị từ input
 const receiveInputValue = (value) => {
     inputValue.value = value;
 };
+
+onMounted(() => {
+    emitter.on("loading-page", loadingPage);
+    emitter.on("error-page", errorPage);
+})
+
+onUnmounted(() => {
+    emitter.off("loading-page", loadingPage);
+    emitter.off("error-page", errorPage);
+})
 
 </script>
 
