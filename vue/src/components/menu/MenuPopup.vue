@@ -169,7 +169,7 @@ const showPopup = (payload) => {
         updatePopupPosition(targetElement);
 
         // Lắng nghe sự kiện resize
-        window.addEventListener('resize', handleResize); 
+        window.addEventListener('resize', handleResize);
 
         // Thêm sự kiện click để ẩn popup
         document.addEventListener('click', hidePopup);
@@ -178,12 +178,21 @@ const showPopup = (payload) => {
 
 // Hàm ẩn menu popup
 const hidePopup = (event) => {
-    if (!event.target.closest('#menu-popup') && !event.target.closest('button[id^="button-"]')) {
+    if (
+        (!menuPopup.value || !menuPopup.value.contains(event.target)) &&
+        !event.target.closest('button[id^="button-"]:not(button#filter-button)')
+    ) {
+        console.log(event.target)
         isVisible.value = false;
-        document.removeEventListener('click', hidePopup);
-        window.removeEventListener('resize', handleResize);
+        cleanupEventListeners()
     }
 }
+
+// Hàm dọn dẹp các lắng nghe sự kiện khi ẩn popup
+const cleanupEventListeners = () => {
+    document.removeEventListener('click', hidePopup);
+    window.removeEventListener('resize', handleResize);
+};
 
 onMounted(() => {
     emitter.on("show-popup", showPopup);
@@ -192,7 +201,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     emitter.off("show-popup", showPopup);
-    document.removeEventListener('click', hidePopup);
+    cleanupEventListeners()
 })
 
 </script>

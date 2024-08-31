@@ -1,7 +1,7 @@
 <template>
-    <section class="menu">
-        <button :id="'button-' + index" class="button" @click="handleClick">
-            <div id="icon">
+    <section id="filter-menu" class="menu">
+        <button id="filter-button" class="button" @click="handleClick">
+            <div class="icon">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     enable-background="new 0 0 24 24"
@@ -13,16 +13,18 @@
                     style="
                         pointer-events: none;
                         display: inherit;
-                        width: 24px;
-                        height: 24px;
-                        fill: currentColor;
+                        width: 100%;
+                        height: 100%;
                     "
                 >
                     <path
-                        d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"
+                        d="M21 6H3V5h18v1zm-6 5H3v1h12v-1zm-6 6H3v1h6v-1z"
                     ></path>
                 </svg>
             </div>
+            <span class="text">
+                Sắp xếp
+            </span>
         </button>
         <div id="interaction" class="interaction">
             <div
@@ -34,20 +36,16 @@
                 :class="{ active: isActiveFill }"
             ></div>
         </div>
+        <FilterMenuDropdown />
     </section>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import emitter from "../../eventBus";
 
-// Định nghĩa các props mà component nhận vào
-const props = defineProps({
-    index: {
-        type: Number,
-        required: true
-    }
-})
+import FilterMenuDropdown from "./FilterMenuDropdown.vue";
+
+import emitter from "../../eventBus";
 
 // Khởi tạo các biến trạng thái
 const isActiveStroke = ref(false);
@@ -70,9 +68,8 @@ const handleClick = (event) => {
     }, 120);
 
     // Hiển thị popup thông qua emitter
-    emitter.emit('show-popup', {
+    emitter.emit('show-filter-menu', {
         event: event,
-        index: props.index, // Truyền index
     });
 
 };
@@ -81,7 +78,7 @@ const handleClick = (event) => {
 
 <style scoped>
 .menu {
-    --menu-diameter: 40px;
+    --menu-width: 120px;
     --button-line-width: 0.25em;
     --button-line-height: 0.25em;
     --button-offset: 0.625em;
@@ -89,7 +86,8 @@ const handleClick = (event) => {
     --button-color: #ffffff;
     --button-line-border-radius: 0.1875em;
     --button-diameter: 100%;
-    --button-btn-border-radius: calc(var(--button-diameter) / 2);
+    --button-icon-diameter: 2em;
+    --button-btn-border-radius: 0.1875em;
     --button-line-transition: 0.3s;
     --button-transition: all 0.5s ease-in-out;
     --stroke-transition: all 0.8s ease;
@@ -111,11 +109,7 @@ const handleClick = (event) => {
     display: inline-block;
     text-rendering: optimizeLegibility;
     position: relative;
-}
-
-.menu {
-    display: inline-block;
-    width: var(--menu-diameter);
+    width: var(--menu-width);
     height: var(--menu-diameter);
 }
 
@@ -123,6 +117,8 @@ const handleClick = (event) => {
     position: relative;
     background: transparent;
     vertical-align: middle;
+    display: flex;
+    align-items: center;
     width: var(--button-diameter);
     height: var(--button-diameter);
     border-radius: var(--button-btn-border-radius);
@@ -135,15 +131,22 @@ const handleClick = (event) => {
     z-index: 1;
 }
 
-.button #icon {
+#filter-button .icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    width: var(--button-diameter);
-    height: var(--button-diameter);
+    width: var(--button-icon-diameter);
+    height: var(--button-icon-diameter);
     vertical-align: middle;
     fill: #ffffff;
+}
+
+.button .text{
+    flex: 1;
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: 400;
 }
 
 .interaction {
@@ -169,10 +172,10 @@ const handleClick = (event) => {
 
 .stroke,
 .fill {
-    border-radius: 50%;
+    border-radius: var(--button-btn-border-radius);
 }
 
-#menu:active #interaction .fill{
+#filter-menu:active #interaction .fill{
     opacity: 1;
 }
 
