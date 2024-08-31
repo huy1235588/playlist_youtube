@@ -8,56 +8,25 @@
     >
         <ul id="items">
             <!-- Sort by ADdedAt -->
-            <li class="menu-item">
-                <div class="menu-item-container">
-                    <div id="menu-service">
-                        <span>Ngày thêm (mới nhất)</span>
-                    </div>
-                </div>
-            </li>
-            <li class="menu-item" has-separator>
-                <div class="menu-item-container">
-                    <div id="menu-service">
-                        <span>Ngày thêm (cũ nhất)</span>
-                    </div>
-                </div>
-            </li>
+            <ButtonFilter text="Ngày thêm (mới nhất)" />
+            <ButtonFilter text="Ngày thêm (cũ nhất)" />
+
             <!-- Sort by PublishedAt -->
-            <li class="menu-item">
-                <div class="menu-item-container">
-                    <div id="menu-service">
-                        <span>Ngày xuất bản (mới nhất)</span>
-                    </div>
-                </div>
-            </li>
-            <li class="menu-item" has-separator>
-                <div class="menu-item-container">
-                    <div id="menu-service">
-                        <span>Ngày thêm (cũ nhất)</span>
-                    </div>
-                </div>
-            </li>
+            <ButtonFilter text="Ngày xuất bản (cũ nhất)" />
+            <ButtonFilter text="Ngày xuất bản (mới nhất)" />
+            
             <!-- Sort by ViewCount -->
-            <li class="menu-item">
-                <div class="menu-item-container">
-                    <div id="menu-service">
-                        <span>Lượt xem (tăng dần)</span>
-                    </div>
-                </div>
-            </li>
-            <li class="menu-item" has-separator>
-                <div class="menu-item-container">
-                    <div id="menu-service">
-                        <span>Lượt xem (giảm dần)</span>
-                    </div>
-                </div>
-            </li>
+            <ButtonFilter text="Lượt xem (tăng nhất)" />
+            <ButtonFilter text="Lượt xem (giảm nhất)" />
         </ul>
     </aside>
 </template>
 
 <script setup>
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
+
+import ButtonFilter from './ButtonFilter.vue';
+
 import emitter from '../../eventBus';
 
 const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
@@ -155,33 +124,5 @@ onUnmounted(() => {
 
 #items {
     padding: 8px 0;
-}
-
-.menu-item-container {
-    display: flex;
-    align-items: center;
-    text-align: start;
-    height: 50px;
-    padding: 0 12px 0 16px;
-    line-height: 24px;
-    cursor: pointer;
-}
-
-.menu-item-container:hover {
-    background-color: #444444;
-}
-
-#icon {
-    margin-right: 16px;
-    fill: #cccccc;
-}
-
-#menu-service {
-    flex: 1;
-    margin-right: 24px;
-    color: #cccccc;
-    font-size: 20px;
-    line-height: 40px;
-    font-weight: 400;
 }
 </style>

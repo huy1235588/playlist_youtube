@@ -182,7 +182,6 @@ const hidePopup = (event) => {
         (!menuPopup.value || !menuPopup.value.contains(event.target)) &&
         !event.target.closest('button[id^="button-"]:not(button#filter-button)')
     ) {
-        console.log(event.target)
         isVisible.value = false;
         cleanupEventListeners()
     }
