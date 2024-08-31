@@ -1,7 +1,7 @@
 <template>
     <li class="menu-item">
         <div class="menu-item-container">
-            <button id="button-sort">
+            <button id="button-sort" @click="filter">
                 {{ text }}
             </button>
         </div>
@@ -9,12 +9,31 @@
 </template>
 
 <script setup>
-defineProps({
+import emitter from '../../eventBus';
+
+const props = defineProps({
     text: {
         type: String,
         required: true,
+    },
+    column: {
+        type: String,
+        require: true,
+    },
+    order: {
+        type: String,
+        require: true
     }
 });
+
+// Gửi sự kiện click cho PlaylistVideo
+const filter = () => {
+    emitter.emit('filter', {
+        column: props.column,
+        order: props.order,
+    });
+}
+
 </script>
 
 <style scoped>

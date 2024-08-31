@@ -8,16 +8,40 @@
     >
         <ul id="items">
             <!-- Sort by ADdedAt -->
-            <ButtonFilter text="Ngày thêm (mới nhất)" />
-            <ButtonFilter text="Ngày thêm (cũ nhất)" />
+            <ButtonFilter
+                text="Ngày thêm (mới nhất)"
+                column="AddedAt"
+                order="Asc"
+            />
+            <ButtonFilter
+                text="Ngày thêm (cũ nhất)"
+                column="AddedAt"
+                order="Desc"
+            />
 
             <!-- Sort by PublishedAt -->
-            <ButtonFilter text="Ngày xuất bản (cũ nhất)" />
-            <ButtonFilter text="Ngày xuất bản (mới nhất)" />
-            
+            <ButtonFilter
+                text="Ngày xuất bản (cũ nhất)"
+                column="PublishedAt"
+                order="Asc"
+            />
+            <ButtonFilter
+                text="Ngày xuất bản (mới nhất)"
+                column="PublishedAt"
+                order="Desc"
+            />
+
             <!-- Sort by ViewCount -->
-            <ButtonFilter text="Lượt xem (tăng nhất)" />
-            <ButtonFilter text="Lượt xem (giảm nhất)" />
+            <ButtonFilter
+                text="Lượt xem (tăng dần)"
+                column="ViewCount"
+                order="Asc"
+            />
+            <ButtonFilter
+                text="Lượt xem (giảm dần)"
+                column="ViewCount"
+                order="Desc"
+            />
         </ul>
     </aside>
 </template>
@@ -70,17 +94,17 @@ const updatePopupPosition = () => {
 const showPopup = () => {
     // Chuyển đổi trạng thái
     isVisible.value = !isVisible.value;
-    
+
     if (isVisible.value) {
         // Cập nhật vị trí hiện menu
         updatePopupPosition();
-    
+
         // Lắng nghe sự kiện resize
         window.addEventListener('resize', updatePopupPosition);
 
         // Thêm sự kiện click để ẩn popup
         setTimeout(() => {
-            document.addEventListener('click', hidePopup);    
+            document.addEventListener('click', hidePopup);
         }, 0);
     }
     else {
@@ -90,10 +114,8 @@ const showPopup = () => {
 
 // Hàm ẩn menu popup
 const hidePopup = (event) => {
-    if (!menuPopup.value || !menuPopup.value.contains(event.target)) {
-        isVisible.value = false;
-        cleanupEventListeners()
-    }
+    isVisible.value = false;
+    cleanupEventListeners()
 }
 
 // Hàm dọn dẹp các lắng nghe sự kiện khi ẩn popup

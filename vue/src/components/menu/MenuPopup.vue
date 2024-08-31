@@ -195,7 +195,6 @@ const cleanupEventListeners = () => {
 
 onMounted(() => {
     emitter.on("show-popup", showPopup);
-
 });
 
 onUnmounted(() => {

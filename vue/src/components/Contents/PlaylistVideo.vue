@@ -11,23 +11,25 @@ import emitter from '../../eventBus';
 
 import VideoYoutube from './VideoYoutube.vue';
 
-// const items = ref(Array.from({ length: 50 }, (_, index) => index + 1));
-const data = ref([]);
+const data = ref([]); // giữ dữ liệu video
 
 // Hàm gọi api để lấy dữ liệu từ DB
-const fetchData = async () => {
+const fetchData = async (payload = {}) => {
     try {
+        const { column = "AddedAt", order = "Desc" } = payload;
+
         // Gọi API backend 
         const response = await axios.get("/api/video/get", {
             params: {
                 start: 1,
                 end: 50,
-                column: "AddedAt",
-                order: "Desc",
+                column: column,
+                order: order,
             }
         });
-    
-        data.value =  await response.data.videos;
+
+        // Cập nhật dữ liệu với các video đã tải về
+        data.value = await response.data.videos || []; 
 
         // Gửi sự kiện loading cho view Home
         emitter.emit('loading-page');
@@ -37,19 +39,21 @@ const fetchData = async () => {
         emitter.emit('error-page', {
             errorMessage: error.message
         });
-        console.log(error.message)
-    } 
+    }
     finally {
+        // Luôn cho quá trình tải đã hoàn tất
         emitter.emit('loading-page');
     }
 };
 
 onMounted(() => {
-    fetchData()
+    fetchData(); // Lấy dữ liệu ban đầu
+    emitter.on('filter', fetchData) // Lấy dữ liệu sự kiện lắng nghe "filter"
 });
 
 onUnmounted(() => {
-    fetchData
+    fetchData();
+    emitter.off('filter', fetchData)
 })
 </script>
 
