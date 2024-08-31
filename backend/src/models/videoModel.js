@@ -45,29 +45,12 @@ class VideoModel {
                 );
 
         } catch (error) {
-            throw new Error(`Errror saving to SQL Server ${error.message}`);
+            throw new Error(`Error saving to SQL Server ${error.message}`);
         } finally {
             // Đảm bảo kết nối được đóng dù có lỗi xảy ra hay không.
             await this.disconnect();
         }
 
-    }
-
-    async select() {
-        try {
-            await this.connect();
-            const request = this.pool.request();
-
-            const result = await request
-                .query(`SELECT * 
-                        FROM Display50Video`
-                );
-
-            // Trả về đối tượng các cột đã chọn
-            return result.recordset[0];
-        } catch (error) {
-
-        }
     }
 }
 
@@ -126,22 +109,6 @@ class ChannelModel {
         }
     }
 
-    async select() {
-        try {
-            await this.connect();
-            const request = this.pool.request();
-
-            const result = await request
-                .query(`select ChannelId, Title
-                        from Channels`
-                );
-
-            // Trả về đối tượng các cột đã chọn
-            return result.recordset[0];
-        } catch (error) {
-
-        }
-    }
 }
 
 class PlaylistModel {

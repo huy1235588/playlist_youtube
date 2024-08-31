@@ -1,18 +1,21 @@
+const express = require('express');
+const app = express();
 require('dotenv').config();
 
-const express = require('express');
 const cors = require('cors');
-
-const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Sử dụng video routes
-const videoRoutes = require('./src/routes/videoRoutes');
-app.use('/api', videoRoutes);
+// Sử dụng videoRoutes
+// const videoRoutes = require('./src/routes/videoRoutes');
+// app.use('/api', videoRoutes);
+// Sử dụng getVideoRoutes
+const getVideoRoutes = require('./src/routes/getVideoRoutes');
+app.use('/api', getVideoRoutes);
+
 
 // Cổng
-const PORT = process.env.PORT || 3001; 
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running at http://localhost:${PORT}`);
