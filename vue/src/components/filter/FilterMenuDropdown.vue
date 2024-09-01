@@ -1,11 +1,25 @@
 <template>
-    <aside id="menu-popup" v-if="isVisible" class="menu-popup-container" ref="menuPopup" :style="popupStyle">
+    <aside
+        id="menu-popup"
+        v-if="isVisible"
+        class="menu-popup-container"
+        ref="menuPopup"
+        :style="popupStyle"
+    >
         <ul id="items">
             <!-- Sort by ADdedAt -->
-            <ButtonFilter v-for="button in buttons" :key="button.id" :label="button.label" :column="button.column"
-                :ascText="button.ascText" :descText="button.descText" :isActive="activeButton === button.id"
-                :order="button.order" @update:order="(newOrder) => updateOrder(button.id, newOrder)"
-                @click="setActiveButton(button.id)" />
+            <ButtonFilter
+                v-for="button in buttons"
+                :key="button.id"
+                :label="button.label"
+                :column="button.column"
+                :ascText="button.ascText"
+                :descText="button.descText"
+                :isActive="activeButton === button.id"
+                :order="button.order"
+                @update:order="(newOrder) => updateOrder(button.id, newOrder)"
+                @click="setActiveButton(button.id)"
+            />
         </ul>
     </aside>
 </template>

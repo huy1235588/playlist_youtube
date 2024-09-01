@@ -4,6 +4,8 @@
             <button id="button-sort" @click="filter">
                 {{ label }} ({{ currentOrderText }})
             </button>
+            <img v-if="order === 'asc'" class="icon" :src="SortUp" alt="" />
+            <img v-else class="icon" :src="SortDown" alt="" />
         </div>
     </li>
 </template>
@@ -11,6 +13,8 @@
 <script setup>
 import { computed, ref } from 'vue';
 import emitter from '../../eventBus';
+import SortUp from '../../assets/icon/sort-up.svg'
+import SortDown from '../../assets/icon/sort-down.svg'
 
 const props = defineProps({
     label: {
@@ -86,5 +90,10 @@ const filter = (event) => {
 
 .menu-item.active {
     background-color: #444444;
+}
+
+.icon {
+    color: #fff;
+    fill: #fff;
 }
 </style>

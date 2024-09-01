@@ -71,6 +71,15 @@ button {
   text-align: center;
 }
 
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    vertical-align: middle;
+    fill: #ffffff;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
