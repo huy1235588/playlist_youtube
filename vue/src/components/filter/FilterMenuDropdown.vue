@@ -11,12 +11,12 @@
             <ButtonFilter
                 text="Ngày thêm (mới nhất)"
                 column="AddedAt"
-                order="Asc"
+                order="Desc"
             />
             <ButtonFilter
                 text="Ngày thêm (cũ nhất)"
                 column="AddedAt"
-                order="Desc"
+                order="Asc"
             />
 
             <!-- Sort by PublishedAt -->

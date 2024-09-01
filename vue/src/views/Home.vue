@@ -46,7 +46,7 @@ const router = useRouter();
 
 // Hàm gọi api
 const fetchData = async () => {
-    loadingPage();
+    loadingPage(true);
     error.value = null;
 
     try {
@@ -64,13 +64,19 @@ const fetchData = async () => {
         error.value = err.message;
         router.push({ path: '/error', query: { error: error.value } });
     } finally {
-        loadingPage();
+        loadingPage(false);
     }
 };
 
+// Nhận giá trị từ input
+const receiveInputValue = (value) => {
+    inputValue.value = value;
+};
+
 // Hàm để loading page khi gọi api
-const loadingPage = () => {
-    loading.value = !loading.value;
+const loadingPage = (payload) => {
+    console.log(payload)
+    loading.value = payload || !loading.value;
 }
 
 // Hàm để hiển thị error page khi gọi api
@@ -80,11 +86,6 @@ const errorPage = (payload) => {
         router.push({ path: '/error', query: { error: payload.errorMessage } });
     }
 }
-
-// Nhận giá trị từ input
-const receiveInputValue = (value) => {
-    inputValue.value = value;
-};
 
 onMounted(() => {
     emitter.on("loading-page", loadingPage);

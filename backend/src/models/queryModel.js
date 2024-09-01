@@ -39,7 +39,7 @@ class QueryModel {
             if (result.recordset.length > 0) {
                 return result.recordset;
             } else {
-                return { message: 'Channel not found' };
+                return { message: 'Videos not found' };
             }
 
         } catch (error) {

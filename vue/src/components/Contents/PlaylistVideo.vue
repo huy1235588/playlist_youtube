@@ -29,20 +29,13 @@ const fetchData = async (payload = {}) => {
         });
 
         // Cập nhật dữ liệu với các video đã tải về
-        data.value = await response.data.videos || []; 
-
-        // Gửi sự kiện loading cho view Home
-        emitter.emit('loading-page');
+        data.value = await response.data.videos || [];
 
     } catch (error) {
         // Xử lý lỗi mạng
         emitter.emit('error-page', {
             errorMessage: error.message
         });
-    }
-    finally {
-        // Luôn cho quá trình tải đã hoàn tất
-        emitter.emit('loading-page');
     }
 };
 
