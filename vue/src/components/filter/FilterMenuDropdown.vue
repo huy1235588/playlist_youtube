@@ -1,47 +1,11 @@
 <template>
-    <aside
-        id="menu-popup"
-        v-if="isVisible"
-        class="menu-popup-container"
-        ref="menuPopup"
-        :style="popupStyle"
-    >
+    <aside id="menu-popup" v-if="isVisible" class="menu-popup-container" ref="menuPopup" :style="popupStyle">
         <ul id="items">
             <!-- Sort by ADdedAt -->
-            <ButtonFilter
-                text="Ngày thêm (mới nhất)"
-                column="AddedAt"
-                order="Desc"
-            />
-            <ButtonFilter
-                text="Ngày thêm (cũ nhất)"
-                column="AddedAt"
-                order="Asc"
-            />
-
-            <!-- Sort by PublishedAt -->
-            <ButtonFilter
-                text="Ngày xuất bản (cũ nhất)"
-                column="PublishedAt"
-                order="Asc"
-            />
-            <ButtonFilter
-                text="Ngày xuất bản (mới nhất)"
-                column="PublishedAt"
-                order="Desc"
-            />
-
-            <!-- Sort by ViewCount -->
-            <ButtonFilter
-                text="Lượt xem (tăng dần)"
-                column="ViewCount"
-                order="Asc"
-            />
-            <ButtonFilter
-                text="Lượt xem (giảm dần)"
-                column="ViewCount"
-                order="Desc"
-            />
+            <ButtonFilter v-for="button in buttons" :key="button.id" :label="button.label" :column="button.column"
+                :ascText="button.ascText" :descText="button.descText" :isActive="activeButton === button.id"
+                :order="button.order" @update:order="(newOrder) => updateOrder(button.id, newOrder)"
+                @click="setActiveButton(button.id)" />
         </ul>
     </aside>
 </template>
@@ -56,6 +20,59 @@ import emitter from '../../eventBus';
 const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
+
+const buttons = [
+    {
+        id: 1,
+        label: "Ngày thêm",
+        column: "AddedAt",
+        ascText: "mới nhất",
+        descText: "cũ nhất",
+        order: "asc",
+    },
+    {
+        id: 2,
+        label: "Ngày xuất bản",
+        column: "PublishedAt",
+        ascText: "mới nhất",
+        descText: "cũ nhất",
+        order: "asc",
+    },
+    {
+        id: 3,
+        label: "Lượt xem",
+        column: "ViewCount",
+        ascText: "tăng dần",
+        descText: "giảm dần",
+        order: "asc",
+    },
+    {
+        id: 4,
+        label: "Thời lượng video",
+        column: "Duration",
+        ascText: "ít nhất",
+        descText: "nhiều nhất",
+        order: "asc",
+    }
+];
+
+// Đặt giá trị mặc định cho nút được active
+const activeButton = ref(buttons[0].id);
+
+// Cập nhật nút order
+const updateOrder = (id, newOrder) => {
+    // Tìm button đang nhấn
+    const button = buttons.find(b => b.id === id);
+    if (button) {
+        // Thay đổi order của button
+        button.order = newOrder;
+    }
+};
+
+// Set nút đã nhấn
+const setActiveButton = (id) => {
+    activeButton.value = id;
+};
 
 // Hàm tính toán và cập nhật vị trí popup
 const updatePopupPosition = () => {
@@ -73,7 +90,7 @@ const updatePopupPosition = () => {
 
             // Vị trí hiện tại của popup dựa trên vị trí của đối tượng mục tiêu
             let topPosition = rect.bottom + 10;
-            let leftPosition = rect.left - 160;
+            let leftPosition = rect.left - 230;
 
             // Kiểm tra nếu menu nằm ngoài viewport
             if (topPosition + popupHeight > viewportHeight) {
@@ -139,6 +156,7 @@ onUnmounted(() => {
 .menu-popup-container {
     outline: none;
     position: fixed;
+    width: 350px;
     background-color: #000;
     border-radius: 12px;
     z-index: 2;

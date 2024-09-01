@@ -1,39 +1,62 @@
 <template>
-    <li class="menu-item">
+    <li class="menu-item" :class="{ active: isActive }">
         <div class="menu-item-container">
             <button id="button-sort" @click="filter">
-                {{ text }}
+                {{ label }} ({{ currentOrderText }})
             </button>
         </div>
     </li>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue';
 import emitter from '../../eventBus';
 
 const props = defineProps({
-    text: {
+    label: {
         type: String,
         required: true,
     },
     column: {
         type: String,
-        require: true,
+        required: true,
+    },
+    ascText: {
+        type: String,
+        required: true,
+    },
+    descText: {
+        type: String,
+        required: true
     },
     order: {
         type: String,
-        require: true
-    }
+        required: true,
+    },
+    isActive: Boolean,
+    onClick: Function,
 });
 
+const emit = defineEmits(['update:order']);
+
+// Xác định currentText dựa trên trạng thái order
+const currentOrderText = computed(() => props.order === 'asc' ? props.ascText : props.descText);
+
 // Gửi sự kiện click cho PlaylistVideo
-const filter = () => {
+const filter = (event) => {
+    // Phát sự kiện update:order để cập nhật trạng thái order
+    emit('update:order', props.order === 'asc' ? 'desc' : 'asc');
+
+    // Phát sự kiện filter để gọi api
     emitter.emit('filter', {
         column: props.column,
         order: props.order,
     });
-}
 
+    if (props.onClick) {
+        props.onClick();
+    }
+}
 </script>
 
 <style scoped>
@@ -48,7 +71,7 @@ const filter = () => {
 }
 
 .menu-item:hover {
-    background-color: #444444;
+    background-color: #242424;
 }
 
 #button-sort {
@@ -59,5 +82,9 @@ const filter = () => {
     font-size: 20px;
     line-height: 40px;
     font-weight: 400;
+}
+
+.menu-item.active {
+    background-color: #444444;
 }
 </style>

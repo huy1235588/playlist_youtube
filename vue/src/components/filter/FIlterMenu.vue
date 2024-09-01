@@ -22,9 +22,7 @@
                     ></path>
                 </svg>
             </div>
-            <span class="text">
-                Sắp xếp
-            </span>
+            <span class="text"> Sắp xếp </span>
         </button>
         <div id="interaction" class="interaction">
             <div
@@ -113,6 +111,10 @@ const handleClick = (event) => {
     height: var(--menu-diameter);
 }
 
+.menu:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
 .button {
     position: relative;
     background: transparent;
@@ -142,7 +144,7 @@ const handleClick = (event) => {
     fill: #ffffff;
 }
 
-.button .text{
+.button .text {
     flex: 1;
     font-size: 20px;
     line-height: 20px;
@@ -175,7 +177,7 @@ const handleClick = (event) => {
     border-radius: var(--button-btn-border-radius);
 }
 
-#filter-menu:active #interaction .fill{
+#filter-menu:active #interaction .fill {
     opacity: 1;
 }
 
