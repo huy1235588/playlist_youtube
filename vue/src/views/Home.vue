@@ -46,26 +46,27 @@ const router = useRouter();
 
 // Hàm gọi api
 const fetchData = async () => {
-    loadingPage(true);
-    error.value = null;
+   console.log(inputValue.value);
+    // loadingPage(true);
+    // error.value = null;
 
-    try {
-        // Gọi API backend
-        const response = await axios.get("/api/videos/fetch", {
-            params: { inputValue: inputValue.value }
-        });
+    // try {
+    //     // Gọi API backend
+    //     const response = await axios.get("/api/videos/fetch", {
+    //         params: { inputValue: inputValue.value }
+    //     });
 
-        const data = await response.data;
+    //     const data = await response.data;
 
-        outputValue.value = data;
+    //     outputValue.value = data;
 
-    } catch (err) {
-        // Xử lý lỗi mạng
-        error.value = err.message;
-        router.push({ path: '/error', query: { error: error.value } });
-    } finally {
-        loadingPage(false);
-    }
+    // } catch (err) {
+    //     // Xử lý lỗi mạng
+    //     error.value = err.message;
+    //     router.push({ path: '/error', query: { error: error.value } });
+    // } finally {
+    //     loadingPage(false);
+    // }
 };
 
 // Nhận giá trị từ input

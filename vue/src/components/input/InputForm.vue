@@ -3,14 +3,11 @@
         <input
             id="messageInput"
             className="input"
-            
             :placeholder="placeholder"
             :type="type"
             :autocomplete="autocomplete"
-
             v-model="inputValue"
-            @input="sendInputValue"
-            
+            @input="handleValue"
             ref="inputField"
             required
         />
@@ -34,76 +31,46 @@
                 ></path>
             </svg>
         </button>
-
-        <button id="sendButton" type="submit">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 664 663"
-            >
-                <path
-                    fill="none"
-                    d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
-                ></path>
-                <path
-                    stroke-linejoin="round"
-                    stroke-linecap="round"
-                    stroke-width="33.67"
-                    stroke="#6c6c6c"
-                    d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
-                ></path>
-            </svg>
-        </button>
     </form>
 </template>
 
-<script>
+<script setup>
 import { ref, nextTick } from "vue";
 
-export default {
-    name: "InputForm",
-    props: {
-        placeholder: {
-            type: String,
-            default: "",
-        },
-        type: {
-            type: String,
-            default: "text",
-        },
-        onSubmit: {
-            type: Function,
-            required: false,
-        },
-        autocomplete: {
-            type: String,
-            default: "off"
-        }
+
+defineProps({
+    placeholder: {
+        type: String,
+        default: "",
     },
-
-    setup(props, { emit }){
-        const inputValue = ref("");
-        const inputField = ref(null); // Tham chiếu đến input field
-
-        const sendInputValue = (event) => {
-            emit("updateInputValue", inputValue.value);
-        };
-        
-        const resetInput = () => {
-            inputValue.value = ""; // Xóa giá trị trong intput
-            nextTick(() => {
-                inputField.value.focus(); // Đặt con trỏ vào ô input
-            });
-        };
-
-        return{
-            inputValue,
-            sendInputValue,
-            resetInput,
-            inputField
-        };
+    type: {
+        type: String,
+        default: "text",
+    },
+    onSubmit: {
+        type: Function,
+        required: false,
+    },
+    autocomplete: {
+        type: String,
+        default: "off"
     }
+});
+
+const inputValue = ref(""); // Giá trị của input
+const inputField = ref(null); // Tham chiếu đến input field
+
+const resetInput = () => {
+    inputValue.value = ""; // Xóa giá trị trong intput
+    nextTick(() => {
+        inputField.value.focus(); // Đặt con trỏ vào ô input
+    });
 };
+
+const handleValue = () => {
+    console.log(inputValue.value);
+}
+
 </script>
 
 <style scoped>
@@ -112,11 +79,11 @@ export default {
     border: none;
     padding: 7px;
     margin-left: 35px;
-    width: 27rem;
+    width: 30rem;
     height: 56px;
     border-radius: 10px;
     color: white;
-    padding-inline: 1.5rem 6.5rem;
+    padding-inline: 1.5rem 3.75rem;
     font-size: 18px;
 }
 
@@ -137,7 +104,7 @@ export default {
     position: absolute;
     height: 100%;
     top: 2px;
-    right: 3.25rem;
+    right: -1.5rem;
     background-color: transparent;
     cursor: pointer;
 }
@@ -156,35 +123,6 @@ export default {
 }
 
 #resetButton:hover svg path {
-    fill: #3c3c3c;
-    stroke: white;
-}
-
-#sendButton {
-    width: fit-content;
-    height: 100%;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0 1rem;
-}
-
-#sendButton svg {
-    height: 18px;
-    transition: all 0.3s;
-}
-
-#sendButton svg path {
-    transition: all 0.3s;
-}
-
-#sendButton:hover svg path {
     fill: #3c3c3c;
     stroke: white;
 }
