@@ -9,10 +9,14 @@ app.use(express.json());
 // Sử dụng videoRoutes
 // const videoRoutes = require('./src/routes/videoRoutes');
 // app.use('/api', videoRoutes);
+
 // Sử dụng getVideoRoutes
 const getVideoRoutes = require('./src/routes/getVideoRoutes');
 app.use('/api', getVideoRoutes);
 
+// Sử dụng getVideoRoutes
+const searchVideoRoutes = require('./src/routes/searchVideoRoutes');
+app.use('/api', searchVideoRoutes);
 
 // Cổng
 const PORT = process.env.PORT || 3001;

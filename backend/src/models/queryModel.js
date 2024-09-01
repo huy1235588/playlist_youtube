@@ -27,7 +27,7 @@ class QueryModel {
             await this.connect();
             const request = this.pool.request();
 
-            // Chọn dữ liệu từ View Display50Video
+            // Chọn dữ liệu từ procedure Display50Video
             const result = await request
                 .input('start', sql.Int, start)
                 .input('end', sql.Int, end)
@@ -46,6 +46,28 @@ class QueryModel {
             throw new Error(`Error querying SQL Server ${error.message}`);
         } finally {
             // Đảm bảo kết nối được đóng dù có lỗi xảy ra hay không.
+            await this.disconnect();
+        }
+    }
+
+    // Tìm video theo tên
+    async searchVideo(input) {
+        try {
+            await this.connect();
+            const request = this.pool.request();
+
+            // Chọn dữ liệu từ procedure Display50Video
+            const result = await request
+                .input('input', sql.VarChar, input)
+                .query(`exec [Search 50 Videos By TitleVideo] @input`);
+
+            // Trả về dữ liệu nếu có
+            return result.recordset;
+
+        } catch (error) {
+            throw new Error(`Error search Video from SQL Server ${error.message}`);
+        }
+        finally {
             await this.disconnect();
         }
     }
