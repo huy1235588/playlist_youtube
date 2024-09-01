@@ -38,14 +38,14 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { ref } from "vue";
 import emitter from "../../eventBus";
 
 // Định nghĩa các props mà component nhận vào
 const props = defineProps({
     index: {
         type: Number,
-        required: true
+        required: true,
     }
 })
 

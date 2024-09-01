@@ -36,7 +36,7 @@
 
 <script setup>
 import { ref, nextTick } from "vue";
-
+import emitter from "../../eventBus";
 
 defineProps({
     placeholder: {
@@ -68,7 +68,9 @@ const resetInput = () => {
 };
 
 const handleValue = () => {
-    console.log(inputValue.value);
+    emitter.emit('search-video', {
+        input: inputValue.value
+    })
 }
 
 </script>

@@ -2,20 +2,13 @@
     <section id="video" class="video flex">
         <div id="index-container">
             <div id="icon">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    focusable="false"
-                    aria-hidden="true"
-                    style="
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" focusable="false"
+                    aria-hidden="true" style="
                         pointer-events: none;
                         display: inherit;
                         width: 100%;
                         height: 100%;
-                    "
-                >
+                    ">
                     <path d="M21 10H3V9h18v1Zm0 4H3v1h18v-1Z"></path>
                 </svg>
             </div>
@@ -24,12 +17,8 @@
             <div id="thumbnail-container">
                 <a id="thumbnail">
                     <!-- Hình ảnh video -->
-                    <img
-                        v-if="notFound"
-                        src="https://i.ytimg.com/img/no_thumbnail.jpg"
-                        alt=""
-                    />
-                    <img v-else :src="data.Thumbnails" alt="" />
+                    <img v-if="notFound" src="https://i.ytimg.com/img/no_thumbnail.jpg" alt="" />
+                    <img v-else :src="thumbnails" alt="" />
                     <div id="overplay">
                         <!-- Thời lượng video -->
                         <div id="time-status">
@@ -43,11 +32,9 @@
             <div id="meta">
                 <!-- Tên video -->
                 <h3 class="video-title-container">
-                    <a v-if="notFound" href="" id="video-title" class="error"
-                        >[Not Found]</a
-                    >
+                    <a v-if="notFound" href="" id="video-title" class="error">[Not Found]</a>
                     <a v-else href="" id="video-title">
-                        {{ data.VideoTitle }}
+                        {{ videoTitle }}
                     </a>
                 </h3>
                 <div class="flex">
@@ -60,7 +47,7 @@
                                         <div id="text">
                                             <a v-if="notFound" href=""></a>
                                             <a v-else href="">
-                                                {{ data.ChannelTitle }}
+                                                {{ channelTitle }}
                                             </a>
                                         </div>
                                     </div>
@@ -72,8 +59,7 @@
                                 <!-- Khoảng cách -->
                                 <div id="separator">•</div>
                                 <span id="view-count">
-                                    {{ viewCount }} lượt xem</span
-                                >
+                                    {{ viewCount }} lượt xem</span>
                                 <span id="separator"> • </span>
                                 <span id="published-at">{{ publishedAt }}</span>
                             </div>
@@ -83,7 +69,7 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :index="data.IndexVideo" />
+            <MenuTask :index="indexVideo" />
         </div>
     </section>
 </template>
@@ -91,12 +77,15 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import MenuTask from '../menu/MenuTask.vue';
-import emitter from '../../eventBus';
 
 const notFound = ref(false);
+const videoTitle = ref("");
+const channelTitle = ref("");
 const viewCount = ref("");
 const duration = ref("");
 const publishedAt = ref("");
+const thumbnails = ref("");
+const indexVideo = ref(0);
 
 const props = defineProps({
     data: {
@@ -114,7 +103,7 @@ function formatViewCount(count) {
     } else if (count >= 1_000) {
         return (count / 1_000).toFixed(count >= 10_000 ? 0 : 1) + " K";
     }
-    return count.toString();
+    return count;
 }
 
 // Hàm tính khoảng cách thời gian
@@ -135,31 +124,37 @@ function timeAgo(dateString) {
 }
 
 function formatDuration(duration) {
-    // Tạo đối tượng RegExp để trích xuất giờ, phút và giây
-    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+    if (duration) {
+        // Tạo đối tượng RegExp để trích xuất giờ, phút và giây
+        const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
 
-    if (match) {
-        // Trích xuất giờ, phút và giây nếu có
-        const hours = match[1] ? parseInt(match[1], 10) : 0;
-        const minutes = match[2] ? parseInt(match[2], 10) : 0;
-        const seconds = match[3] ? parseInt(match[3], 10) : 0;
+        if (match) {
+            // Trích xuất giờ, phút và giây nếu có
+            const hours = match[1] ? parseInt(match[1], 10) : 0;
+            const minutes = match[2] ? parseInt(match[2], 10) : 0;
+            const seconds = match[3] ? parseInt(match[3], 10) : 0;
 
-        // Định dạng giờ, phút và giây
-        const formattedHours = hours > 0 ? `${hours}:` : '';
-        const formattedMinutes = minutes > 0 ? `${minutes}` : '0';
-        const formattedSeconds = seconds.toString().padStart(2, '0');
+            // Định dạng giờ, phút và giây
+            const formattedHours = hours > 0 ? `${hours}:` : '';
+            const formattedMinutes = minutes > 0 ? `${minutes}` : '0';
+            const formattedSeconds = seconds.toString().padStart(2, '0');
 
-        // Trả về kết quả dạng "giờ:phút:giây" hoặc "phút:giây"
-        return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
+            // Trả về kết quả dạng "giờ:phút:giây" hoặc "phút:giây"
+            return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
+        }
     }
-
     return 'Invalid format'; // Hoặc có thể trả về một giá trị mặc định
 }
 
 
-function formatData(){
+function formatData() {
     // Kiểm tra video bị xóa
-    if (props.data.Thumbnails !== null) {
+    if (props.data.Duration !== null) {
+        videoTitle.value = props.data.VideoTitle;
+        channelTitle.value = props.data.ChannelTitle;
+        thumbnails.value = props.data.Thumbnails;
+        indexVideo.value = props.data.IndexVideo;
+
         // Định dạng lượt xem
         viewCount.value = formatViewCount(props.data.ViewCount);
         // Định dạng thời lượng video
