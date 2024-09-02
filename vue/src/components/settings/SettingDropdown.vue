@@ -31,10 +31,10 @@ const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 
-import AddVideoIcon from '../../assets/icon/add-video.svg'
-import ShowVideoIcon from '../../assets/icon/show-video.svg'
-import ChangePlaylistIcon from '../../assets/icon/change-playlist.svg'
-import DeleteVideoIcon from '../../assets/icon/delete-video.svg'
+import AddVideoIcon from '../../assets/icon/setting/add-playlist.svg'
+import ShowVideoIcon from '../../assets/icon/setting/show-video.svg'
+import ChangePlaylistIcon from '../../assets/icon/setting/change-playlist.svg'
+import DeleteVideoIcon from '../../assets/icon/setting/delete-playlist.svg'
 
 const buttons = [
     {

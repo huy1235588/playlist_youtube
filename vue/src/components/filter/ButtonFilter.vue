@@ -13,8 +13,8 @@
 <script setup>
 import { computed, ref } from 'vue';
 import emitter from '../../eventBus';
-import SortUp from '../../assets/icon/sort-up.svg'
-import SortDown from '../../assets/icon/sort-down.svg'
+import SortUp from '../../assets/icon/filter/sort-up.svg'
+import SortDown from '../../assets/icon/filter/sort-down.svg'
 
 const props = defineProps({
     label: {

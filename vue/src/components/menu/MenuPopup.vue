@@ -7,95 +7,15 @@
         :style="popupStyle"
     >
         <ul id="items">
-            <!-- Delete video -->
-            <li class="menu-item">
-                <div class="menu-item-container">
-                    <span id="icon">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            enable-background="new 0 0 24 24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            focusable="false"
-                            aria-hidden="true"
-                            style="
-                                pointer-events: none;
-                                display: inherit;
-                                width: 100%;
-                                height: 100%;
-                                fill: currentColor;
-                            "
-                        >
-                            <path
-                                d="M11 17H9V8h2v9zm4-9h-2v9h2V8zm4-4v1h-1v16H6V5H5V4h4V3h6v1h4zm-2 1H7v15h10V5z"
-                            ></path>
-                        </svg>
-                    </span>
-                    <div id="menu-service">
-                        <span>Xóa khỏi </span>
-                        <span id="playlist">haha</span>
-                    </div>
-                </div>
-            </li>
-            <!-- Share -->
-            <li class="menu-item" has-separator>
-                <div class="menu-item-container">
-                    <span id="icon">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            focusable="false"
-                            aria-hidden="true"
-                            style="
-                                pointer-events: none;
-                                display: inherit;
-                                width: 100%;
-                                height: 100%;
-                                fill: currentColor;
-                            "
-                        >
-                            <path
-                                d="M15 5.63 20.66 12 15 18.37V14h-1c-3.96 0-7.14 1-9.75 3.09 1.84-4.07 5.11-6.4 9.89-7.1l.86-.13V5.63M14 3v6C6.22 10.13 3.11 15.33 2 21c2.78-3.97 6.44-6 12-6v6l8-9-8-9z"
-                            ></path>
-                        </svg>
-                    </span>
-                    <div id="menu-service">
-                        <span>Chia sẻ</span>
-                    </div>
-                </div>
-            </li>
-            <!-- Set thumbnail playlist -->
-            <li class="menu-item">
-                <div class="menu-item-container">
-                    <span id="icon">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            width="24"
-                            focusable="false"
-                            aria-hidden="true"
-                            style="
-                                pointer-events: none;
-                                display: inherit;
-                                width: 100%;
-                                height: 100%;
-                                fill: currentColor;
-                            "
-                        >
-                            <path
-                                d="M14.04 13.61 16.86 17H11.5l.3-.4 2.24-2.99m-5.11 1.08 1.24 1.86.3.45H7.08l1.85-2.31M14 12l-3 4-2-3-4 5h14l-5-6zm6-8v16H4V4h16m1-1H3v18h18V3z"
-                            ></path>
-                        </svg>
-                    </span>
-                    <div id="menu-service">
-                        <span>Đặt làm hình nền của danh sách phát</span>
-                    </div>
-                </div>
-            </li>
+            <ButtonMenu 
+                v-for="button in buttons"
+                :index="button.id"
+                :id="button.id"
+                :label="button.label"
+                :icon="button.icon"
+                :playlistName="button.playlistName"
+                :showSeparator="button.showSeparator"
+            />
         </ul>
     </aside>
 </template>
@@ -108,6 +28,38 @@ const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const pressedButton = ref(""); // Lưu lại nút đã nhấn
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
+
+import ButtonMenu from './ButtonMenu.vue';
+
+import ReplaceVideoIcon from '../../assets/icon/menu/replace-video.svg'
+import DeleteVideoIcon from '../../assets/icon/menu/delete-video.svg'
+import ShareIcon from '../../assets/icon/menu/share.svg'
+import SetThumbnailIcon from '../../assets/icon/menu/set-thumbnail.svg'
+
+const buttons = [
+    {
+        id: 1,
+        label: "Thay thế video",
+        icon: ReplaceVideoIcon,
+    },
+    {
+        id: 2,
+        label: "Xóa khỏi ",
+        icon: DeleteVideoIcon,
+        playlistName: "haha",
+    },
+    {
+        id: 3,
+        label: "Chia sẻ",
+        icon: ShareIcon,
+        showSeparator: true,
+    },
+    {
+        id: 4,
+        label: "Đặt làm hình nền của danh sách phát",
+        icon: SetThumbnailIcon,
+    }
+];
 
 // Hàm tính toán và cập nhật vị trí popup
 const updatePopupPosition = (targetElement) => {
@@ -214,7 +166,7 @@ onUnmounted(() => {
 }
 
 #items {
-    padding: 8px 0;
+    padding: 12px 0;
 }
 
 .menu-item-container {
