@@ -63,16 +63,34 @@ const searchVideo = async (payload) => {
     }
 }
 
+// Hàm để hiện video bị ẩn
+const showHiddenVideo = async () => {
+    try {
+        const response = await axios.get('/api/video/show-hidden-video');
+
+        // Cập nhật dữ liệu với các video đã tải về
+        data.value = await response.data.videos;
+
+    } catch (error) {
+        // Xử lý lỗi mạng
+        emitter.emit('error-page', {
+            errorMessage: error.message
+        });
+    }
+}
+
 onMounted(() => {
     fetchData(); // Lấy dữ liệu ban đầu
-    emitter.on('filter', fetchData) // Lấy dữ liệu sự kiện lắng nghe "filter"
-    emitter.on('search-video', searchVideo) // Lấy dữ liệu sự kiện lắng nghe "search-video"
+    emitter.on('filter', fetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
+    emitter.on('show-hidden-video', showHiddenVideo); // Lấy dữ liệu sự kiện lắng nghe "filter"
+    emitter.on('search-video', searchVideo); // Lấy dữ liệu sự kiện lắng nghe "search-video"
 });
 
 onUnmounted(() => {
     fetchData();
-    emitter.off('filter', fetchData)
-    emitter.off('search-video', searchVideo)
+    emitter.off('filter', fetchData);
+    emitter.off('show-hidden-video', showHiddenVideo);
+    emitter.off('search-video', searchVideo);
 })
 </script>
 

@@ -11,13 +11,9 @@
             <ButtonSetting
                 v-for="button in buttons"
                 :key="button.id"
+                :id="button.id"
                 :label="button.label"
-                :column="button.column"
-                :ascText="button.ascText"
-                :descText="button.descText"
-                :isActive="activeButton === button.id"
-                :order="button.order"
-                @update:order="(newOrder) => updateOrder(button.id, newOrder)"
+                :icon="button.icon"
                 @click="setActiveButton(button.id)"
             />
         </ul>
@@ -35,26 +31,31 @@ const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 
+import AddVideoIcon from '../../assets/icon/add-video.svg'
+import ShowVideoIcon from '../../assets/icon/show-video.svg'
+import ChangePlaylistIcon from '../../assets/icon/change-playlist.svg'
+import DeleteVideoIcon from '../../assets/icon/delete-video.svg'
+
 const buttons = [
     {
         id: 1,
-        label: "Hiện các video bị ẩn",
-        column: "AddedAt",
+        label: "Thêm danh sách phát",
+        icon: AddVideoIcon,
     },
     {
         id: 2,
-        label: "Chuyển đổi danh sách phát",
-        column: "PublishedAt",
+        label: "Hiện các video bị ẩn",
+        icon: ShowVideoIcon,
     },
     {
         id: 3,
-        label:  "Thêm danh sách phát",
-        column: "ViewCount",
+        label: "Chuyển đổi danh sách phát",
+        icon: ChangePlaylistIcon,
     },
     {
         id: 4,
         label: "Xóa danh sách phát",
-        column: "Duration",
+        icon: DeleteVideoIcon,
     }
 ];
 
