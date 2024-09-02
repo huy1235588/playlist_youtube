@@ -7,7 +7,7 @@
         :style="popupStyle"
     >
         <ul id="items">
-            <ButtonMenu 
+            <ButtonMenu
                 v-for="button in buttons"
                 :index="button.id"
                 :id="button.id"
@@ -15,9 +15,15 @@
                 :icon="button.icon"
                 :playlistName="button.playlistName"
                 :showSeparator="button.showSeparator"
+                @click="handleClick(button.id)"
             />
         </ul>
     </aside>
+    <ReplaceVideo
+        v-if="isReplaceVideo"
+        @click="closePopup"
+        @close-popup="closePopup()"
+    />
 </template>
 
 <script setup>
@@ -29,7 +35,10 @@ const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị tr�
 const pressedButton = ref(""); // Lưu lại nút đã nhấn
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 
+const isReplaceVideo = ref(false);
+
 import ButtonMenu from './ButtonMenu.vue';
+import ReplaceVideo from '../popup/ReplaceVideo.vue';
 
 import ReplaceVideoIcon from '../../assets/icon/menu/replace-video.svg'
 import DeleteVideoIcon from '../../assets/icon/menu/delete-video.svg'
@@ -60,6 +69,16 @@ const buttons = [
         icon: SetThumbnailIcon,
     }
 ];
+
+const handleClick = (id) => {
+    if (id === 1) {
+        isReplaceVideo.value = true;
+    }
+}
+
+const closePopup = () => {
+    isReplaceVideo.value = false;
+}
 
 // Hàm tính toán và cập nhật vị trí popup
 const updatePopupPosition = (targetElement) => {
@@ -131,7 +150,6 @@ const showPopup = (payload) => {
 // Hàm ẩn menu popup
 const hidePopup = (event) => {
     if (
-        (!menuPopup.value || !menuPopup.value.contains(event.target)) &&
         !event.target.closest('button[id^="button-"]:not(button#filter-button)')
     ) {
         isVisible.value = false;

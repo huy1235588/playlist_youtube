@@ -1,6 +1,6 @@
 <template>
     <li class="menu-item" v-bind:has-separator="showSeparator">
-        <div class="menu-item-container">
+        <button class="menu-item-container" @click="handleClick">
             <span id="icon">
                 <img :src="icon" alt="" />
             </span>
@@ -10,12 +10,12 @@
                     playlistName
                 }}</span>
             </div>
-        </div>
+        </button>
     </li>
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
     id: {
         type: Number,
         Required: true,
@@ -35,8 +35,18 @@ defineProps({
     showSeparator:{
         type: Boolean,
         Required: false,
+    },
+    onClick: {
+        type: Function,
+        Required: true,
     }
 })
+
+const handleClick = () => {
+    if (props.onClick) {
+        props.onClick();
+    }
+}
 </script>
 
 <style scoped>
@@ -44,8 +54,10 @@ defineProps({
     display: flex;
     align-items: center;
     text-align: start;
+    width: 100%;
     height: 40px;
     padding: 0 12px 0 16px;
+    background-color: inherit;
     line-height: 24px;
     cursor: pointer;
 }
@@ -64,6 +76,8 @@ defineProps({
 }
 
 #icon {
+    display: flex;
+    align-items: center;
     margin-right: 16px;
 }
 
