@@ -81,7 +81,8 @@ class QueryModel {
             const result = await request
                 .query(`select *
                         from videos
-                        where Title is null`
+                        where Title is null
+                        order by IndexVideo desc`
                 );
 
             // Trả về dữ liệu

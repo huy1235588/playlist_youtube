@@ -2,13 +2,20 @@
     <section id="video" class="video flex">
         <div id="index-container">
             <div id="icon">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" focusable="false"
-                    aria-hidden="true" style="
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    focusable="false"
+                    aria-hidden="true"
+                    style="
                         pointer-events: none;
                         display: inherit;
                         width: 100%;
                         height: 100%;
-                    ">
+                    "
+                >
                     <path d="M21 10H3V9h18v1Zm0 4H3v1h18v-1Z"></path>
                 </svg>
             </div>
@@ -23,7 +30,7 @@
                         <!-- Thời lượng video -->
                         <div id="time-status">
                             <div class="badge-shape">
-                                <span class="text">{{ duration }}</span>
+                                <span class="text"></span>
                             </div>
                         </div>
                     </div>
@@ -33,7 +40,7 @@
                 <!-- Tên video -->
                 <h3 class="video-title-container">
                     <a href="" id="video-title">
-                        {{ videoTitle }}
+                        {{ videoId }}
                     </a>
                 </h3>
                 <div class="flex">
@@ -44,7 +51,7 @@
                                 <div id="container">
                                     <div id="text-container">
                                         <div id="text">
-                                            Ngày thêm: {{ AddedAt }}
+                                            Ngày thêm: {{ addedAt }}
                                         </div>
                                     </div>
                                 </div>
@@ -54,10 +61,9 @@
                             <div v-else id="video-info">
                                 <!-- Khoảng cách -->
                                 <div id="separator">•</div>
-                                <span id="view-count">
-                                    {{ viewCount }} lượt xem</span>
+                                <span id="view-count"> lượt xem</span>
                                 <span id="separator"> • </span>
-                                <span id="published-at">{{ publishedAt }}</span>
+                                <span id="published-at"></span>
                             </div>
                         </div>
                     </div>
@@ -76,9 +82,9 @@ import MenuTask from '../menu/MenuTask.vue';
 import NoThumbail from '../../assets/no_thumbnail.jpg'
 
 const notFound = ref(true);
-const videoTitle = ref("");
-const AddedAt = ref("");
-const indexVideo = ref("");
+const videoId = ref("");
+const addedAt = ref("");
+const indexVideo = ref(0);
 
 const props = defineProps({
     data: {
@@ -87,12 +93,15 @@ const props = defineProps({
     }
 })
 
+function formatAddedAt(dateString) {
+    return dateString.split('T')[0];
+}
+
 function formatData() {
     // Kiểm tra video bị xóa
-    videoTitle.value = props.data.VideoTitle;
-    addedAt.value = props.data.addedAt;
+    videoId.value = props.data.VideoId;
+    addedAt.value = formatAddedAt(props.data.AddedAt);
     indexVideo.value = props.data.IndexVideo;
-
 }
 
 onMounted(() => {
