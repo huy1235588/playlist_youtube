@@ -1,5 +1,5 @@
 <template>
-    <section id="video" class="video flex">
+    <section :id="'video-' + indexVideo" class="video flex">
         <div id="index-container">
             <div id="icon">
                 <svg
@@ -71,13 +71,13 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :index="indexVideo" />
+            <MenuTask :indexVideo="indexVideo" />
         </div>
     </section>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import MenuTask from '../menu/MenuTask.vue';
 import NoThumbail from '../../assets/no_thumbnail.jpg'
 
@@ -99,9 +99,9 @@ function formatAddedAt(dateString) {
 
 function formatData() {
     // Kiểm tra video bị xóa
-    videoId.value = props.data.VideoId;
     addedAt.value = formatAddedAt(props.data.AddedAt);
     indexVideo.value = props.data.IndexVideo;
+    videoId.value = props.data.VideoId;
 }
 
 onMounted(() => {
@@ -115,7 +115,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-#video {
+.video {
     display: flex;
     align-items: center;
     border-radius: 12px;
@@ -123,7 +123,7 @@ onUnmounted(() => {
     /* transition: all 0.3s ease-in-out; */
 }
 
-#video:hover {
+.video:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 

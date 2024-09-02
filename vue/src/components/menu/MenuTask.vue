@@ -1,6 +1,6 @@
 <template>
     <section class="menu">
-        <button :id="'button-' + index" class="button" @click="handleClick">
+        <button :id="'button-'+indexVideo" class="button" @click="handleClick">
             <div id="icon">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -43,10 +43,10 @@ import emitter from "../../eventBus";
 
 // Định nghĩa các props mà component nhận vào
 const props = defineProps({
-    index: {
+    indexVideo: {
         type: Number,
         required: true,
-    }
+    },
 })
 
 // Khởi tạo các biến trạng thái
@@ -72,7 +72,7 @@ const handleClick = (event) => {
     // Hiển thị popup thông qua emitter
     emitter.emit('show-popup', {
         event: event,
-        index: props.index, // Truyền index
+        indexVideo: props.indexVideo, // Truyền index
     });
 
 };
@@ -172,7 +172,7 @@ const handleClick = (event) => {
     border-radius: 50%;
 }
 
-#menu:active #interaction .fill{
+#menu:active #interaction .fill {
     opacity: 1;
 }
 

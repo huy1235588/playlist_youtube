@@ -17,7 +17,7 @@
 
 <script setup>
 import axios from 'axios';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import emitter from '../../eventBus';
 
 import VideoYoutube from './VideoYoutube.vue';

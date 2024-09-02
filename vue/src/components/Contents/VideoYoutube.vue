@@ -1,14 +1,21 @@
 <template>
-    <section id="video" class="video flex">
+    <section :id="'video-' + indexVideo" class="video flex">
         <div id="index-container">
             <div id="icon">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" focusable="false"
-                    aria-hidden="true" style="
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    focusable="false"
+                    aria-hidden="true"
+                    style="
                         pointer-events: none;
                         display: inherit;
                         width: 100%;
                         height: 100%;
-                    ">
+                    "
+                >
                     <path d="M21 10H3V9h18v1Zm0 4H3v1h18v-1Z"></path>
                 </svg>
             </div>
@@ -32,8 +39,23 @@
             <div id="meta">
                 <!-- Tên video -->
                 <h3 class="video-title-container">
-                    <a v-if="notFound" href="" id="video-title" class="error">[Not Found]</a>
-                    <a v-else href="" id="video-title">
+                    <a
+                        v-if="notFound"
+                        :href="videoId"
+                        id="video-title"
+                        class="error"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        [Not Found]
+                    </a>
+                    <a
+                        v-else
+                        :href="videoId"
+                        id="video-title"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         {{ videoTitle }}
                     </a>
                 </h3>
@@ -59,7 +81,8 @@
                                 <!-- Khoảng cách -->
                                 <div id="separator">•</div>
                                 <span id="view-count">
-                                    {{ viewCount }} lượt xem</span>
+                                    {{ viewCount }} lượt xem</span
+                                >
                                 <span id="separator"> • </span>
                                 <span id="published-at">{{ publishedAt }}</span>
                             </div>
@@ -69,7 +92,7 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :index="indexVideo" />
+            <MenuTask :indexVideo="indexVideo" />
         </div>
     </section>
 </template>
@@ -80,6 +103,7 @@ import MenuTask from '../menu/MenuTask.vue';
 import NoThumbail from '../../assets/no_thumbnail.jpg'
 
 const notFound = ref(false);
+const videoId = ref("");
 const videoTitle = ref("");
 const channelTitle = ref("");
 const viewCount = ref("");
@@ -94,6 +118,10 @@ const props = defineProps({
         required: true
     }
 })
+
+function formatVideoId(id) {
+    return 'https://youtube.com/watch?v=' + id;
+}
 
 // Hàm chuyển đổi một chuỗi thành định dạng theo các đơn vị "K", "M", hoặc "B".
 function formatViewCount(count) {
@@ -149,13 +177,16 @@ function formatDuration(duration) {
 
 
 function formatData() {
+    // Định dạng VideoId
+    videoId.value = formatVideoId(props.data.VideoId);
+    
     // Kiểm tra video bị xóa
-    if (props.data.Duration !== null) {
+    if (props.data.Duration !== null) {        
         videoTitle.value = props.data.VideoTitle;
         channelTitle.value = props.data.ChannelTitle;
         thumbnails.value = props.data.Thumbnails;
         indexVideo.value = props.data.IndexVideo;
-
+        
         // Định dạng lượt xem
         viewCount.value = formatViewCount(props.data.ViewCount);
         // Định dạng thời lượng video
@@ -184,7 +215,7 @@ watch(() => props.data, formatData, { deep: true });
 </script>
 
 <style scoped>
-#video {
+.video {
     display: flex;
     align-items: center;
     border-radius: 12px;
@@ -192,7 +223,7 @@ watch(() => props.data, formatData, { deep: true });
     /* transition: all 0.3s ease-in-out; */
 }
 
-#video:hover {
+.video:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 

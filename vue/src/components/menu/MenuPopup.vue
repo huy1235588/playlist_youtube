@@ -21,6 +21,7 @@
     </aside>
     <ReplaceVideo
         v-if="isReplaceVideo"
+        :indexVideo="indexVideo"
         @click="closePopup"
         @close-popup="closePopup()"
     />
@@ -35,6 +36,7 @@ const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị tr�
 const pressedButton = ref(""); // Lưu lại nút đã nhấn
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 
+const indexVideo = ref(0);
 const isReplaceVideo = ref(false);
 
 import ButtonMenu from './ButtonMenu.vue';
@@ -70,12 +72,15 @@ const buttons = [
     }
 ];
 
+// Hàm để xử lý sự kiện click của button
 const handleClick = (id) => {
+    // Nếu button bằng 1 (Thay thé video) thì hiển thị component
     if (id === 1) {
         isReplaceVideo.value = true;
     }
 }
 
+// Hàm để đóng popup
 const closePopup = () => {
     isReplaceVideo.value = false;
 }
@@ -123,6 +128,7 @@ const handleResize = () => {
 
 // Hàm hiện menu popup
 const showPopup = (payload) => {
+    indexVideo.value = payload.indexVideo;
     const elementTarget = payload.event.currentTarget.id;
 
     // Kiểm tra popup chưa hiển thị

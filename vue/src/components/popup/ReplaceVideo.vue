@@ -1,17 +1,26 @@
 <template>
     <aside class="popup-overlay">
         <div class="popup-content" @click.stop>
-            <h2>This is a popup</h2>
-            <p>You can put any content here.</p>
+            <h2>{{ videoId }}</h2>
             <button @click="handleClick">Close</button>
         </div>
     </aside>
 </template>
 
 <script setup>
+const props = defineProps({
+    indexVideo: {
+        type: Number,
+        Required: true,
+    },
+})
 
+const videoId = document.querySelector(`#video-${props.indexVideo} #video-title`).textContent;
+
+// Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
 
+// Sự lý sự kiện click
 const handleClick = () => {
     emit('close-popup');
 }

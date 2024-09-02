@@ -3,7 +3,7 @@
     <LoadingPage v-if="loading" />
     <div v-else id="content">
         <div class="grid">
-            <InputForm
+            <InputSearch
                 placeholder="Search. . ."
                 type="text"
                 autocomplete="off"
@@ -29,7 +29,7 @@ import axios from "axios";
 
 import HelloWorld from "../components/HelloWorld.vue";
 import LoadingPage from "../components/LoadingPage.vue";
-import InputForm from "../components/input/InputForm.vue";
+import InputSearch from "../components/input/InputSearch.vue";
 import Setting from "../components/settings/Setting.vue";
 import FIlterMenu from "../components/filter/FIlterMenu.vue";
 import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
