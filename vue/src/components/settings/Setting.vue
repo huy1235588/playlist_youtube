@@ -44,14 +44,6 @@ import emitter from "../../eventBus";
 
 import SettingDropdown from "./SettingDropdown.vue";
 
-// Định nghĩa các props mà component nhận vào
-const props = defineProps({
-    index: {
-        type: Number,
-        required: true,
-    }
-})
-
 // Khởi tạo các biến trạng thái
 const isActiveStroke = ref(false);
 const isActiveFill = ref(false);
@@ -75,7 +67,6 @@ const handleClick = (event) => {
     // Hiển thị popup thông qua emitter
     emitter.emit('show-setting', {
         event: event,
-        index: props.index, // Truyền index
     });
 
 };

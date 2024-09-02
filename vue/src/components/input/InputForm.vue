@@ -65,6 +65,8 @@ const resetInput = () => {
     nextTick(() => {
         inputField.value.focus(); // Đặt con trỏ vào ô input
     });
+    
+    emitter.emit('filter')
 };
 
 const handleValue = () => {
@@ -80,12 +82,11 @@ const handleValue = () => {
     background-color: #010201;
     border: none;
     padding: 7px;
-    /* margin-left: 35px; */
     width: 30rem;
     height: 56px;
     border-radius: 10px;
     color: white;
-    padding-inline: 1.5rem 3.75rem;
+    padding-inline: 1.5rem 3.5rem;
     font-size: 18px;
 }
 
@@ -105,8 +106,9 @@ const handleValue = () => {
 #resetButton {
     position: absolute;
     height: 100%;
-    top: 2px;
-    right: -1.5rem;
+    top: 0;
+    right: 0;
+    padding: 0 10px;
     background-color: transparent;
     cursor: pointer;
 }

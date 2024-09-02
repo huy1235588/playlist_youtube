@@ -1,8 +1,8 @@
 <template>
-    <li class="menu-item" :class="{ active: isActive }">
+    <li class="menu-item">
         <div class="menu-item-container">
             <img :src="icon" class="icon" alt="" />
-            <button id="button-sort" @click="filter">
+            <button id="button-sort" @click="handleClick">
                 {{ label }}
             </button>
         </div>
@@ -30,19 +30,15 @@ const props = defineProps({
 });
 
 // Gửi sự kiện click cho PlaylistVideo
-const filter = (event) => {
+const handleClick = (event) => {
 
     // Hiện video bị ẩn
-    if (id === 2) {
+    if (props.id === 2) {
         // Phát sự kiện filter để gọi api
         emitter.emit('show-hidden-video', {
             column: props.column,
             order: props.order,
         });
-    }
-
-    if (props.onClick) {
-        props.onClick();
     }
 }
 </script>

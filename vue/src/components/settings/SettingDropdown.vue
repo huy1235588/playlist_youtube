@@ -59,24 +59,6 @@ const buttons = [
     }
 ];
 
-// Đặt giá trị mặc định cho nút được active
-// const activeButton = ref(buttons[0].id);
-
-// // Cập nhật nút order
-// const updateOrder = (id, newOrder) => {
-//     // Tìm button đang nhấn
-//     const button = buttons.find(b => b.id === id);
-//     if (button) {
-//         // Thay đổi order của button
-//         button.order = newOrder;
-//     }
-// };
-
-// Set nút đã nhấn
-// const setActiveButton = (id) => {
-//     activeButton.value = id;
-// };
-
 // Hàm tính toán và cập nhật vị trí popup
 const updatePopupPosition = () => {
     const targetElement = document.getElementById("setting-button");
