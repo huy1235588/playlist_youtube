@@ -8,7 +8,7 @@
     >
         <ul id="items">
             <!-- Sort by ADdedAt -->
-            <ButtonFilter
+            <ButtonSetting
                 v-for="button in buttons"
                 :key="button.id"
                 :label="button.label"
@@ -27,7 +27,7 @@
 <script setup>
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 
-import ButtonFilter from './ButtonFilter.vue';
+import ButtonSetting from './ButtonSetting.vue';
 
 import emitter from '../../eventBus';
 
@@ -38,59 +38,47 @@ const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 const buttons = [
     {
         id: 1,
-        label: "Ngày thêm",
+        label: "Hiện các video bị ẩn",
         column: "AddedAt",
-        ascText: "cũ nhất",
-        descText: "mới nhất",
-        order: "asc",
     },
     {
         id: 2,
-        label: "Ngày xuất bản",
+        label: "Chuyển đổi danh sách phát",
         column: "PublishedAt",
-        ascText: "cũ nhất",
-        descText: "mới nhất",
-        order: "asc",
     },
     {
         id: 3,
-        label: "Lượt xem",
+        label:  "Thêm danh sách phát",
         column: "ViewCount",
-        ascText: "tăng dần",
-        descText: "giảm dần",
-        order: "asc",
     },
     {
         id: 4,
-        label: "Thời lượng video",
+        label: "Xóa danh sách phát",
         column: "Duration",
-        ascText: "ít nhất",
-        descText: "nhiều nhất",
-        order: "asc",
     }
 ];
 
 // Đặt giá trị mặc định cho nút được active
-const activeButton = ref(buttons[0].id);
+// const activeButton = ref(buttons[0].id);
 
-// Cập nhật nút order
-const updateOrder = (id, newOrder) => {
-    // Tìm button đang nhấn
-    const button = buttons.find(b => b.id === id);
-    if (button) {
-        // Thay đổi order của button
-        button.order = newOrder;
-    }
-};
+// // Cập nhật nút order
+// const updateOrder = (id, newOrder) => {
+//     // Tìm button đang nhấn
+//     const button = buttons.find(b => b.id === id);
+//     if (button) {
+//         // Thay đổi order của button
+//         button.order = newOrder;
+//     }
+// };
 
 // Set nút đã nhấn
-const setActiveButton = (id) => {
-    activeButton.value = id;
-};
+// const setActiveButton = (id) => {
+//     activeButton.value = id;
+// };
 
 // Hàm tính toán và cập nhật vị trí popup
 const updatePopupPosition = () => {
-    const targetElement = document.getElementById("filter-button");
+    const targetElement = document.getElementById("setting-button");
 
     if (targetElement) {
         // Lấy kích thước và vị trí của đối tượng mục tiêu
@@ -104,7 +92,7 @@ const updatePopupPosition = () => {
 
             // Vị trí hiện tại của popup dựa trên vị trí của đối tượng mục tiêu
             let topPosition = rect.bottom + 10;
-            let leftPosition = rect.left;
+            let leftPosition = rect.left - 310;
 
             // Kiểm tra nếu menu nằm ngoài viewport
             if (topPosition + popupHeight > viewportHeight) {
@@ -156,11 +144,11 @@ const cleanupEventListeners = () => {
 };
 
 onMounted(() => {
-    emitter.on("show-filter-menu", showPopup);
+    emitter.on("show-setting", showPopup);
 });
 
 onUnmounted(() => {
-    emitter.off("show-filter-menu", showPopup);
+    emitter.off("show-setting", showPopup);
     cleanupEventListeners()
 })
 

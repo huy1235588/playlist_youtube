@@ -2,7 +2,7 @@
 <template>
     <LoadingPage v-if="loading" />
     <div v-else id="content">
-        <div class="flex">
+        <div class="grid">
             <InputForm
                 placeholder="Search. . ."
                 type="text"
@@ -10,6 +10,7 @@
                 :onSubmit="fetchData"
                 @updateInputValue="receiveInputValue"
             />
+            <Setting />
             <FIlterMenu />
         </div>
         <PlaylistVideo />
@@ -29,6 +30,7 @@ import axios from "axios";
 import HelloWorld from "../components/HelloWorld.vue";
 import LoadingPage from "../components/LoadingPage.vue";
 import InputForm from "../components/input/InputForm.vue";
+import Setting from "../components/settings/Setting.vue";
 import FIlterMenu from "../components/filter/FIlterMenu.vue";
 import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
 import MenuPopup from "../components/menu/MenuPopup.vue";
@@ -104,8 +106,13 @@ onUnmounted(() => {
 #content {
     width: 90vw;
 }
-.flex{
+.grid{
+    display: grid;
+    grid-template-columns: repeat(2, 0fr);
+    grid-template-rows: repeat(2, 0fr);
+    row-gap: 10px;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 10px;
 }
 </style>

@@ -23,7 +23,7 @@ const fetchData = async (payload = {}) => {
         const response = await axios.get("/api/video/get", {
             params: {
                 start: 1,
-                end: 69,
+                end: 50,
                 column: column,
                 order: order,
             }

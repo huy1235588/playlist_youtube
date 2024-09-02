@@ -17,7 +17,7 @@
             <div id="thumbnail-container">
                 <a id="thumbnail">
                     <!-- Hình ảnh video -->
-                    <img v-if="notFound" src="https://i.ytimg.com/img/no_thumbnail.jpg" alt="" />
+                    <img v-if="notFound" :src="NoThumbail" alt="" />
                     <img v-else :src="thumbnails" alt="" />
                     <div id="overplay">
                         <!-- Thời lượng video -->
@@ -77,6 +77,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import MenuTask from '../menu/MenuTask.vue';
+import NoThumbail from '../../assets/no_thumbnail.jpg'
 
 const notFound = ref(false);
 const videoTitle = ref("");

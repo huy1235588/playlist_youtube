@@ -80,7 +80,7 @@ const handleValue = () => {
     background-color: #010201;
     border: none;
     padding: 7px;
-    margin-left: 35px;
+    /* margin-left: 35px; */
     width: 30rem;
     height: 56px;
     border-radius: 10px;
