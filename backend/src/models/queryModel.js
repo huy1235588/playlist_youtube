@@ -66,8 +66,30 @@ class QueryModel {
 
         } catch (error) {
             throw new Error(`Error search Video from SQL Server ${error.message}`);
+        } finally {
+            await this.disconnect();
         }
-        finally {
+    }
+
+    // Select các video bị lỗi
+    async selectHiddenVideo() {
+        try {
+            this.connect();
+            const request = this.pool.request();
+
+            // Chọn dữ liệu từ bảng Video nhưng lọc các cột Title = null
+            const result = await request
+                .query(`select *
+                        from videos
+                        where Title is null`
+                );
+
+            // Trả về dữ liệu
+            return result.recordsets;
+
+        } catch (error) {
+            throw new Error(`Error while select hidden video: ${error.message}`);
+        } finally {
             await this.disconnect();
         }
     }
