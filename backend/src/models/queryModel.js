@@ -74,7 +74,7 @@ class QueryModel {
     // Select các video bị lỗi
     async selectHiddenVideo() {
         try {
-            this.connect();
+            await this.connect();
             const request = this.pool.request();
 
             // Chọn dữ liệu từ bảng Video nhưng lọc các cột Title = null
@@ -85,7 +85,7 @@ class QueryModel {
                 );
 
             // Trả về dữ liệu
-            return result.recordsets;
+            return result.recordset;
 
         } catch (error) {
             throw new Error(`Error while select hidden video: ${error.message}`);

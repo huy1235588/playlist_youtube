@@ -89,10 +89,10 @@ const showHiddenVideo = async () => {
     try {
         isShowHiddenVideo.value = !isShowHiddenVideo.value;
 
-        // const response = await axios.get('/api/video/show-hidden-video');
+        const response = await axios.get('/api/video/get/hidden-video');
 
-        // // Cập nhật dữ liệu với các video đã tải về
-        // dataHidden.value = await response.data.videos;
+        // Cập nhật dữ liệu với các video đã tải về
+        dataHidden.value = await response.data.videos;
 
     } catch (error) {
         // Xử lý lỗi mạng
