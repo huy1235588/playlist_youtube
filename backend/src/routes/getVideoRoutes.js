@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const getVideoController = require('../controllers/getVideoController');
+const getHiddenVideoController = require('../controllers/getHiddenVideoController');
 
 // Route để lấy dữ liệu từ database
 router.get('/video/get', getVideoController.getVideoInfo);
+
+// Route để lấy video bị ẩn từ database
+router.get('/video/get/hidden-video', getHiddenVideoController.getHiddenVideo);
 
 module.exports = router;

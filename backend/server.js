@@ -18,10 +18,6 @@ app.use('/api', getVideoRoutes);
 const searchVideoRoutes = require('./src/routes/searchVideoRoutes');
 app.use('/api', searchVideoRoutes);
 
-// Sử dụng getHiddenVideoRoutes
-const getHiddenVideoRoutes = require('./src/routes/getHiddenVideoRoutes');
-app.use('/api', getHiddenVideoRoutes);
-
 // Cổng
 const PORT = process.env.PORT || 3001;
 
