@@ -5,8 +5,9 @@
             <InputForm
                 label="Nhập URL video:"
                 placeholder="https://www.youtube.com/watch?v="
+                @inputValue="(payload) => onsubmit(payload.inputValue)"
             />
-            <button class="close-popup" @click="handleClick">
+            <button class="close-popup" @click="closePopup">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -18,11 +19,16 @@
                     ></path>
                 </svg>
             </button>
+
+            <p>
+                {{ outputValue }}
+            </p>
         </div>
     </aside>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import InputForm from '../input/InputForm.vue';
 
 const props = defineProps({
@@ -32,14 +38,22 @@ const props = defineProps({
     },
 })
 
+const inputValue = ref('');
+const outputValue = ref('');
+
 const videoId = document.querySelector(`#video-${props.indexVideo} #video-title`).textContent;
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
 
 // Sự lý sự kiện click
-const handleClick = () => {
+const closePopup = () => {
     emit('close-popup');
+}
+
+// Xử lý sự kiện submit form
+const onsubmit = (inputValue) => {
+    outputValue.value = inputValue;
 }
 </script>
 
@@ -88,7 +102,7 @@ const handleClick = () => {
     transition: all 0.2s;
 }
 
-.close-popup:hover{
+.close-popup:hover {
     background-color: #ff0000;
 }
 
@@ -109,5 +123,4 @@ const handleClick = () => {
     fill: #3c3c3c;
     stroke: white;
 }
-
 </style>

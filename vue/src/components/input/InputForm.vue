@@ -8,7 +8,6 @@
             :type="type"
             :autocomplete="autocomplete"
             v-model="inputValue"
-            @input="inputValue"
             ref="inputField"
             required
         />
@@ -36,8 +35,6 @@
 
 <script setup>
 import { ref, nextTick } from "vue";
-import emitter from "../../eventBus";
-
 import ButtonSubmit from "./ButtonSubmit.vue";
 
 defineProps({
@@ -74,8 +71,13 @@ const resetInput = () => {
     
 };
 
-const handleValue = () => {
-    console.log()
+const emits = defineEmits(['inputValue']);
+
+// Gửi input value cho component cha
+const onSubmit = () => {
+    emits('inputValue', {
+        inputValue: inputValue.value,
+    });
 }
 
 </script>
