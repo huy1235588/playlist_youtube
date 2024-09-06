@@ -28,20 +28,27 @@ class VideoModel {
             await this.connect(sqlConfig);
             const request = this.pool.request();
 
-            // Chèn dữ liệu vào bảng
-            await request
-                .input('VideoId', sql.VarChar(50), video.videoId)
-                .input('Title', sql.NVarChar(255), video.title)
-                .input('PublishedAt', sql.DateTime, new Date(video.publishedAt).toISOString().slice(0, 19).replace('T', ' '))
-                .input('Thumbnail', sql.NVarChar(255), video.thumbnails)
-                .input('ViewCount', sql.BigInt, video.viewCount)
-                .input('Duration', sql.VarChar(20), video.duration)
-                .input('ChannelId', sql.NVarChar(50), video.channelId)
-                .input('PlaylistId', sql.VarChar(50), video.playlistId)
-                .query(
-                    `INSERT INTO Videos VALUES 
-                    (@VideoId, @Title, @PublishedAt, @Thumbnail, @ViewCount, @Duration, @ChannelId, @PlaylistId)`,
-                );
+            // Biến iểm tra đã tồn tại VideoId trong database
+            const existingVideo = await request
+                .input('CheckVideoId', sql.VarChar(50), video.videoId)
+                .query(`SELECT COUNT(*) AS Count FROM Videos WHERE VideoId = @CheckVideoId`);
+
+            // Nếu đã tồn tại, bỏ qua thao tác chèn.
+            if (existingVideo.recordset[0].Count === 0) {
+                // Chèn dữ liệu vào bảng
+                await request
+                    .input('VideoId', sql.VarChar(50), video.videoId)
+                    .input('Title', sql.NVarChar(255), video.title)
+                    .input('PublishedAt', sql.DateTime, new Date(video.publishedAt).toISOString().slice(0, 19).replace('T', ' '))
+                    .input('Thumbnail', sql.NVarChar(255), video.thumbnails)
+                    .input('ViewCount', sql.BigInt, video.viewCount)
+                    .input('Duration', sql.VarChar(20), video.duration)
+                    .input('ChannelId', sql.NVarChar(50), video.channelId)
+                    .query(
+                        `INSERT INTO Videos VALUES 
+                    (@VideoId, @Title, @PublishedAt, @Thumbnail, @ViewCount, @Duration, @ChannelId)`,
+                    );
+            }
 
         } catch (error) {
             throw new Error(`Error saving to SQL Server ${error.message}`);
@@ -88,7 +95,7 @@ class ChannelModel {
             // Nếu đã tồn tại, bỏ qua thao tác chèn.
             if (existingChannel.recordset[0].Count === 0) {
                 // Chèn dữ liệu vào bảng
-                const result = await request
+                await request
                     .input('ChannelId', sql.VarChar(50), channel.channelId)
                     .input('Title', sql.NVarChar(255), channel.title)
                     .input('Thumbnail', sql.NVarChar(255), channel.thumbnails)

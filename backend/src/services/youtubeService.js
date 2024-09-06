@@ -60,7 +60,6 @@ const getVideoDetails = async (videoId, playlistId) => {
                 viewCount: video.statistics.viewCount,
                 duration: video.contentDetails.duration,
                 channelId: video.snippet.channelId,
-                playlistId: playlistId,
             };
         }
         else {
