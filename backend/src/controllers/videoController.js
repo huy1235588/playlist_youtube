@@ -19,13 +19,19 @@ const fetchAndSaveVideos = async (req, res) => {
 
         for (const item of playlistItems.items){
             // Lấy thông tin chi tiết của video
-            const video = await youtubeService.getVideoDetails(item.videoId);
-            // Lấy thông tin chi tiết của channel
-            const channel = await youtubeService.getChannelDetails(item.channelId);
-
-            // Lưu vào database
+            const video = await youtubeService.getVideoDetails(item.videoId, playlistId);
+            // Lưu video vào database
             videoModel.add(video);
-            channelModel.add(channel);
+
+            const channelId = video.channelId;
+
+            //  Kiểm tra xem có tồn tại channelId
+            if (channelId) {
+                // Lấy thông tin chi tiết của channel
+                const channel = await youtubeService.getChannelDetails(video.channelId);
+                // Lưu channel vào database
+                channelModel.add(channel);
+            }
         }
 
         // Lấy thông tin chi tiết của playlist

@@ -12,7 +12,7 @@ const getChannelDetails = async (channelId) => {
             params: {
                 // https://developers.google.com/youtube/v3/docs/channels#snippet
                 part: 'snippet, contentDetails, statistics',
-                id: channelId, // Id video muốn lấy
+                id: channelId, // Id channel muốn lấy
                 key: config.youtubeApiKey
             }
         });
@@ -35,7 +35,7 @@ const getChannelDetails = async (channelId) => {
 }
 
 // Hàm lấy thông tin chi tiết của video
-const getVideoDetails = async (videoId) => {
+const getVideoDetails = async (videoId, playlistId) => {
     try {
         // Gửi yêu cầu GET tới endpoint playlistItems của YouTube API.
         const response = await axios.get(`${YOUTUBE_API_BASE_URL}/videos`, {
@@ -47,18 +47,34 @@ const getVideoDetails = async (videoId) => {
             }
         });
 
-        const video = response.data.items[0];
+        const video = response.data.items;
 
-        // Trả về thông tin chi tiết video
-        if (video) {
+        // Kiểm tra video có bị xóa không
+        if (video.length === 0) {
+            // Trả về thông tin chi tiết video
             return {
+                videoId: videoId,
                 title: video.snippet.title,
                 publishedAt: video.snippet.publishedAt,
                 thumbnails: video.snippet.thumbnails.high.url,
                 viewCount: video.statistics.viewCount,
                 duration: video.contentDetails.duration,
                 channelId: video.snippet.channelId,
+                playlistId: playlistId,
             };
+        }
+        else {
+            // Trả về null nếu video bị xóa hoặc bị lỗi
+            return {
+                videoId: videoId,
+                title: null,
+                publishedAt: null,
+                thumbnails: null,
+                viewCount: null,
+                duration: null,
+                channelId: null,
+                playlistId: playlistId,
+            }
         }
 
     } catch (error) {
@@ -84,6 +100,7 @@ const getPlaylistDetails = async (playlistId) => {
         // Trả về thông tin chi tiết playlist
         if (playlist) {
             return {
+                playlistId: playlistId,
                 title: playlist.snippet.title,
                 publishedAt: playlist.snippet.publishedAt,
                 thumbnails: playlist.snippet.thumbnails.high.url,
@@ -133,15 +150,12 @@ const getPlaylistVideos = async (playlistId) => {
                 const videoId = item.contentDetails.videoId;
                 // Lấy ngày phát hành của video
                 const videoPublishedAt = item.contentDetails.videoPublishedAt;
-                // Lấy kênh của video
-                const channelId = item.snippet.videoOwnerChannelId;
 
                 // Thêm dữ liệu vào mảng videos
                 videos.push({
                     videoId: videoId,
                     addAt: videoPublishedAt,
                     indexVideo: indexVideo,
-                    channelId: channelId,
                 });
 
                 // Cập nhật indexvideo
