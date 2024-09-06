@@ -144,7 +144,7 @@ class PlaylistModel {
             const request = this.pool.request();
 
             // Chèn dữ liệu vào bảng
-            const result = await request
+            await request
                 .input('PlaylistId', sql.VarChar(50), playlist.playlistId)
                 .input('Title', sql.NVarChar(255), playlist.title)
                 .input('PublishedAt', sql.DateTime, new Date(playlist.publishedAt).toISOString().slice(0, 19).replace('T', ' '))

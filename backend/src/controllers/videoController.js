@@ -19,7 +19,7 @@ const fetchAndSaveVideos = async (req, res) => {
         let playlistId = req.query.inputValue;
 
         if (!playlistId.includes("?list=")) {
-            return res.json({
+            return await res.json({
                 isAdded: false,
                 message: 'Incorrect URL playlist'
             });
@@ -29,10 +29,10 @@ const fetchAndSaveVideos = async (req, res) => {
         playlistId = playlistId.split("?list=")[1];
 
         // Kiểm tra xem có tồn tại playlistId hay chưa
-        const checkPlaylistId = queryModel.checkExistingPlaylist(playlistId)
-
+        const checkPlaylistId = await queryModel.checkExistingPlaylist(playlistId)
+        
         if (checkPlaylistId) {
-            return res.json({
+            return await res.json({
                 isAdded: false,
                 message: 'PlaylistId is already exist',
             });
@@ -66,12 +66,12 @@ const fetchAndSaveVideos = async (req, res) => {
             await videoModel.add(video);
 
             // Lưu vào bảng PlaylistItems
-            playlistItemsModel.add(item, playlistId, indexVideo);
+            await playlistItemsModel.add(item, playlistId, indexVideo);
             // Cập nhật indexvideo
             indexVideo -= 1;
         }
 
-        return res.json({
+        return await res.json({
             isAdded: true,
             message: 'Videos fetched and saved successfully'
         });

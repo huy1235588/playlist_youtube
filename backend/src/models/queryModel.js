@@ -100,8 +100,8 @@ class QueryModel {
 
             // Biến iểm tra đã tồn tại PlaylistId trong database
             const existingChannel = await request
-                .input('CheckChannelId', sql.VarChar(50), PlaylistId)
-                .query(`SELECT COUNT(*) AS Count FROM Channels WHERE ChannelId = @CheckChannelId`);
+                .input('CheckPlaylistId', sql.VarChar(50), PlaylistId)
+                .query(`SELECT COUNT(*) AS Count FROM Playlists WHERE PlaylistId = @CheckPlaylistId`);
 
             // Nếu đã tồn tại, thì return true
             if (existingChannel.recordset[0].Count === 0) {

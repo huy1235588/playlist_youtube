@@ -20,7 +20,7 @@
                 </svg>
             </button>
             <Loading v-if="isLoading" />
-            <p v-else class="playlist-add-status" :class="isAdded">
+            <p v-else class="playlist-add-status" :class="isAddedStatus">
                 {{ playlistAddStatus }}
             </p>
         </div>
@@ -32,6 +32,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 import InputForm from '../input/InputForm.vue';
 import Loading from '../loading/Loading.vue';
+import emitter from '../../eventBus';
 
 const props = defineProps({
     labelH2: {
@@ -41,8 +42,8 @@ const props = defineProps({
 })
 
 const playlistAddStatus = ref('');
-const isLoading = ref(true);
-const isAdded = ref(false);
+const isLoading = ref(false);
+const isAddedStatus = ref(false);
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
@@ -52,10 +53,12 @@ const closePopup = () => {
     emit('close-popup');
 }
 
+
 // Xử lý sự kiện submit form
 const onsubmit = async (inputValue) => {
     // hiện Loading-page trong khi đợi
     isLoading.value = true;
+
     try {
         // Gọi api để add playlist vào database
         const response = await axios.get('/api/video/fetch', {
@@ -64,26 +67,26 @@ const onsubmit = async (inputValue) => {
             }
         });
 
+        // Lấy trạng thái api
         const data = await response.data;
 
-        setTimeout(() => {
-
-            if (data.isAdded) {
-                playlistAddStatus.value = "Added playlist successfully";
-            }
-            else {
-                playlistAddStatus.value =  response.data.message;
-            }
-        }, 7000)
-        
+        // Kiểm tra xem playlist đã được thêm thành công thay chưa
+        if (data.isAdded) {
+            playlistAddStatus.value = "Added playlist successfully";
+            isAddedStatus.value = true;
+        }
+        else {
+            playlistAddStatus.value = response.data.message;
+        }
 
     } catch (error) {
         // Xử lý lỗi mạng
         emitter.emit('error-page', {
             errorMessage: error.message
         });
+
     } finally {
-       isLoading.value = false;
+        isLoading.value = false;
     }
 }
 
