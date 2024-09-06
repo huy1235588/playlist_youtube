@@ -90,6 +90,34 @@ class QueryModel {
             await this.disconnect();
         }
     }
+
+    // Kiểm tra PlaylistId trong bảng Playlist
+    async checkExistingPlaylist(PlaylistId) {
+        try {
+            // Kết nối đến SQL Server
+            await this.connect();
+            const request = this.pool.request();
+
+            // Biến iểm tra đã tồn tại PlaylistId trong database
+            const existingChannel = await request
+                .input('CheckChannelId', sql.VarChar(50), PlaylistId)
+                .query(`SELECT COUNT(*) AS Count FROM Channels WHERE ChannelId = @CheckChannelId`);
+
+            // Nếu đã tồn tại, thì return true
+            if (existingChannel.recordset[0].Count === 0) {
+                return false;
+            }
+            else {
+                return true;
+            }
+
+        } catch (error) {
+            throw new Error(`Error saving to SQL Server: ${error.message}`);
+        } finally {
+            // Đóng kết nối khi không còn cần thiết
+            await this.disconnect();
+        }
+    }
 }
 
 module.exports = {
