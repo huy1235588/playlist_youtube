@@ -64,8 +64,8 @@ export default {
 
 <style scoped>
 #error-page {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     color: white;
     font-family: "Arial Black";
     text-align: center;
