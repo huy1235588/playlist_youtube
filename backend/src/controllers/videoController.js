@@ -17,51 +17,64 @@ const fetchAndSaveVideos = async (req, res) => {
 
         // Lấy playlistId từ input
         let playlistId = req.query.inputValue;
+
+        if (!playlistId.includes("?list=")) {
+            return res.json({
+                isAdded: false,
+                message: 'Incorrect URL playlist'
+            });
+        }
+
         // Format playlistId
         playlistId = playlistId.split("?list=")[1];
 
         // Kiểm tra xem có tồn tại playlistId hay chưa
-        if (queryModel.checkExistingPlaylist(playlistId)) {
-            res.status(300).json({
-                message: 'PlaylistId is already exist'
+        const checkPlaylistId = queryModel.checkExistingPlaylist(playlistId)
+
+        if (checkPlaylistId) {
+            return res.json({
+                isAdded: false,
+                message: 'PlaylistId is already exist',
             });
         }
-        else {
-            // Lấy thông tin chi tiết của playlist
-            const playlist = await youtubeService.getPlaylistDetails(playlistId);
-            // Lưu các playlist vào bảng playlists
-            await playlistModel.add(playlist);
 
-            // Lấy playlistId, videoId, addAt, indexVideo của toàn bộ videos
-            const playlistItems = await youtubeService.getPlaylistItems(playlistId);
+        // Lấy thông tin chi tiết của playlist
+        const playlist = await youtubeService.getPlaylistDetails(playlistId);
+        // Lưu các playlist vào bảng playlists
+        await playlistModel.add(playlist);
 
-            // Khởi tạo indexVideo
-            let indexVideo = playlistItems.totalResults;
+        // Lấy playlistId, videoId, addAt, indexVideo của toàn bộ videos
+        const playlistItems = await youtubeService.getPlaylistItems(playlistId);
 
-            for (const item of playlistItems.items) {
-                // Lấy channelId
-                const channelId = item.channelId;
-                //  Kiểm tra xem có tồn tại channelId
-                if (channelId) {
-                    // Lấy thông tin chi tiết của channel
-                    const channel = await youtubeService.getChannelDetails(channelId);
-                    // Lưu channel vào database
-                    await channelModel.add(channel);
-                }
+        // Khởi tạo indexVideo
+        let indexVideo = playlistItems.totalResults;
 
-                // Lấy thông tin chi tiết của video
-                const video = await youtubeService.getVideoDetails(item.videoId, playlistId);
-                // Lưu video vào database
-                await videoModel.add(video);
-
-                // Lưu vào bảng PlaylistItems
-                playlistItemsModel.add(item, playlistId, indexVideo);
-                // Cập nhật indexvideo
-                indexVideo -= 1;
+        for (const item of playlistItems.items) {
+            // Lấy channelId
+            const channelId = item.channelId;
+            //  Kiểm tra xem có tồn tại channelId
+            if (channelId) {
+                // Lấy thông tin chi tiết của channel
+                const channel = await youtubeService.getChannelDetails(channelId);
+                // Lưu channel vào database
+                await channelModel.add(channel);
             }
 
-            res.status(200).json({ message: 'Videos fetched and saved successfully' });
+            // Lấy thông tin chi tiết của video
+            const video = await youtubeService.getVideoDetails(item.videoId, playlistId);
+            // Lưu video vào database
+            await videoModel.add(video);
+
+            // Lưu vào bảng PlaylistItems
+            playlistItemsModel.add(item, playlistId, indexVideo);
+            // Cập nhật indexvideo
+            indexVideo -= 1;
         }
+
+        return res.json({
+            isAdded: true,
+            message: 'Videos fetched and saved successfully'
+        });
 
     } catch (error) {
         res.status(500).json({ message: 'Error fetching or saving videos', error });

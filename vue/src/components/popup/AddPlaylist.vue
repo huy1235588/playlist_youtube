@@ -20,16 +20,18 @@
                 </svg>
             </button>
 
-            <p>
-                {{ outputValue }}
+            <p class="playlist-add-status">
+                {{ playlistAddStatus }}
             </p>
         </div>
     </aside>
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref } from 'vue';
 import InputForm from '../input/InputForm.vue';
+import emitter from '../../eventBus';
 
 const props = defineProps({
     labelH2: {
@@ -38,8 +40,7 @@ const props = defineProps({
     },
 })
 
-const inputValue = ref('');
-const outputValue = ref('');
+const playlistAddStatus = ref('');
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
@@ -50,8 +51,37 @@ const closePopup = () => {
 }
 
 // Xử lý sự kiện submit form
-const onsubmit = (inputValue) => {
-    outputValue.value = inputValue;
+const onsubmit = async (inputValue) => {
+    // Gọi api để add playlist vào database
+    try {
+        // hiện Loading-page trong khi đợi
+        emitter.emit('loading-page', true);
+        // Gọi api
+        const response = await axios.get('/api/video/fetch', {
+            params: {
+                inputValue: inputValue
+            }
+        });
+
+        const data = await response.data;
+
+        console.log(data)
+
+        if (data.isAdded) {
+            playlistAddStatus.value = "Added playlist successfully";
+        }
+        else {
+            playlistAddStatus.value = await response.data.message;
+        }
+
+    } catch (error) {
+        // Xử lý lỗi mạng
+        emitter.emit('error-page', {
+            errorMessage: error.message
+        });
+    } finally {
+        emitter.emit('loading-page', false);
+    }
 }
 
 </script>
@@ -121,5 +151,9 @@ const onsubmit = (inputValue) => {
 .close-popup:hover svg path {
     fill: #3c3c3c;
     stroke: white;
+}
+
+.playlist-add-status {
+    color: rgb(22, 222, 22);
 }
 </style>

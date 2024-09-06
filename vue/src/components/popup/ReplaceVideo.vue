@@ -38,7 +38,6 @@ const props = defineProps({
     },
 })
 
-const inputValue = ref('');
 const outputValue = ref('');
 
 const videoId = document.querySelector(`#video-${props.indexVideo} #video-title`).textContent;

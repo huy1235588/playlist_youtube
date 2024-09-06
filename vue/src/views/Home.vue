@@ -7,7 +7,6 @@
                 placeholder="Search. . ."
                 type="text"
                 autocomplete="off"
-                :onSubmit="fetchData"
                 @updateInputValue="receiveInputValue"
             />
             <Setting />
@@ -40,36 +39,10 @@ import emitter from "../eventBus";
 const loading = ref(false);
 const error = ref(null);
 
-const data = ref(null);
 const inputValue = ref("");
 const outputValue = ref("");
 
 const router = useRouter();
-
-// Hàm gọi api
-const fetchData = async () => {
-   console.log(inputValue.value);
-    // loadingPage(true);
-    // error.value = null;
-
-    // try {
-    //     // Gọi API backend
-    //     const response = await axios.get("/api/videos/fetch", {
-    //         params: { inputValue: inputValue.value }
-    //     });
-
-    //     const data = await response.data;
-
-    //     outputValue.value = data;
-
-    // } catch (err) {
-    //     // Xử lý lỗi mạng
-    //     error.value = err.message;
-    //     router.push({ path: '/error', query: { error: error.value } });
-    // } finally {
-    //     loadingPage(false);
-    // }
-};
 
 // Nhận giá trị từ input
 const receiveInputValue = (value) => {
