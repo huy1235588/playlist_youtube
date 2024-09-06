@@ -9,22 +9,30 @@ const fetchAndSaveVideos = async (req, res) => {
         const channelModel = new ChannelModel();
         const playlistModel = new PlaylistModel();
 
-        const playlistId = req.query.inputValue; // Lấy playlistId từ input
+        // Lấy playlistId từ input
+        let playlistId = req.query.inputValue; 
+        // Format playlistId
+        playlistId = playlistId.split("?list=")[1];
 
-        const { channels, videos, playlists } = await youtubeService.getPlaylistVideos(playlistId.split("?list=")[1]);
+        // Lấy playlistId, videoId, addAt, indexVideo của toàn bộ videos
+        const playlistItems = await youtubeService.getPlaylistVideos(playlistId);
 
-        // Lưu các playlist vào bảng playlists
-        playlistModel.add(playlists);
+        for (const item of playlistItems.items){
+            // Lấy thông tin chi tiết của video
+            const video = await youtubeService.getVideoDetails(item.videoId);
+            // Lấy thông tin chi tiết của channel
+            const channel = await youtubeService.getChannelDetails(item.channelId);
 
-        // Lưu các channel vào bảng channels
-        for (const channel of channels) {
+            // Lưu vào database
+            videoModel.add(video);
             channelModel.add(channel);
         }
 
-        // Lưu các video vào bảng videos
-        for (const video of videos) {
-            videoModel.add(video);
-        }
+        // Lấy thông tin chi tiết của playlist
+        const playlist = await youtubeService.getPlaylistDetails(playlistId);
+
+        // Lưu các playlist vào bảng playlists
+        playlistModel.add(playlist);
 
         res.status(200).json({ message: 'Videos fetched and saved successfully' });
 

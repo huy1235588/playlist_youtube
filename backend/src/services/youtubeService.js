@@ -48,8 +48,6 @@ const getVideoDetails = async (videoId) => {
         });
 
         const video = response.data.items[0];
-        // Lấy thông tin chi tiết của channel
-        detailChannel = await getChannelDetails(video.snippet.channelId);
 
         // Trả về thông tin chi tiết video
         if (video) {
@@ -59,7 +57,7 @@ const getVideoDetails = async (videoId) => {
                 thumbnails: video.snippet.thumbnails.high.url,
                 viewCount: video.statistics.viewCount,
                 duration: video.contentDetails.duration,
-                detailChannel: detailChannel,
+                channelId: video.snippet.channelId,
             };
         }
 
@@ -104,13 +102,9 @@ const getPlaylistVideos = async (playlistId) => {
     // https://developers.google.com/youtube/v3/docs/playlistItems/list#properties
     let nextPageToken = null;
     // Khai báo biến mảng videos
-    let channels = [];
-    // Khai báo biến mảng videos
     let videos = [];
-    // Khai báo biến thông tin chi tiết
-    let detailVideo;
-    let detailChannel;
-    let nullChannel = 1; // NUll channel?
+    // Khai báo biến indexVideo
+    let indexVideo;
 
     try {
         do {
@@ -130,87 +124,39 @@ const getPlaylistVideos = async (playlistId) => {
 
             const Videos = response.data.items;
 
+            // Lấy tổng video
+            indexVideo = response.data.pageInfo.totalResults;
+
             // Lặp từng phần tử trong playlists
             for (const item of Videos) {
                 // Lấy ID của video
                 const videoId = item.contentDetails.videoId;
                 // Lấy ngày phát hành của video
                 const videoPublishedAt = item.contentDetails.videoPublishedAt;
-                // Lấy ngày thêm của vào playlist
-                const publishedAt = item.snippet.publishedAt;
+                // Lấy kênh của video
+                const channelId = item.snippet.videoOwnerChannelId;
 
-                // Lấy thông tin chi tiết của video
-                if (videoPublishedAt !== undefined) {
-                    detailVideo = await getVideoDetails(videoId);
-                }
-                else {
-                    // Tạo một đối tượng mới từ mảng các cặp [key, null].
-                    detailVideo = Object.fromEntries(
-                        // Tạo một mảng các cặp [key, value] từ đối tượng detailVideo.
-                        // Thay đổi giá trị của mỗi cặp thành null
-                        Object.entries(detailVideo).map(([key, _]) => [key, null])
-                    );
-                }
-                
-                // Lấy thông tin chi tiết của channel
-                if (videoPublishedAt !== undefined) {
-                    detailChannel = detailVideo.detailChannel;
-                }
-                else {
-                    detailChannel = {
-                        channelId: "null" + nullChannel,
-                        title: null,
-                        thumbnails: null,
-                        subscriberCount: null,
-                        videoCount: null
-                    };
-                    nullChannel++;
-                }
-
-                // thêm dữ liệu vào mảng channels
-                channels.push({
-                    channelId: detailChannel.channelId,
-                    title: detailChannel.title,
-                    thumbnails: detailChannel.thumbnails,
-                    subscriberCount: detailChannel.subscriberCount,
-                    videoCount: detailChannel.videoCount,
-                })
-
-                // thêm dữ liệu vào mảng videos
+                // Thêm dữ liệu vào mảng videos
                 videos.push({
                     videoId: videoId,
-                    title: detailVideo.title,
-                    publishedAt: detailVideo.publishedAt,
-                    thumbnails: detailVideo.thumbnails,
-                    viewCount: detailVideo.viewCount,
-                    duration: detailVideo.duration,
-                    addAt: publishedAt,
-                    channelId: detailChannel.channelId,
-                    playlistId: playlistId
+                    addAt: videoPublishedAt,
+                    indexVideo: indexVideo,
+                    channelId: channelId,
                 });
+
+                // Cập nhật indexvideo
+                indexVideo -= 1;
             }
 
             // Cập nhật token cho trang tiếp theo
-            nextPageToken = response.data.nextPageToken;
+            // nextPageToken = response.data.nextPageToken;
 
         } while (nextPageToken); // Tiếp tục gửi yêu cầu API cho đến khi không còn nextPageToken,
 
-        // Lấy thông tin chi tiết của playlist
-        const detailPlaylist = await getPlaylistDetails(playlistId);
-        // Thêm dữ liệu playlist vào
-        const playlists = {
-            playlistId: playlistId,
-            title: detailPlaylist.title,
-            publishedAt: detailPlaylist.publishedAt,
-            thumbnails: detailPlaylist.thumbnails,
-            channelTitle: detailPlaylist.channelTitle,
-        }
-
         // Trả về dữ liệu
         return {
-            channels,
-            videos,
-            playlists
+            playlistId: playlistId,
+            items: videos,
         };
 
     } catch (error) {
@@ -219,5 +165,8 @@ const getPlaylistVideos = async (playlistId) => {
 }
 
 module.exports = {
-    getPlaylistVideos
+    getPlaylistVideos,
+    getChannelDetails,
+    getVideoDetails,
+    getPlaylistDetails,
 };
