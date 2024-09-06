@@ -1,12 +1,37 @@
 <template>
-    <aside id="menu-popup" v-if="isVisible" class="menu-popup-container" ref="menuPopup" :style="popupStyle">
+    <aside
+        id="menu-popup"
+        v-if="isVisible"
+        class="menu-popup-container"
+        ref="menuPopup"
+        :style="popupStyle"
+    >
         <ul id="items">
             <!-- Sort by ADdedAt -->
-            <ButtonSetting v-for="button in buttons" :key="button.id" :id="button.id" :label="button.label"
-                :icon="button.icon" @add-playlist="addPlaylist()" />
+            <ButtonSetting
+                v-for="button in buttons"
+                :key="button.id"
+                :id="button.id"
+                :label="button.label"
+                :icon="button.icon"
+                @add-playlist="addPlaylist()"
+                @change-playlist="changePlaylist()"
+            />
         </ul>
     </aside>
-    <AddPlaylist v-if="isAddPlaylist" labelH2="Thêm playlisVideo" @click="closePopup" @close-popup="closePopup()" />
+    <AddPlaylist
+        v-if="isAddPlaylist"
+        labelH2="Thêm Playlist"
+        @click="closePopup"
+        @close-popup="closePopup()"
+    />
+
+    <ChangePlaylist
+        v-if="isChangePlaylist"
+        labelH2="Thay đổi Playlist"
+        @click="closePopup"
+        @close-popup="closePopup()"
+    />
 </template>
 
 <script setup>
@@ -14,6 +39,7 @@ import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 import ButtonSetting from './ButtonSetting.vue';
 import AddPlaylist from '../popup/AddPlaylist.vue';
+import ChangePlaylist from '../popup/ChangePlaylist.vue';
 
 import emitter from '../../eventBus';
 
@@ -21,6 +47,7 @@ const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 const isAddPlaylist = ref(false);
+const isChangePlaylist = ref(false);
 
 import AddVideoIcon from '../../assets/icon/setting/add-playlist.svg'
 import ShowVideoIcon from '../../assets/icon/setting/show-video.svg'
@@ -55,9 +82,14 @@ const addPlaylist = () => {
     isAddPlaylist.value = true;
 }
 
+const changePlaylist = () => {
+    isChangePlaylist.value = true;
+}
+
 // Hàm để đóng popup AddPlaylist
 const closePopup = () => {
     isAddPlaylist.value = false;
+    isChangePlaylist.value = false;
 }
 
 // Hàm tính toán và cập nhật vị trí popup

@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import emitter from '../../eventBus';
 
 const props = defineProps({
@@ -29,7 +28,7 @@ const props = defineProps({
     onClick: Function,
 });
 
-const emit = defineEmits(['add-playlist'])
+const emit = defineEmits(['add-playlist', 'change-playlist'])
 
 // Gửi sự kiện click cho PlaylistVideo
 const handleClick = (event) => {
@@ -45,6 +44,11 @@ const handleClick = (event) => {
             column: props.column,
             order: props.order,
         });
+    }
+
+    // Thay đổi playlist
+    if (props.id === 3) {
+        emit('change-playlist');
     }
 }
 </script>
