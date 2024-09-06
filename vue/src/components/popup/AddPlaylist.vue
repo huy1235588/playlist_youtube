@@ -19,8 +19,8 @@
                     ></path>
                 </svg>
             </button>
-
-            <p class="playlist-add-status">
+            <Loading v-if="isLoading" />
+            <p v-else class="playlist-add-status" :class="isAdded">
                 {{ playlistAddStatus }}
             </p>
         </div>
@@ -31,7 +31,7 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import InputForm from '../input/InputForm.vue';
-import emitter from '../../eventBus';
+import Loading from '../loading/Loading.vue';
 
 const props = defineProps({
     labelH2: {
@@ -41,6 +41,8 @@ const props = defineProps({
 })
 
 const playlistAddStatus = ref('');
+const isLoading = ref(true);
+const isAdded = ref(false);
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
@@ -52,11 +54,10 @@ const closePopup = () => {
 
 // Xử lý sự kiện submit form
 const onsubmit = async (inputValue) => {
-    // Gọi api để add playlist vào database
+    // hiện Loading-page trong khi đợi
+    isLoading.value = true;
     try {
-        // hiện Loading-page trong khi đợi
-        emitter.emit('loading-page', true);
-        // Gọi api
+        // Gọi api để add playlist vào database
         const response = await axios.get('/api/video/fetch', {
             params: {
                 inputValue: inputValue
@@ -65,14 +66,16 @@ const onsubmit = async (inputValue) => {
 
         const data = await response.data;
 
-        console.log(data)
+        setTimeout(() => {
 
-        if (data.isAdded) {
-            playlistAddStatus.value = "Added playlist successfully";
-        }
-        else {
-            playlistAddStatus.value = await response.data.message;
-        }
+            if (data.isAdded) {
+                playlistAddStatus.value = "Added playlist successfully";
+            }
+            else {
+                playlistAddStatus.value =  response.data.message;
+            }
+        }, 7000)
+        
 
     } catch (error) {
         // Xử lý lỗi mạng
@@ -80,7 +83,7 @@ const onsubmit = async (inputValue) => {
             errorMessage: error.message
         });
     } finally {
-        emitter.emit('loading-page', false);
+       isLoading.value = false;
     }
 }
 
@@ -105,11 +108,10 @@ const onsubmit = async (inputValue) => {
 .popup-content {
     position: relative;
     background-color: rgb(87, 87, 87);
-    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 90%;
-    height: 35%;
+    height: 40%;
     text-align: center;
 }
 
@@ -154,6 +156,12 @@ const onsubmit = async (inputValue) => {
 }
 
 .playlist-add-status {
+    font-size: 20px;
+    font-weight: 700;
+    color: rgb(255, 0, 0);
+}
+
+.playlist-add-status.isAdded {
     color: rgb(22, 222, 22);
 }
 </style>
