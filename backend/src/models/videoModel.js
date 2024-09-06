@@ -36,7 +36,6 @@ class VideoModel {
                 .input('Thumbnail', sql.NVarChar(255), video.thumbnails)
                 .input('ViewCount', sql.BigInt, video.viewCount)
                 .input('Duration', sql.VarChar(20), video.duration)
-                .input('AddAt', sql.DateTime, new Date(video.addAt).toISOString().slice(0, 19).replace('T', ' '))
                 .input('ChannelId', sql.NVarChar(50), video.channelId)
                 .input('PlaylistId', sql.VarChar(50), video.playlistId)
                 .query(
@@ -158,8 +157,57 @@ class PlaylistModel {
     }
 }
 
+class PlaylistItemsModel {
+    constructor() {
+        this.pool = null;
+    }
+
+    // Tạo kết nối đến SQL Server nếu chưa có
+    async connect() {
+        if (!this.pool) {
+            this.pool = await sql.connect(sqlConfig);
+        }
+    }
+
+    //  Đóng kết nối khi không còn sử dụng nữa.
+    async disconnect() {
+        if (this.pool) {
+            await this.pool.close();
+            this.pool = null;
+        }
+    }
+
+    // Insert vào bảng
+    async add(playlistItems) {
+        try {
+            // Kết nối đến SQL Server
+            await this.connect(sqlConfig);
+            const request = this.pool.request();
+
+            // Chèn dữ liệu vào bảng
+            await request
+                .input('VideoId', sql.VarChar(50), playlistItems.videoId)
+                .input('PlaylistId', sql.VarChar(50), playlistItems.playlistId)
+                .input('AddAt', sql.DateTime, new Date(playlistItems.addAt).toISOString().slice(0, 19).replace('T', ' '))
+                .input('IndexVideo', sql.Int, playlistItems.indexVideo)
+                .query(
+                    `INSERT INTO Videos VALUES 
+                    (@VideoId, @PlaylistId, @AddAt, @IndexVideo)`,
+                );
+
+        } catch (error) {
+            throw new Error(`Error saving to SQL Server ${error.message}`);
+        } finally {
+            // Đảm bảo kết nối được đóng dù có lỗi xảy ra hay không.
+            await this.disconnect();
+        }
+
+    }
+}
+
 module.exports = {
     VideoModel,
     ChannelModel,
     PlaylistModel,
+    PlaylistItemsModel,
 };
