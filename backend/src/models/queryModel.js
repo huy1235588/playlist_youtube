@@ -79,11 +79,7 @@ class QueryModel {
 
             // Chọn dữ liệu từ bảng Video nhưng lọc các cột Title = null
             const result = await request
-                .query(`select *
-                        from videos
-                        where Title is null
-                        order by IndexVideo desc`
-                );
+                .query(`exec [Get Hidden Video Procedure]`);
 
             // Trả về dữ liệu
             return result.recordset;

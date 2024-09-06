@@ -11,7 +11,7 @@ const fetchAndSaveVideos = async (req, res) => {
         const playlistItemsModel = new PlaylistItemsModel();
 
         // Lấy playlistId từ input
-        let playlistId = req.query.inputValue; 
+        let playlistId = req.query.inputValue;
         // Format playlistId
         playlistId = playlistId.split("?list=")[1];
 
@@ -23,7 +23,10 @@ const fetchAndSaveVideos = async (req, res) => {
         // Lấy playlistId, videoId, addAt, indexVideo của toàn bộ videos
         const playlistItems = await youtubeService.getPlaylistItems(playlistId);
 
-        for (const item of playlistItems.items){
+        // Khởi tạo indexVideo
+        let indexVideo = playlistItems.totalResults;
+
+        for (const item of playlistItems.items) {
             // Lấy channelId
             const channelId = item.channelId;
             //  Kiểm tra xem có tồn tại channelId
@@ -40,7 +43,9 @@ const fetchAndSaveVideos = async (req, res) => {
             await videoModel.add(video);
 
             // Lưu vào bảng PlaylistItems
-            playlistItemsModel.add(item, playlistId);
+            playlistItemsModel.add(item, playlistId, indexVideo);
+            // Cập nhật indexvideo
+            indexVideo -= 1;
         }
 
         res.status(200).json({ message: 'Videos fetched and saved successfully' });

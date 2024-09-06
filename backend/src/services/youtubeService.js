@@ -121,7 +121,7 @@ const getPlaylistItems = async (playlistId) => {
     // Khai báo biến mảng videos
     let videos = [];
     // Khai báo biến indexVideo
-    let indexVideo;
+    let totalResults;
 
     try {
         do {
@@ -142,7 +142,7 @@ const getPlaylistItems = async (playlistId) => {
             const Videos = response.data.items;
 
             // Lấy tổng video
-            indexVideo = response.data.pageInfo.totalResults;
+            totalResults = response.data.pageInfo.totalResults;
 
             // Lặp từng phần tử trong playlists
             for (const item of Videos) {
@@ -155,12 +155,9 @@ const getPlaylistItems = async (playlistId) => {
                 videos.push({
                     videoId: videoId,
                     addAt: videoPublishedAt,
-                    indexVideo: indexVideo,
                     channelId: item.snippet.videoOwnerChannelId,
                 });
 
-                // Cập nhật indexvideo
-                indexVideo -= 1;
             }
 
             // Cập nhật token cho trang tiếp theo
@@ -171,6 +168,7 @@ const getPlaylistItems = async (playlistId) => {
         // Trả về dữ liệu
         return {
             playlistId: playlistId,
+            totalResults: totalResults,
             items: videos,
         };
 

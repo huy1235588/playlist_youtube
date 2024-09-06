@@ -178,7 +178,7 @@ class PlaylistItemsModel {
     }
 
     // Insert vào bảng
-    async add(playlistItems, playlistId) {
+    async add(playlistItems, playlistId, indexVideo) {
         try {
             // Kết nối đến SQL Server
             await this.connect(sqlConfig);
@@ -189,7 +189,7 @@ class PlaylistItemsModel {
                 .input('VideoId', sql.VarChar(50), playlistItems.videoId)
                 .input('PlaylistId', sql.VarChar(50), playlistId)
                 .input('AddAt', sql.DateTime, new Date(playlistItems.addAt).toISOString().slice(0, 19).replace('T', ' '))
-                .input('IndexVideo', sql.Int, playlistItems.indexVideo)
+                .input('IndexVideo', sql.Int, indexVideo)
                 .query(
                     `INSERT INTO PlaylistItems VALUES 
                     (@VideoId, @PlaylistId, @AddAt, @IndexVideo)`,
