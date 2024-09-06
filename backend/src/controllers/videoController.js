@@ -1,6 +1,6 @@
 const youtubeService = require('../services/youtubeService');
 
-const { VideoModel, ChannelModel, PlaylistModel } = require('../models/videoModel');
+const { VideoModel, ChannelModel, PlaylistModel, PlaylistItemsModel, PlaylistItemsModel } = require('../models/videoModel');
 
 const fetchAndSaveVideos = async (req, res) => {
     try {
@@ -8,6 +8,7 @@ const fetchAndSaveVideos = async (req, res) => {
         const videoModel = new VideoModel();
         const channelModel = new ChannelModel();
         const playlistModel = new PlaylistModel();
+        const playlistItemsModel = new PlaylistItemsModel();
 
         // Lấy playlistId từ input
         let playlistId = req.query.inputValue; 
@@ -32,6 +33,9 @@ const fetchAndSaveVideos = async (req, res) => {
                 // Lưu channel vào database
                 channelModel.add(channel);
             }
+
+            // Lưu vào bảng PlaylistItems
+            playlistItemsModel.add(item, playlistId);
         }
 
         // Lấy thông tin chi tiết của playlist
