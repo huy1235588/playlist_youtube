@@ -57,7 +57,7 @@ const onsubmit = (inputValue) => {
 }
 </script>
 
-<style>
+<style scoped>
 /* Định dạng nền mờ khi hiển thị popup */
 .popup-overlay {
     position: fixed;
@@ -74,8 +74,8 @@ const onsubmit = (inputValue) => {
 
 /* Định dạng nội dung của popup */
 .popup-content {
+    position: relative;
     background-color: rgb(87, 87, 87);
-    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 90%;
@@ -92,10 +92,9 @@ const onsubmit = (inputValue) => {
     position: absolute;
     display: flex;
     align-items: center;
-    top: 11.325rem;
-    right: 18.75rem;
+    top: 0;
+    right: 0;
     padding: 10px;
-    margin-top: 20px;
     border-top-right-radius: 8px;
     background-color: transparent;
     cursor: pointer;
