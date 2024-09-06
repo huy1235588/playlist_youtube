@@ -40,7 +40,7 @@ class VideoModel {
                 .input('PlaylistId', sql.VarChar(50), video.playlistId)
                 .query(
                     `INSERT INTO Videos VALUES 
-                    (@VideoId, @Title, @PublishedAt, @Thumbnail, @ViewCount, @Duration, @AddAt, @ChannelId, @PlaylistId)`,
+                    (@VideoId, @Title, @PublishedAt, @Thumbnail, @ViewCount, @Duration, @ChannelId, @PlaylistId)`,
                 );
 
         } catch (error) {
@@ -191,12 +191,12 @@ class PlaylistItemsModel {
                 .input('AddAt', sql.DateTime, new Date(playlistItems.addAt).toISOString().slice(0, 19).replace('T', ' '))
                 .input('IndexVideo', sql.Int, playlistItems.indexVideo)
                 .query(
-                    `INSERT INTO Videos VALUES 
+                    `INSERT INTO PlaylistItems VALUES 
                     (@VideoId, @PlaylistId, @AddAt, @IndexVideo)`,
                 );
 
         } catch (error) {
-            throw new Error(`Error saving to SQL Server ${error.message}`);
+            throw new Error(`Error saving to SQL Server: ${error.message}`);
         } finally {
             // Đảm bảo kết nối được đóng dù có lỗi xảy ra hay không.
             await this.disconnect();

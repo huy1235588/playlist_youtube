@@ -7,8 +7,8 @@ app.use(cors());
 app.use(express.json());
 
 // Sử dụng videoRoutes
-// const videoRoutes = require('./src/routes/videoRoutes');
-// app.use('/api', videoRoutes);
+const videoRoutes = require('./src/routes/videoRoutes');
+app.use('/api', videoRoutes);
 
 // Sử dụng getVideoRoutes
 const getVideoRoutes = require('./src/routes/getVideoRoutes');

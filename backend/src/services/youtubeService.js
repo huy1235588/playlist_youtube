@@ -30,7 +30,7 @@ const getChannelDetails = async (channelId) => {
             };
         }
     } catch (error) {
-        throw new Error(`Error  fetching playlist videos: ${error.message}`);
+        throw new Error(`Error fetching channel: ${error.message}`);
     }
 }
 
@@ -47,10 +47,10 @@ const getVideoDetails = async (videoId, playlistId) => {
             }
         });
 
-        const video = response.data.items;
+        const video = response.data.items[0];
 
         // Kiểm tra video có bị xóa không
-        if (video.length === 0) {
+        if (video) {
             // Trả về thông tin chi tiết video
             return {
                 videoId: videoId,
@@ -78,7 +78,7 @@ const getVideoDetails = async (videoId, playlistId) => {
         }
 
     } catch (error) {
-        throw new Error(`Error  fetching playlist videos: ${error.message}`);
+        throw new Error(`Error fetching videos: ${error.message}`);
     }
 }
 
@@ -109,11 +109,11 @@ const getPlaylistDetails = async (playlistId) => {
         }
 
     } catch (error) {
-        throw new Error(`Error  fetching playlist videos: ${error.message}`);
+        throw new Error(`Error fetching playlist videos: ${error.message}`);
     }
 }
 
-const getPlaylistVideos = async (playlistId) => {
+const getPlaylistItems = async (playlistId) => {
     // Làm giá trị của tham số pageToken 
     // để truy xuất trang tiếp theo trong tập kết quả.
     // https://developers.google.com/youtube/v3/docs/playlistItems/list#properties
@@ -148,14 +148,15 @@ const getPlaylistVideos = async (playlistId) => {
             for (const item of Videos) {
                 // Lấy ID của video
                 const videoId = item.contentDetails.videoId;
-                // Lấy ngày phát hành của video
-                const videoPublishedAt = item.contentDetails.videoPublishedAt;
+                // Lấy ngày thêm video vào playlist
+                const videoPublishedAt = item.snippet.publishedAt;
 
                 // Thêm dữ liệu vào mảng videos
                 videos.push({
                     videoId: videoId,
                     addAt: videoPublishedAt,
                     indexVideo: indexVideo,
+                    channelId: item.snippet.videoOwnerChannelId,
                 });
 
                 // Cập nhật indexvideo
@@ -163,7 +164,7 @@ const getPlaylistVideos = async (playlistId) => {
             }
 
             // Cập nhật token cho trang tiếp theo
-            // nextPageToken = response.data.nextPageToken;
+            nextPageToken = response.data.nextPageToken;
 
         } while (nextPageToken); // Tiếp tục gửi yêu cầu API cho đến khi không còn nextPageToken,
 
@@ -174,12 +175,12 @@ const getPlaylistVideos = async (playlistId) => {
         };
 
     } catch (error) {
-        throw new Error(`Error  fetching playlist videos: ${error.message}`);
+        throw new Error(`Error fetching playlistItems videos: ${error.message}`);
     }
 }
 
 module.exports = {
-    getPlaylistVideos,
+    getPlaylistItems,
     getChannelDetails,
     getVideoDetails,
     getPlaylistDetails,

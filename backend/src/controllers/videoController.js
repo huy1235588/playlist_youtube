@@ -1,6 +1,6 @@
 const youtubeService = require('../services/youtubeService');
 
-const { VideoModel, ChannelModel, PlaylistModel, PlaylistItemsModel, PlaylistItemsModel } = require('../models/videoModel');
+const { VideoModel, ChannelModel, PlaylistModel, PlaylistItemsModel } = require('../models/videoModel');
 
 const fetchAndSaveVideos = async (req, res) => {
     try {
@@ -15,34 +15,33 @@ const fetchAndSaveVideos = async (req, res) => {
         // Format playlistId
         playlistId = playlistId.split("?list=")[1];
 
+        // Lấy thông tin chi tiết của playlist
+        const playlist = await youtubeService.getPlaylistDetails(playlistId);
+        // Lưu các playlist vào bảng playlists
+        await playlistModel.add(playlist);
+
         // Lấy playlistId, videoId, addAt, indexVideo của toàn bộ videos
-        const playlistItems = await youtubeService.getPlaylistVideos(playlistId);
+        const playlistItems = await youtubeService.getPlaylistItems(playlistId);
 
         for (const item of playlistItems.items){
-            // Lấy thông tin chi tiết của video
-            const video = await youtubeService.getVideoDetails(item.videoId, playlistId);
-            // Lưu video vào database
-            videoModel.add(video);
-
-            const channelId = video.channelId;
-
+            // Lấy channelId
+            const channelId = item.channelId;
             //  Kiểm tra xem có tồn tại channelId
             if (channelId) {
                 // Lấy thông tin chi tiết của channel
-                const channel = await youtubeService.getChannelDetails(video.channelId);
+                const channel = await youtubeService.getChannelDetails(channelId);
                 // Lưu channel vào database
-                channelModel.add(channel);
+                await channelModel.add(channel);
             }
+
+            // Lấy thông tin chi tiết của video
+            const video = await youtubeService.getVideoDetails(item.videoId, playlistId);
+            // Lưu video vào database
+            await videoModel.add(video);
 
             // Lưu vào bảng PlaylistItems
             playlistItemsModel.add(item, playlistId);
         }
-
-        // Lấy thông tin chi tiết của playlist
-        const playlist = await youtubeService.getPlaylistDetails(playlistId);
-
-        // Lưu các playlist vào bảng playlists
-        playlistModel.add(playlist);
 
         res.status(200).json({ message: 'Videos fetched and saved successfully' });
 
