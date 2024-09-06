@@ -29,9 +29,15 @@ const props = defineProps({
     onClick: Function,
 });
 
+const emit = defineEmits(['add-playlist'])
+
 // Gửi sự kiện click cho PlaylistVideo
 const handleClick = (event) => {
-
+    // Thêm playlist vào database
+    if (props.id === 1) {
+        emit('add-playlist');
+    }
+    
     // Hiện video bị ẩn
     if (props.id === 2) {
         // Phát sự kiện filter để gọi api

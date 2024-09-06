@@ -1,10 +1,10 @@
 <template>
     <aside class="popup-overlay">
         <div class="popup-content" @click.stop>
-            <h2 class="popup-h2">{{ videoId }}</h2>
+            <h2 class="popup-h2">{{ labelH2 }}</h2>
             <InputForm
-                label="Nhập URL video:"
-                placeholder="https://www.youtube.com/watch?v="
+                label="Nhập URL playlist:"
+                placeholder="https://www.youtube.com/playlist?list="
                 @inputValue="(payload) => onsubmit(payload.inputValue)"
             />
             <button class="close-popup" @click="closePopup">
@@ -32,16 +32,14 @@ import { ref } from 'vue';
 import InputForm from '../input/InputForm.vue';
 
 const props = defineProps({
-    indexVideo: {
-        type: Number,
+    labelH2: {
+        type: String,
         Required: true,
     },
 })
 
 const inputValue = ref('');
 const outputValue = ref('');
-
-const videoId = document.querySelector(`#video-${props.indexVideo} #video-title`).textContent;
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
@@ -55,6 +53,7 @@ const closePopup = () => {
 const onsubmit = (inputValue) => {
     outputValue.value = inputValue;
 }
+
 </script>
 
 <style>
