@@ -1,6 +1,6 @@
 <template>
     <main id="contents" className="contents">
-        <NoPlaylistVideo v-if="!isNoPlaylist" />
+        <NoPlaylistVideo v-if="isNoPlaylist" />
         <VideoYoutube
             v-else-if="!isShowHiddenVideo"
             v-for="(item, index) in data"
@@ -33,7 +33,26 @@ const isNoPlaylist = ref(false);
 
 // Hàm để lấy playlist
 const getPlaylist = async (payload = {}) => {
-    isNoPlaylist.value = true;
+    isNoPlaylist.value = true; // set 
+
+    try {
+        // Gọi api
+        const response = await axios.get('/api/playlist/get');
+        
+        // Lấy dữ liệu
+        const playlists = await response.data.playlists;
+
+        // Kiểm tra nếu có playlist trong database
+        if (playlists.length > 0) {
+            isNoPlaylist.value = false;
+        }
+
+    } catch (error) {
+         // Xử lý lỗi mạng
+         emitter.emit('error-page', {
+            errorMessage: error.message
+        }); 
+    }
 
     if (!isNoPlaylist.value) {
         const { column = "AddedAt", order = "Desc" } = payload;
@@ -119,14 +138,14 @@ const showHiddenVideo = async () => {
 }
 
 onMounted(() => {
-    emitter.on('filter', getPlaylist); // Lấy dữ liệu sự kiện lắng nghe "filter"
+    getPlaylist();
+    emitter.on('filter', fetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('show-hidden-video', showHiddenVideo); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('search-video', searchVideo); // Lấy dữ liệu sự kiện lắng nghe "search-video"
 });
 
 onUnmounted(() => {
-    fetchData();
-    emitter.off('filter', getPlaylist);
+    getPlaylist();
     emitter.off('filter', fetchData);
     emitter.off('show-hidden-video', showHiddenVideo);
     emitter.off('search-video', searchVideo);

@@ -1,6 +1,5 @@
-const { QueryModel } = require('../models/queryModel');
-
 const getVideoInfo = async (req, res) => {
+    const { QueryModel } = require('../models/queryModel');
     try {
         // Khởi tạo đối tượng
         const queryModel = new QueryModel();
