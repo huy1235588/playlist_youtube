@@ -1,13 +1,15 @@
 <template>
-    <main id="contents" className="contents">
+    <main id="content" className="contents">
         <NoPlaylistVideo v-if="isNoPlaylist" />
         <section v-else-if="isPlaylistYoutube">
             <h1 class="h1-text">Playlist</h1>
-            <PlaylistYoutube
-                v-for="(itemPlaylist, indexPlaylist) in dataPlaylist"
-                :key="indexPlaylist"
-                :data="itemPlaylist"
-            />
+            <div id="contents">
+                <PlaylistYoutube
+                    v-for="(itemPlaylist, indexPlaylist) in dataPlaylist"
+                    :key="indexPlaylist"
+                    :data="itemPlaylist"
+                />
+            </div>
         </section>
         <VideoYoutube
             v-else-if="!isShowHiddenVideo"
@@ -168,5 +170,9 @@ onUnmounted(() => {
 <style scoped>
 #content {
     width: 100%;
+}
+
+#contents {
+    display: flex;
 }
 </style>
