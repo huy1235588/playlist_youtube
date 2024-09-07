@@ -1,6 +1,14 @@
 <template>
     <main id="contents" className="contents">
         <NoPlaylistVideo v-if="isNoPlaylist" />
+        <section v-else-if="isPlaylistYoutube">
+            <h1 class="h1-text">Playlist</h1>
+            <PlaylistYoutube
+                v-for="(itemPlaylist, indexPlaylist) in dataPlaylist"
+                :key="indexPlaylist"
+                :data="itemPlaylist"
+            />
+        </section>
         <VideoYoutube
             v-else-if="!isShowHiddenVideo"
             v-for="(item, index) in data"
@@ -24,12 +32,15 @@ import emitter from '../../eventBus';
 import VideoYoutube from './VideoYoutube.vue';
 import HiddenVideo from './HiddenVideo.vue';
 import NoPlaylistVideo from './NoPlaylistVideo.vue';
+import PlaylistYoutube from './PlaylistYoutube.vue';
 
 const data = ref([]); // giữ dữ liệu video
+const dataPlaylist = ref([]); // giữ dữ liệu playlists
 const dataHidden = ref([]); // giữ dữ liệu video bị ẩn
 const input = ref('');
 const isShowHiddenVideo = ref(false);
 const isNoPlaylist = ref(false);
+const isPlaylistYoutube = ref(false);
 
 // Hàm để lấy playlist
 const getPlaylist = async (payload = {}) => {
@@ -45,6 +56,8 @@ const getPlaylist = async (payload = {}) => {
         // Kiểm tra nếu có playlist trong database
         if (playlists.length > 0) {
             isNoPlaylist.value = false;
+            isPlaylistYoutube.value = true;
+            dataPlaylist.value = playlists || [];
         }
 
     } catch (error) {
@@ -54,13 +67,13 @@ const getPlaylist = async (payload = {}) => {
         }); 
     }
 
-    if (!isNoPlaylist.value) {
-        const { column = "AddedAt", order = "Desc" } = payload;
-        fetchData({
-            column: column,
-            order: order,
-        })
-    }
+    // if (!isNoPlaylist.value) {
+    //     const { column = "AddedAt", order = "Desc" } = payload;
+    //     fetchData({
+    //         column: column,
+    //         order: order,
+    //     })
+    // }
 }
 
 // Hàm gọi api để lấy dữ liệu từ DB

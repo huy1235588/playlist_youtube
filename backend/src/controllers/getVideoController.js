@@ -9,7 +9,8 @@ const getVideoInfo = async (req, res) => {
             req.query.start,
             req.query.end,
             req.query.column,
-            req.query.order
+            req.query.order,
+            req.query.playlistId,
         )
 
         // Trả về giá trị

@@ -88,7 +88,7 @@ const getPlaylistDetails = async (playlistId) => {
         const response = await axios.get(`${YOUTUBE_API_BASE_URL}/playlists`, {
             params: {
                 // https://developers.google.com/youtube/v3/docs/playlists#snippet
-                part: 'snippet',
+                part: 'snippet, contentDetails',
                 id: playlistId, // Id video muốn lấy
                 key: config.youtubeApiKey
             }
@@ -104,6 +104,7 @@ const getPlaylistDetails = async (playlistId) => {
                 publishedAt: playlist.snippet.publishedAt,
                 thumbnails: playlist.snippet.thumbnails.high.url,
                 channelTitle: playlist.snippet.channelTitle,
+                itemCount: playlist.contentDetails.itemCount,
             };
         }
 
