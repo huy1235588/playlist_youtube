@@ -8,6 +8,9 @@
                     v-for="(itemPlaylist, indexPlaylist) in dataPlaylist"
                     :key="indexPlaylist"
                     :data="itemPlaylist"
+                    @select-playlist="
+                        (payload) => selectPlaylist(payload.playlistId)
+                    "
                 />
             </div>
         </section>
@@ -44,46 +47,47 @@ const isShowHiddenVideo = ref(false);
 const isNoPlaylist = ref(false);
 const isPlaylistYoutube = ref(false);
 
+const playlistId = ref(''); // Giữ playlistId
+
+const selectPlaylist = (PlaylistId) => {
+    playlistId.value = PlaylistId;
+    isShowHiddenVideo.value = false;
+    isPlaylistYoutube.value = false;
+
+    fetchData();
+}
+
 // Hàm để lấy playlist
-const getPlaylist = async (payload = {}) => {
+const getPlaylist = async () => {
     isNoPlaylist.value = true; // set 
 
     try {
         // Gọi api
         const response = await axios.get('/api/playlist/get');
-        
+
         // Lấy dữ liệu
         const playlists = await response.data.playlists;
 
         // Kiểm tra nếu có playlist trong database
         if (playlists.length > 0) {
-            isNoPlaylist.value = false;
             isPlaylistYoutube.value = true;
+            isNoPlaylist.value = false; // set 
             dataPlaylist.value = playlists || [];
         }
 
     } catch (error) {
-         // Xử lý lỗi mạng
-         emitter.emit('error-page', {
+        // Xử lý lỗi mạng
+        emitter.emit('error-page', {
             errorMessage: error.message
-        }); 
+        });
     }
-
-    // if (!isNoPlaylist.value) {
-    //     const { column = "AddedAt", order = "Desc" } = payload;
-    //     fetchData({
-    //         column: column,
-    //         order: order,
-    //     })
-    // }
 }
 
 // Hàm gọi api để lấy dữ liệu từ DB
 const fetchData = async (payload = {}) => {
     try {
-        isShowHiddenVideo.value = false;
-
         const { column = "AddedAt", order = "Desc" } = payload;
+
 
         // Gọi API backend 
         const response = await axios.get("/api/video/get", {
@@ -92,6 +96,7 @@ const fetchData = async (payload = {}) => {
                 end: 50,
                 column: column,
                 order: order,
+                playlistId: playlistId.value,
             }
         });
 

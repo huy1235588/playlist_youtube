@@ -4,6 +4,7 @@
         class="playlist-item"
         @mouseover="isHover = true"
         @mouseleave="isHover = false"
+        @click="selectPlaylist"
     >
         <div id="content">
             <div id="thumbnail-container">
@@ -63,7 +64,7 @@
                                     <path d="m7 4 12 8-12 8V4z"></path>
                                 </svg>
                             </div>
-                            <span class="thumbnail-hover-text">Xem tất cả</span>
+                            <span class="thumbnail-hover-text no-select">Xem tất cả</span>
                         </div>
                     </div>
                 </a>
@@ -92,7 +93,10 @@
                     </a>
                     <div id="menu">
                         <!-- <p>Go entire playlist video</p> -->
-                        <PlaylistMenu :indexVideo="playlistId" />
+                        <PlaylistMenu
+                            @click.stop
+                            :indexVideo="playlistId"
+                        />
                     </div>
                 </h3>
                 <!-- Tên channel -->
@@ -111,6 +115,7 @@
                                 <a v-if="notFound" href=""></a>
                                 <a
                                     v-else
+                                    class="no-select"
                                     :href="channelId"
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -150,6 +155,8 @@ const notFound = ref('');
 const isHover = ref(false);
 const channel = ref([]);
 
+const emit = defineEmits(['select-playlist']);
+
 function formatChannelId(id) {
     return 'https://youtube.com/channel/' + id;
 }
@@ -181,14 +188,17 @@ async function formatData() {
         channelTitle.value = props.data.ChannelTitle;
         itemCount.value = props.data.ItemCount;
 
-        // Lấy khoảng thời gian phát hành đến hiện tại
-        publishedAt.value = props.data.PublishedAt;
-
         notFound.value = false;
     }
     else {
         notFound.value = true;
     }
+}
+
+function selectPlaylist() {
+    emit('select-playlist', {
+        playlistId: props.data.PlaylistId,
+    });
 }
 
 onMounted(() => {
