@@ -103,6 +103,7 @@ const getPlaylistDetails = async (playlistId) => {
                 title: playlist.snippet.title,
                 publishedAt: playlist.snippet.publishedAt,
                 thumbnails: playlist.snippet.thumbnails.high.url,
+                channelId: playlist.snippet.channelId,
                 channelTitle: playlist.snippet.channelTitle,
                 itemCount: playlist.contentDetails.itemCount,
             };

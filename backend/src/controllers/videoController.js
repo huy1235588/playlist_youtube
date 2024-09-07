@@ -42,6 +42,8 @@ const fetchAndSaveVideos = async (req, res) => {
         const playlist = await youtubeService.getPlaylistDetails(playlistId);
         // Lưu các playlist vào bảng playlists
         await playlistModel.add(playlist);
+        // Thêm thông chi tiết của kênh playlist vào database;
+        await channelModel.add(playlist.channelId);
 
         // Lấy playlistId, videoId, addAt, indexVideo của toàn bộ videos
         const playlistItems = await youtubeService.getPlaylistItems(playlistId);

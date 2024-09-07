@@ -149,11 +149,12 @@ class PlaylistModel {
                 .input('Title', sql.NVarChar(255), playlist.title)
                 .input('PublishedAt', sql.DateTime, new Date(playlist.publishedAt).toISOString().slice(0, 19).replace('T', ' '))
                 .input('Thumbnails', sql.NVarChar(255), playlist.thumbnails)
+                .input('ChannelId', sql.NVarChar(50), playlist.ChannelId)
                 .input('ChannelTitle', sql.NVarChar(255), playlist.channelTitle)
                 .input('ItemCount', sql.Int, playlist.ItemCount)
                 .query(
                     `INSERT INTO Playlists
-                    VALUES (@PlaylistId, @Title, @PublishedAt, @Thumbnails, @ChannelTitle, @ItemCount)`,
+                    VALUES (@PlaylistId, @Title, @PublishedAt, @Thumbnails, @ChannelId, @ChannelTitle, @ItemCount)`,
                 );
 
         } catch (error) {
