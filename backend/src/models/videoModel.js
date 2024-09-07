@@ -195,13 +195,14 @@ class PlaylistItemsModel {
 
             // Chèn dữ liệu vào bảng
             await request
+                .input('Id', sql.VarChar(100), playlistItems.id)
                 .input('VideoId', sql.VarChar(50), playlistItems.videoId)
                 .input('PlaylistId', sql.VarChar(50), playlistId)
                 .input('AddAt', sql.DateTime, new Date(playlistItems.addAt).toISOString().slice(0, 19).replace('T', ' '))
                 .input('IndexVideo', sql.Int, indexVideo)
                 .query(
                     `INSERT INTO PlaylistItems VALUES 
-                    (@VideoId, @PlaylistId, @AddAt, @IndexVideo)`,
+                    (@Id, @VideoId, @PlaylistId, @AddAt, @IndexVideo)`,
                 );
 
         } catch (error) {

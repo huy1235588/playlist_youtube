@@ -154,6 +154,7 @@ const getPlaylistItems = async (playlistId) => {
 
                 // Thêm dữ liệu vào mảng videos
                 videos.push({
+                    id: item.id,
                     videoId: videoId,
                     addAt: videoPublishedAt,
                     channelId: item.snippet.videoOwnerChannelId,
