@@ -120,7 +120,8 @@ const searchVideo = async (payload) => {
         try {
             const response = await axios.get('/api/video/search', {
                 params: {
-                    input: input.value
+                    input: input.value,
+                    playlistId: playlistId.value,
                 }
             });
 
@@ -144,7 +145,11 @@ const showHiddenVideo = async () => {
     try {
         isShowHiddenVideo.value = !isShowHiddenVideo.value;
 
-        const response = await axios.get('/api/video/get/hidden-video');
+        const response = await axios.get('/api/video/get/hidden-video',{
+            params: {
+                playlistId: playlistId.value,
+            }
+        });
 
         // Cập nhật dữ liệu với các video đã tải về
         dataHidden.value = await response.data.videos;

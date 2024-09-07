@@ -6,7 +6,9 @@ const getHiddenVideo = async (req, res) => {
         const queryModel = new QueryModel();
 
         // Lấy video từ datbase
-        const videos = await queryModel.selectHiddenVideo()
+        const videos = await queryModel.selectHiddenVideo(
+            req.query.playlistId
+        )
 
         // Trả về giá trị
         res.json({

@@ -53,7 +53,7 @@ class QueryModel {
     }
 
     // Tìm video theo tên
-    async searchVideo(input) {
+    async searchVideo(input, playlistId) {
         try {
             await this.connect();
             const request = this.pool.request();
@@ -61,7 +61,8 @@ class QueryModel {
             // Chọn dữ liệu từ procedure Display50Video
             const result = await request
                 .input('input', sql.VarChar, input)
-                .query(`exec [Search 50 Videos By TitleVideo] @input`);
+                .input('playlistId', sql.VarChar(50), playlistId)
+                .query(`exec [Search 50 Videos By TitleVideo] @input, @playlistId`);
 
             // Trả về dữ liệu nếu có
             return result.recordset;
@@ -74,14 +75,14 @@ class QueryModel {
     }
 
     // Select các video bị lỗi
-    async selectHiddenVideo() {
+    async selectHiddenVideo(playlistId) {
         try {
             await this.connect();
             const request = this.pool.request();
 
             // Chọn dữ liệu từ bảng Video nhưng lọc các cột Title = null
             const result = await request
-                .query(`exec [Get Hidden Video Procedure]`);
+                .query(`exec [Get Hidden Video Procedure] ${playlistId}`);
 
             // Trả về dữ liệu
             return result.recordset;

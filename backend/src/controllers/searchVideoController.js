@@ -1,6 +1,5 @@
-const { QueryModel } = require('../models/queryModel');
-
 const searchVideoTitle = async (req, res) => {
+    const { QueryModel } = require('../models/queryModel');
     try {
         // Khởi tạo đối tượng
         const queryModel = new QueryModel();
@@ -8,6 +7,7 @@ const searchVideoTitle = async (req, res) => {
         // Lấy video từ datbase
         const videos = await queryModel.searchVideo(
             req.query.input,
+            req.query.playlistId,
         )
 
         // Trả về giá trị

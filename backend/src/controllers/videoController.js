@@ -2,9 +2,8 @@ const youtubeService = require('../services/youtubeService');
 
 const { VideoModel, ChannelModel, PlaylistModel, PlaylistItemsModel } = require('../models/videoModel');
 
-const { QueryModel } = require('../models/queryModel');
-
 const fetchAndSaveVideos = async (req, res) => {
+    const { QueryModel } = require('../models/queryModel');
     try {
         // Khởi tạo đối tượng 
         const videoModel = new VideoModel();
