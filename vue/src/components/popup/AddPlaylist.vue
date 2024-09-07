@@ -20,7 +20,11 @@
                 </svg>
             </button>
             <Loading v-if="isLoading" />
-            <p v-else class="playlist-add-status" :class="isAddedStatus">
+            <p
+                v-else
+                class="playlist-add-status"
+                :class="{ isAdded: isAddedStatus }"
+            >
                 {{ playlistAddStatus }}
             </p>
         </div>
@@ -76,6 +80,7 @@ const onsubmit = async (inputValue) => {
             isAddedStatus.value = true;
         }
         else {
+            isAddedStatus.value = false;
             playlistAddStatus.value = response.data.message;
         }
 
