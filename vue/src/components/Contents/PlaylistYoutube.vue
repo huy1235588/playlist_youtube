@@ -38,7 +38,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="thumbnail-hover" :class="{ 'thumbnail-hovered': isHover }">
+                    <div
+                        class="thumbnail-hover"
+                        :class="{ 'thumbnail-hovered': isHover }"
+                    >
                         <div class="thumbnail-hover-overplay">
                             <div class="thumbnail-hover-icon">
                                 <svg
@@ -64,7 +67,47 @@
                     </div>
                 </a>
             </div>
+
+            <div id="meta">
+                <!-- Tên Playlist -->
+                <h3 class="playlist-title-container">
+                    <a
+                        v-if="notFound"
+                        id="playlist-title"
+                        class="error"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        [Not Found]
+                    </a>
+                    <a
+                        v-else
+                        id="playlist-title"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {{ title }}
+                    </a>
+                </h3>
+                <!-- Tên channel -->
+                <div id="channel-name">
+                    <div id="container">
+                        
+                        <div id="text-container">
+                            <div id="text">
+                                <a v-if="notFound" href=""></a>
+                                <a v-else href="">
+                                    {{ channelTitle }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        <!-- <div id="menu">
+            <MenuTask :indexVideo="playlistId" />
+        </div> -->
     </section>
 </template>
 
@@ -118,8 +161,8 @@ onUnmounted(() => {
 
 <style scoped>
 section {
-    width: calc(100% / 4);
-    height: 160px;
+    width: calc(100% / 3);
+    height: 200px;
     margin-right: 20px;
 }
 
@@ -145,9 +188,9 @@ section {
 }
 
 #thumbnail img {
-    width: 288px;
-    height: 214px;
-    margin: -27px 0 0 0;
+    width: 384px;
+    height: 268px;
+    margin: -34px 0 0 0;
 }
 
 /* Item-count */
@@ -201,5 +244,22 @@ section {
 
 .thumbnail-hovered {
     opacity: 1;
+}
+
+/* Meta */
+#meta {
+    cursor: pointer;
+    /* background-color: #000; */
+}
+
+/* Title playlist */
+.playlist-title-container {
+    padding: 10px;
+}
+
+#playlist-title {
+    color: #29911f;
+    font-size: 20px;
+    line-height: 20px;
 }
 </style>
