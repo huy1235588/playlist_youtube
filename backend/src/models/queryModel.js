@@ -114,6 +114,28 @@ class QueryModel {
         }
     }
 
+    // Select channel playlist
+    async getChannelPlaylists() {
+        try {
+            // Kết nối đến SQL Server
+            await this.connect();
+            const request = this.pool.request();
+
+            const result = await request
+                .query(`SELECT * FROM Channels C WHERE EXISTS 
+                    (SELECT 1 FROM Playlists P WHERE P.ChannelId = C.ChannelId);`);
+
+            // Trả về dữ liệu
+            return result.recordset;
+
+        } catch (error) {
+            throw new Error(`Error getting playlists in SQL Server: ${error.message}`);
+        } finally {
+            // Đóng kết nối khi không còn cần thiết
+            await this.disconnect();
+        }
+    }
+
     // Kiểm tra PlaylistId trong bảng Playlist
     async checkExistingPlaylist(PlaylistId) {
         try {
