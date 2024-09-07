@@ -47,6 +47,14 @@ const props = defineProps({
         type: Number,
         required: true,
     },
+    data: {
+        type: Object,
+        required: false,
+    },
+    playlistId: {
+        type: String,
+        required: false,
+    },
 })
 
 // Khởi tạo các biến trạng thái
@@ -73,6 +81,9 @@ const handleClick = (event) => {
     emitter.emit('show-popup', {
         event: event,
         indexVideo: props.indexVideo, // Truyền index
+        playlistItemId: props.data.playlistItemId,
+        playlistId: props.playlistId,
+        videoId: props.data.VideoId,
     });
 
 };

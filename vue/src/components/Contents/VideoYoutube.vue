@@ -92,7 +92,7 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :indexVideo="indexVideo" />
+            <MenuTask :indexVideo="indexVideo" :data="data" :playlistId="playlistId"/>
         </div>
     </section>
 </template>
@@ -116,7 +116,11 @@ const props = defineProps({
     data: {
         type: Object,
         required: true
-    }
+    },
+    playlistId: {
+        type: String,
+        required: true,
+    },
 })
 
 function formatVideoId(id) {
@@ -179,14 +183,14 @@ function formatDuration(duration) {
 function formatData() {
     // Định dạng VideoId
     videoId.value = formatVideoId(props.data.VideoId);
-    
+
     // Kiểm tra video bị xóa
-    if (props.data.Duration !== null) {        
+    if (props.data.Duration !== null) {
         videoTitle.value = props.data.VideoTitle;
         channelTitle.value = props.data.ChannelTitle;
         thumbnails.value = props.data.Thumbnails;
         indexVideo.value = props.data.IndexVideo;
-        
+
         // Định dạng lượt xem
         viewCount.value = formatViewCount(props.data.ViewCount);
         // Định dạng thời lượng video

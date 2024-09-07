@@ -19,12 +19,14 @@
             v-for="(item, index) in data"
             :key="index"
             :data="item"
+            :playlistId="playlistId"
         />
         <hiddenVideo
             v-else
             v-for="(itemHidden, indexHidden) in dataHidden"
             :key="indexHidden"
             :data="itemHidden"
+            :playlistId="playlistId"
         />
     </main>
 </template>

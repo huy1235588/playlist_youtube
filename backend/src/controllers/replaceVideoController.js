@@ -5,6 +5,7 @@ const replaceVideoInPlaylist = async (req, res) => {
     await youtubeAction.deleteVideoFromPlaylist(
         req.query.playlistItemId,
     );
+    
     // Thêm video mới
     await youtubeAction.addVideoToPlaylist(
         req.query.playlistId,

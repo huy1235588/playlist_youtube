@@ -71,7 +71,7 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :indexVideo="indexVideo" />
+            <MenuTask :indexVideo="indexVideo" :data="data" :playlistId="playlistId"/>
         </div>
     </section>
 </template>
@@ -90,7 +90,11 @@ const props = defineProps({
     data: {
         type: Object,
         required: true
-    }
+    },
+    playlistId: {
+        type: String,
+        required: true,
+    },
 })
 
 function formatAddedAt(dateString) {

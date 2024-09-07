@@ -22,6 +22,7 @@
     <ReplaceVideo
         v-if="isReplaceVideo"
         :indexVideo="indexVideo"
+        :dataVideo="dataVideo"
         @click="closePopup"
         @close-popup="closePopup()"
     />
@@ -38,6 +39,7 @@ const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 
 const indexVideo = ref(0);
 const isReplaceVideo = ref(false);
+const dataVideo = ref({});
 
 import ButtonMenu from './ButtonMenu.vue';
 import ReplaceVideo from '../popup/ReplaceVideo.vue';
@@ -129,6 +131,14 @@ const handleResize = () => {
 // Hàm hiện menu popup
 const showPopup = (payload) => {
     indexVideo.value = payload.indexVideo;
+
+    // Lấy dữ liệu của video
+    dataVideo.value = {
+        playlistItemId: payload.playlistItemId,
+        playlistId: payload.playlistId,
+        videoId: payload.videoId,
+    }
+
     const elementTarget = payload.event.currentTarget.id;
 
     // Kiểm tra popup chưa hiển thị

@@ -20,27 +20,40 @@
                 </svg>
             </button>
 
-            <p>
-                {{ outputValue }}
+            <Loading v-if="isLoading" />
+            <p
+                v-else
+                class="video-replace-status"
+                :class="{ isReplaced: isReplacedStatus }"
+            >
+                {{ videoReplaceStatus }}
             </p>
         </div>
     </aside>
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref } from 'vue';
 import InputForm from '../input/InputForm.vue';
+import Loading from '../loading/Loading.vue';
 
 const props = defineProps({
     indexVideo: {
         type: Number,
         Required: true,
     },
+    dataVideo: {
+        type: Object,
+        Required: true,
+    }
 })
 
-const outputValue = ref('');
+const videoReplaceStatus = ref('');
+const isLoading = ref(false);
+const isReplacedStatus = ref(false);
 
-const videoId = document.querySelector(`#video-${props.indexVideo} #video-title`).textContent;
+const videoId = ref('');
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
@@ -50,10 +63,48 @@ const closePopup = () => {
     emit('close-popup');
 }
 
+// Hàm để xử lý data nhận từ sự kiện
+videoId.value = props.dataVideo.videoId;
+
 // Xử lý sự kiện submit form
-const onsubmit = (inputValue) => {
-    outputValue.value = inputValue;
-}
+// const onsubmit = async (inputValue) => {
+//     // hiện Loading-page trong khi đợi
+//     isLoading.value = true;
+
+//     try {
+//         // Gọi api để add playlist vào database
+//         const response = await axios.get('/api/video/replace', {
+//             params: {
+//                 playlistItemId: id,
+//                 playlistId: playlistId,
+//                 videoId: inputValue,
+//             }
+//         });
+
+//         // Lấy trạng thái api
+//         const data = await response.data;
+
+//         // Kiểm tra xem playlist đã được thêm thành công thay chưa
+//         if (data.isAdded) {
+//             playlistAddStatus.value = "Added playlist successfully";
+//             isAddedStatus.value = true;
+//         }
+//         else {
+//             isAddedStatus.value = false;
+//             playlistAddStatus.value = response.data.message;
+//         }
+
+//     } catch (error) {
+//         // Xử lý lỗi mạng
+//         emitter.emit('error-page', {
+//             errorMessage: error.message
+//         });
+
+//     } finally {
+//         isLoading.value = false;
+//     }
+// }
+
 </script>
 
 <style scoped>
@@ -120,5 +171,15 @@ const onsubmit = (inputValue) => {
 .close-popup:hover svg path {
     fill: #3c3c3c;
     stroke: white;
+}
+
+.video-replace-status {
+    font-size: 20px;
+    font-weight: 700;
+    color: rgb(255, 0, 0);
+}
+
+.video-replace-status.isReplaced {
+    color: rgb(22, 222, 22);
 }
 </style>
