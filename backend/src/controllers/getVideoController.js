@@ -25,5 +25,5 @@ const getVideoInfo = async (req, res) => {
 }
 
 module.exports = {
-    getVideoInfo
+    getVideoInfo,
 };

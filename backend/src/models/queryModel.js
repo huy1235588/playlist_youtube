@@ -1,5 +1,6 @@
 const sql = require('mssql');
 const { sqlConfig } = require('../config/db');
+const { trace } = require('../routes/getVideoRoutes');
 
 class QueryModel {
     constructor() {
@@ -91,6 +92,27 @@ class QueryModel {
         }
     }
 
+    // Select playlist
+    async getPlaylists() {
+        try {
+            // Kết nối đến SQL Server
+            await this.connect();
+            const request = this.pool.request();
+
+            const result = await request
+                .query(`SELECT * FROM Playlists`);
+
+            // Trả về dữ liệu
+            return result.recordset;
+
+        } catch (error) {
+            throw new Error(`Error getting playlists in SQL Server: ${error.message}`);
+        } finally {
+            // Đóng kết nối khi không còn cần thiết
+            await this.disconnect();
+        }
+    }
+
     // Kiểm tra PlaylistId trong bảng Playlist
     async checkExistingPlaylist(PlaylistId) {
         try {
@@ -112,7 +134,7 @@ class QueryModel {
             }
 
         } catch (error) {
-            throw new Error(`Error saving to SQL Server: ${error.message}`);
+            throw new Error(`Error checking playlists in SQL Server: ${error.message}`);
         } finally {
             // Đóng kết nối khi không còn cần thiết
             await this.disconnect();
