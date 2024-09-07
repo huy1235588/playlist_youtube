@@ -67,43 +67,43 @@ const closePopup = () => {
 videoId.value = props.dataVideo.videoId;
 
 // Xử lý sự kiện submit form
-// const onsubmit = async (inputValue) => {
-//     // hiện Loading-page trong khi đợi
-//     isLoading.value = true;
+const onsubmit = async (inputValue) => {
+    // hiện Loading-page trong khi đợi
+    isLoading.value = true;
 
-//     try {
-//         // Gọi api để add playlist vào database
-//         const response = await axios.get('/api/video/replace', {
-//             params: {
-//                 playlistItemId: id,
-//                 playlistId: playlistId,
-//                 videoId: inputValue,
-//             }
-//         });
+    try {
+        // Gọi api để add playlist vào database
+        const response = await axios.get('/api/video/replace', {
+            params: {
+                playlistItemId: props.dataVideo.playlistItemId,
+                playlistId: props.dataVideo.playlistId,
+                videoId: inputValue,
+            }
+        });
 
-//         // Lấy trạng thái api
-//         const data = await response.data;
+        // Lấy trạng thái api
+        const data = await response.data;
 
-//         // Kiểm tra xem playlist đã được thêm thành công thay chưa
-//         if (data.isAdded) {
-//             playlistAddStatus.value = "Added playlist successfully";
-//             isAddedStatus.value = true;
-//         }
-//         else {
-//             isAddedStatus.value = false;
-//             playlistAddStatus.value = response.data.message;
-//         }
+        // Kiểm tra xem playlist đã được thêm thành công thay chưa
+        if (data.isAdded) {
+            playlistAddStatus.value = "Added playlist successfully";
+            isAddedStatus.value = true;
+        }
+        else {
+            isAddedStatus.value = false;
+            playlistAddStatus.value = response.data.message;
+        }
 
-//     } catch (error) {
-//         // Xử lý lỗi mạng
-//         emitter.emit('error-page', {
-//             errorMessage: error.message
-//         });
+    } catch (error) {
+        // Xử lý lỗi mạng
+        emitter.emit('error-page', {
+            errorMessage: error.message
+        });
 
-//     } finally {
-//         isLoading.value = false;
-//     }
-// }
+    } finally {
+        isLoading.value = false;
+    }
+}
 
 </script>
 

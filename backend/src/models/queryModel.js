@@ -136,6 +136,36 @@ class QueryModel {
         }
     }
 
+    // Kiểm tra videoId trong bảng Playlist
+    async checkExistingVideoId(VideoId) {
+        try {
+            // Kết nối đến SQL Server
+            await this.connect();
+            const request = this.pool.request();
+
+            console.log(VideoId)
+
+            // Biến iểm tra đã tồn tại PlaylistId trong database
+            const existingChannel = await request
+                .input('CheckVideoId', sql.VarChar(50), VideoId)
+                .query(`SELECT COUNT(*) AS Count FROM Videos WHERE VideoId = @CheckVideoId`);
+
+            // Nếu đã tồn tại, thì return true
+            if (existingChannel.recordset[0].Count === 0) {
+                return false;
+            }
+            else {
+                return true;
+            }
+
+        } catch (error) {
+            throw new Error(`Error checking playlists in SQL Server: ${error.message}`);
+        } finally {
+            // Đóng kết nối khi không còn cần thiết
+            await this.disconnect();
+        }
+    }
+
     // Kiểm tra PlaylistId trong bảng Playlist
     async checkExistingPlaylist(PlaylistId) {
         try {
