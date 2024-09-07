@@ -21,14 +21,14 @@
     </aside>
     <AddPlaylist
         v-if="isAddPlaylist"
-        labelH2="Thêm Playlist"
+        labelH2="Add Playlist"
         @click="closePopup"
         @close-popup="closePopup()"
     />
 
     <ChangePlaylist
         v-if="isChangePlaylist"
-        labelH2="Thay đổi Playlist"
+        labelH2="Change Playlist"
         @click="closePopup"
         @close-popup="closePopup()"
     />
@@ -57,22 +57,22 @@ import DeleteVideoIcon from '../../assets/icon/setting/delete-playlist.svg'
 const buttons = [
     {
         id: 1,
-        label: "Thêm danh sách phát",
+        label: "Add new playlist",
         icon: AddVideoIcon,
     },
     {
         id: 2,
-        label: "Hiện các video bị ẩn",
+        label: "Show hidden videos",
         icon: ShowVideoIcon,
     },
     {
         id: 3,
-        label: "Chuyển đổi danh sách phát",
+        label: "Change playlist",
         icon: ChangePlaylistIcon,
     },
     {
         id: 4,
-        label: "Xóa danh sách phát",
+        label: "Delete playlist",
         icon: DeleteVideoIcon,
     }
 ];

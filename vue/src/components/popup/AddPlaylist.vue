@@ -3,7 +3,7 @@
         <div class="popup-content" @click.stop>
             <h2 class="popup-h2">{{ labelH2 }}</h2>
             <InputForm
-                label="Nhập URL playlist:"
+                label="Enter URL playlist:"
                 placeholder="https://www.youtube.com/playlist?list="
                 @inputValue="(payload) => onsubmit(payload.inputValue)"
             />

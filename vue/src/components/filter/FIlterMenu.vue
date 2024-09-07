@@ -22,7 +22,7 @@
                     ></path>
                 </svg>
             </div>
-            <span class="text"> Sắp xếp </span>
+            <span class="text">Filter</span>
         </button>
         <div id="interaction" class="interaction">
             <div
@@ -76,7 +76,7 @@ const handleClick = (event) => {
 
 <style scoped>
 .menu {
-    --menu-width: 120px;
+    --menu-width: 100px;
     --button-line-width: 0.25em;
     --button-line-height: 0.25em;
     --button-offset: 0.625em;

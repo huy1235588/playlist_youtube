@@ -1,7 +1,8 @@
 <template>
     <main id="contents" className="contents">
+        <NoPlaylistVideo v-if="!isNoPlaylist" />
         <VideoYoutube
-            v-if="!isShowHiddenVideo"
+            v-else-if="!isShowHiddenVideo"
             v-for="(item, index) in data"
             :key="index"
             :data="item"
@@ -22,11 +23,26 @@ import emitter from '../../eventBus';
 
 import VideoYoutube from './VideoYoutube.vue';
 import HiddenVideo from './HiddenVideo.vue';
+import NoPlaylistVideo from './NoPlaylistVideo.vue';
 
 const data = ref([]); // giữ dữ liệu video
 const dataHidden = ref([]); // giữ dữ liệu video bị ẩn
 const input = ref('');
 const isShowHiddenVideo = ref(false);
+const isNoPlaylist = ref(false);
+
+// Hàm để lấy playlist
+const getPlaylist = async (payload = {}) => {
+    isNoPlaylist.value = true;
+
+    if (!isNoPlaylist.value) {
+        const { column = "AddedAt", order = "Desc" } = payload;
+        fetchData({
+            column: column,
+            order: order,
+        })
+    }
+}
 
 // Hàm gọi api để lấy dữ liệu từ DB
 const fetchData = async (payload = {}) => {
@@ -103,14 +119,14 @@ const showHiddenVideo = async () => {
 }
 
 onMounted(() => {
-    fetchData(); // Lấy dữ liệu ban đầu
-    emitter.on('filter', fetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
+    emitter.on('filter', getPlaylist); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('show-hidden-video', showHiddenVideo); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('search-video', searchVideo); // Lấy dữ liệu sự kiện lắng nghe "search-video"
 });
 
 onUnmounted(() => {
     fetchData();
+    emitter.off('filter', getPlaylist);
     emitter.off('filter', fetchData);
     emitter.off('show-hidden-video', showHiddenVideo);
     emitter.off('search-video', searchVideo);
