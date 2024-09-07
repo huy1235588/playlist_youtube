@@ -18,6 +18,7 @@
     </div>
     <section id="popup-container">
         <MenuPopup />
+        <PlaylistMenuPopup />
     </section>
 </template>
 
@@ -33,6 +34,7 @@ import Setting from "../components/settings/Setting.vue";
 import FIlterMenu from "../components/filter/FIlterMenu.vue";
 import PlaylistVideo from "../components/Contents/PlaylistVideo.vue";
 import MenuPopup from "../components/menu/MenuPopup.vue";
+import PlaylistMenuPopup from "../components/menu/PlaylistMenuPopup.vue";
 
 import emitter from "../eventBus";
 

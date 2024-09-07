@@ -1,6 +1,7 @@
 <template>
     <section
         :id="'playlist-' + playlistId"
+        class="playlist-item"
         @mouseover="isHover = true"
         @mouseleave="isHover = false"
     >
@@ -74,7 +75,7 @@
                     <a
                         v-if="notFound"
                         id="playlist-title"
-                        class="error"
+                        class="error no-select"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -83,21 +84,38 @@
                     <a
                         v-else
                         id="playlist-title"
+                        class="no-select"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         {{ title }}
                     </a>
+                    <div id="menu">
+                        <!-- <p>Go entire playlist video</p> -->
+                        <PlaylistMenu :indexVideo="playlistId" />
+                    </div>
                 </h3>
                 <!-- Tên channel -->
                 <div id="channel-name">
-                    <div id="container">
-                        
+                    <div class="channel-container">
+                        <!-- Thumbnail Channel -->
+                        <div class="thumbnail-channel">
+                            <a class="thumbnail-channel-overplay">
+                                <!-- Hình ảnh video -->
+                                <img :src="channel.Thumbnails" alt="" />
+                            </a>
+                        </div>
+                        <!-- Tên Channel -->
                         <div id="text-container">
                             <div id="text">
                                 <a v-if="notFound" href=""></a>
-                                <a v-else href="">
-                                    {{ channelTitle }}
+                                <a
+                                    v-else
+                                    :href="channelId"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {{ channel.Title }}
                                 </a>
                             </div>
                         </div>
@@ -105,15 +123,15 @@
                 </div>
             </div>
         </div>
-        <!-- <div id="menu">
-            <MenuTask :indexVideo="playlistId" />
-        </div> -->
     </section>
 </template>
 
 <script setup>
-
+import axios from 'axios';
 import { onMounted, onUnmounted, ref } from 'vue';
+
+import PlaylistMenu from '../menu/PlaylistMenu.vue';
+
 const props = defineProps({
     data: {
         type: Object,
@@ -124,22 +142,45 @@ const props = defineProps({
 const playlistId = ref('');
 const title = ref('');
 const thumbnails = ref('');
+const channelId = ref('');
 const channelTitle = ref('');
 const itemCount = ref('');
-const publishedAt = ref('');
 const notFound = ref('');
 
 const isHover = ref(false);
+const channel = ref([]);
 
-function formatData() {    
-    // Kiểm tra video bị xóa
-    if (props.data.title !== null) {        
+function formatChannelId(id) {
+    return 'https://youtube.com/channel/' + id;
+}
+
+async function formatData() {
+    try {
+        const response = await axios.get('api/channel/get', {
+            params: {
+                channelId: props.data.ChannelId,
+            }
+        });
+
+        channel.value = await response.data.channel[0];
+
+    } catch (error) {
+        // Xử lý lỗi mạng
+        emitter.emit('error-page', {
+            errorMessage: error.message
+        });
+    }
+
+    channelId.value = formatChannelId(props.data.ChannelId);
+
+    // Kiểm tra playlist bị xóa
+    if (props.data.title !== null) {
         playlistId.value = props.data.PlaylistId;
         title.value = props.data.Title;
         thumbnails.value = props.data.Thumbnails;
         channelTitle.value = props.data.ChannelTitle;
         itemCount.value = props.data.ItemCount;
-        
+
         // Lấy khoảng thời gian phát hành đến hiện tại
         publishedAt.value = props.data.PublishedAt;
 
@@ -160,10 +201,13 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-section {
+.playlist-item {
     width: calc(100% / 3);
-    height: 200px;
+    min-height: 300px;
     margin-right: 20px;
+    padding: 10px;
+    background-color: rgb(22, 22, 22);
+    cursor: pointer;
 }
 
 #content {
@@ -174,8 +218,7 @@ section {
 /* Thumbnail */
 #thumbnail-container {
     width: 100%;
-    height: 100%;
-    /* margin-right: 8px; */
+    height: 200px;
 }
 
 #thumbnail {
@@ -238,6 +281,7 @@ section {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
 }
+
 .thumbnail-hover-text {
     color: #fff;
 }
@@ -249,17 +293,57 @@ section {
 /* Meta */
 #meta {
     cursor: pointer;
-    /* background-color: #000; */
+    text-align: start;
+    display: grid;
 }
 
 /* Title playlist */
 .playlist-title-container {
+    display: flex;
+    align-items: center;
+    height: 50px;
     padding: 10px;
 }
 
 #playlist-title {
-    color: #29911f;
-    font-size: 20px;
+    flex: 1;
+    color: #13ce23;
+    font-size: 40px;
     line-height: 20px;
+}
+
+/* Channel */
+#channel-name {
+}
+
+.channel-container {
+    display: flex;
+}
+
+#channel-name #text a {
+    color: #fff;
+}
+
+/* Thumbnail Channel */
+.thumbnail-channel {
+    margin-right: 10px;
+}
+
+.thumbnail-channel-overplay {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    overflow: hidden;
+}
+
+.thumbnail-channel-overplay img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Menu */
+#menu {
+    font-size: 0;
 }
 </style>

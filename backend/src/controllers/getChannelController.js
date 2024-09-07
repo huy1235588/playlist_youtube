@@ -7,11 +7,11 @@ const getChannel = async (req, res) => {
         const channelId = req.query.channelId;
 
         // Lấy video từ datbase
-        const channelPlaylists = await queryModel.getChannel(channelId);
+        const channel = await queryModel.getChannel(channelId);
 
         // Trả về giá trị
         res.json({
-            channelPlaylists
+            channel
         })
 
     } catch (error) {
