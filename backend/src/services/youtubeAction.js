@@ -12,7 +12,7 @@ const deleteVideoFromPlaylist = async (playlistItemId) => {
                 key: config.youtubeApiKey
             },
         });
-        
+
         console.log('Video deleted:', response.data);
 
     } catch (error) {
@@ -21,7 +21,7 @@ const deleteVideoFromPlaylist = async (playlistItemId) => {
 };
 
 //   hàm để Thêm video mới vào playlist
-const addVideoToPlaylist = async (playlistId, videoId, accessToken) => {
+const addVideoToPlaylist = async (playlistId, videoId) => {
     try {
         const response = await axios.post(
             'https://www.googleapis.com/youtube/v3/playlistItems',
@@ -35,17 +35,20 @@ const addVideoToPlaylist = async (playlistId, videoId, accessToken) => {
                 },
             },
             {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
                 params: {
                     part: 'snippet',
+                    key: config.youtubeApiKey,
                 },
             }
         );
         console.log('Video added:', response.data);
+
     } catch (error) {
         console.error('Error adding video:', error.response ? error.response.data : error.message);
     }
 };
+
+module.exports = {
+    deleteVideoFromPlaylist,
+    addVideoToPlaylist,
+}
