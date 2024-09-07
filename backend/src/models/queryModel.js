@@ -115,15 +115,14 @@ class QueryModel {
     }
 
     // Select channel playlist
-    async getChannelPlaylists() {
+    async getChannel(ChannelId) {
         try {
             // Kết nối đến SQL Server
             await this.connect();
             const request = this.pool.request();
 
             const result = await request
-                .query(`SELECT * FROM Channels C WHERE EXISTS 
-                    (SELECT 1 FROM Playlists P WHERE P.ChannelId = C.ChannelId);`);
+                .query(`exec [Get Channel by ChannelId] ${ChannelId}`);
 
             // Trả về dữ liệu
             return result.recordset;

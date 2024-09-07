@@ -1,11 +1,13 @@
-const getChannelPlaylists = async (req, res) => {
+const getChannel = async (req, res) => {
     const { QueryModel } = require('../models/queryModel');
     try {
         // Khởi tạo đối tượng
         const queryModel = new QueryModel();
 
+        const channelId = req.query.channelId;
+
         // Lấy video từ datbase
-        const channelPlaylists = await queryModel.getChannelPlaylists();
+        const channelPlaylists = await queryModel.getChannel(channelId);
 
         // Trả về giá trị
         res.json({
@@ -19,5 +21,5 @@ const getChannelPlaylists = async (req, res) => {
 }
 
 module.exports = {
-    getChannelPlaylists,
+    getChannel,
 };

@@ -15,6 +15,6 @@ router.get('/video/get/hidden-video', getHiddenVideoController.getHiddenVideo);
 router.get('/playlist/get', getPlaylistsController.getPlaylists);
 
 // Route để lấy channel của playlist
-router.get('/channel/get/channelPlaylist', getChannelController.getChannelPlaylists);
+router.get('/channel/get', getChannelController.getChannel);
 
 module.exports = router;
