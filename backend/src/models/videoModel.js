@@ -25,7 +25,7 @@ class VideoModel {
     async add(video) {
         try {
             // Kết nối đến SQL Server
-            await this.connect(sqlConfig);
+            await this.connect();
             const request = this.pool.request();
 
             // Biến iểm tra đã tồn tại VideoId trong database
@@ -190,7 +190,7 @@ class PlaylistItemsModel {
     async add(playlistItems, playlistId, indexVideo) {
         try {
             // Kết nối đến SQL Server
-            await this.connect(sqlConfig);
+            await this.connect();
             const request = this.pool.request();
 
             // Chèn dữ liệu vào bảng
@@ -213,6 +213,7 @@ class PlaylistItemsModel {
         }
 
     }
+
 }
 
 module.exports = {
