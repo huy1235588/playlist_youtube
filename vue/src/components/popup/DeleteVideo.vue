@@ -17,17 +17,17 @@
             </button>
 
             <div class="button-container">
-                <button class="button-yes">YES</button>
-                <button class="button-no">NO</button>
+                <button class="button-yes" @click="deleteVideo">YES</button>
+                <button class="button-no" @click="closePopup">NO</button>
             </div>
 
             <Loading v-if="isLoading" />
             <p
                 v-else
-                class="video-replace-status"
-                :class="{ isReplaced: isReplacedStatus }"
+                class="video-delete-status"
+                :class="{ isDeleted: isDeletedVideo }"
             >
-                {{ videoReplaceStatus }}
+                {{ deleteVideoText }}
             </p>
         </div>
     </aside>
@@ -49,9 +49,9 @@ const props = defineProps({
     }
 })
 
-const videoReplaceStatus = ref('');
+const deleteVideoText = ref('');
+const isDeletedVideo = ref(false);
 const isLoading = ref(false);
-const isReplacedStatus = ref(false);
 
 const videoId = ref('');
 
@@ -67,13 +67,13 @@ const closePopup = () => {
 videoId.value = props.dataVideo.videoId;
 
 // Xử lý sự kiện submit form
-const onsubmit = async (inputValue) => {
+const deleteVideo = async (inputValue) => {
     // hiện Loading-page trong khi đợi
     isLoading.value = true;
 
     try {
         // Gọi api để add playlist vào database
-        const response = await axios.get('/api/video/replace', {
+        const response = await axios.get('/api/video/delete', {
             params: {
                 playlistItemId: props.dataVideo.playlistItemId,
                 playlistId: props.dataVideo.playlistId,
@@ -85,13 +85,13 @@ const onsubmit = async (inputValue) => {
         const data = await response.data;
 
         // Kiểm tra xem playlist đã được thêm thành công thay chưa
-        if (data.isAdded) {
-            playlistAddStatus.value = "Added playlist successfully";
-            isAddedStatus.value = true;
+        if (data.isDeleted) {
+            deleteVideoText.value = "Delete video successfully";
+            isDeletedVideo.value = true;
         }
         else {
-            isAddedStatus.value = false;
-            playlistAddStatus.value = response.data.message;
+            isDeletedVideo.value = false;
+            deleteVideoText.value = response.data.message;
         }
 
     } catch (error) {
@@ -173,13 +173,13 @@ const onsubmit = async (inputValue) => {
     stroke: white;
 }
 
-.video-replace-status {
+.video-delete-status {
     font-size: 20px;
     font-weight: 700;
     color: rgb(255, 0, 0);
 }
 
-.video-replace-status.isReplaced {
+.video-delete-status.isDeleted {
     color: rgb(22, 222, 22);
 }
 
