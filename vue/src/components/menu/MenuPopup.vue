@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import emitter from '../../eventBus';
 
 const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
@@ -40,6 +40,7 @@ const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 const indexVideo = ref(0);
 const isReplaceVideo = ref(false);
 const dataVideo = ref({});
+const playlist = ref({});
 
 import ButtonMenu from './ButtonMenu.vue';
 import ReplaceVideo from '../popup/ReplaceVideo.vue';
@@ -49,7 +50,7 @@ import DeleteVideoIcon from '../../assets/icon/menu/delete-video.svg'
 import ShareIcon from '../../assets/icon/menu/share.svg'
 import SetThumbnailIcon from '../../assets/icon/menu/set-thumbnail.svg'
 
-const buttons = [
+const buttons = computed(() => [
     {
         id: 1,
         label: "Thay thế video",
@@ -59,7 +60,7 @@ const buttons = [
         id: 2,
         label: "Xóa khỏi ",
         icon: DeleteVideoIcon,
-        playlistName: "haha",
+        playlistName: playlist.value.Title,
     },
     {
         id: 3,
@@ -72,7 +73,7 @@ const buttons = [
         label: "Đặt làm hình nền của danh sách phát",
         icon: SetThumbnailIcon,
     }
-];
+]);
 
 // Hàm để xử lý sự kiện click của button
 const handleClick = (id) => {
@@ -135,9 +136,13 @@ const showPopup = (payload) => {
     // Lấy dữ liệu của video
     dataVideo.value = {
         playlistItemId: payload.playlistItemId,
-        playlistId: payload.playlistId,
         videoId: payload.videoId,
     }
+
+    // Lấy dữ liệu playlist của video
+    playlist.value = payload.playlist;
+
+    console.log(playlist.value.Title)
 
     const elementTarget = payload.event.currentTarget.id;
 

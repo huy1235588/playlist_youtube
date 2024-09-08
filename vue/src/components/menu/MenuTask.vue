@@ -51,8 +51,8 @@ const props = defineProps({
         type: Object,
         required: false,
     },
-    playlistId: {
-        type: String,
+    playlist: {
+        type: Object,
         required: false,
     },
 })
@@ -82,8 +82,9 @@ const handleClick = (event) => {
         event: event,
         indexVideo: props.indexVideo, // Truyền index
         playlistItemId: props.data.playlistItemId,
-        playlistId: props.playlistId,
+        playlist: props.playlist,
         videoId: props.data.VideoId,
+        titlePlaylist: props.data.title
     });
 
 };

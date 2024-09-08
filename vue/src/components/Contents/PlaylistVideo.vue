@@ -19,14 +19,14 @@
             v-for="(item, index) in data"
             :key="index"
             :data="item"
-            :playlistId="playlistId"
+            :playlist="playlist"
         />
         <hiddenVideo
             v-else
             v-for="(itemHidden, indexHidden) in dataHidden"
             :key="indexHidden"
             :data="itemHidden"
-            :playlistId="playlistId"
+            :playlist="playlist"
         />
     </main>
 </template>
@@ -50,11 +50,15 @@ const isNoPlaylist = ref(false);
 const isPlaylistYoutube = ref(false);
 
 const playlistId = ref(''); // Giữ playlistId
+const playlists = ref([]) // Giữ mảng dữ liệu playlist đã chọn
+const playlist = ref({}) // Giữ dữ liệu playlist đã chọn
 
 const selectPlaylist = (PlaylistId) => {
     playlistId.value = PlaylistId;
     isShowHiddenVideo.value = false;
     isPlaylistYoutube.value = false;
+    // Tìm playlist đã chọn
+    playlist.value = playlists.value.find(item => item.PlaylistId === playlistId.value);
 
     fetchData();
 }
@@ -68,13 +72,13 @@ const getPlaylist = async () => {
         const response = await axios.get('/api/playlist/get');
 
         // Lấy dữ liệu
-        const playlists = await response.data.playlists;
+        playlists.value = await response.data.playlists;
 
         // Kiểm tra nếu có playlist trong database
-        if (playlists.length > 0) {
+        if (playlists.value.length > 0) {
             isPlaylistYoutube.value = true;
             isNoPlaylist.value = false; // set 
-            dataPlaylist.value = playlists || [];
+            dataPlaylist.value = playlists.value || [];
         }
 
     } catch (error) {
@@ -186,5 +190,8 @@ onUnmounted(() => {
 
 #contents {
     display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
 }
 </style>

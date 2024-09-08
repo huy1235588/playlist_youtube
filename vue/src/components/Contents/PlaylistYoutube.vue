@@ -64,7 +64,9 @@
                                     <path d="m7 4 12 8-12 8V4z"></path>
                                 </svg>
                             </div>
-                            <span class="thumbnail-hover-text no-select">Xem tất cả</span>
+                            <span class="thumbnail-hover-text no-select"
+                                >Xem tất cả</span
+                            >
                         </div>
                     </div>
                 </a>
@@ -93,10 +95,7 @@
                     </a>
                     <div id="menu">
                         <!-- <p>Go entire playlist video</p> -->
-                        <PlaylistMenu
-                            @click.stop
-                            :indexVideo="playlistId"
-                        />
+                        <PlaylistMenu @click.stop :indexVideo="playlistId" />
                     </div>
                 </h3>
                 <!-- Tên channel -->
@@ -211,13 +210,24 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@media only screen and (max-width: 576px) {
+    .playlist-item {
+        width: 36px;
+        background-color: #13ce23;
+    }
+}
+
 .playlist-item {
-    width: calc(100% / 3);
+    width: 336px;
     min-height: 300px;
     margin-right: 20px;
     padding: 10px;
     background-color: rgb(22, 22, 22);
     cursor: pointer;
+}
+
+.playlist-item:nth-child(3){
+    margin-right: 0;
 }
 
 #content {
@@ -241,7 +251,7 @@ onUnmounted(() => {
 }
 
 #thumbnail img {
-    width: 384px;
+    width: 330px;
     height: 268px;
     margin: -34px 0 0 0;
 }

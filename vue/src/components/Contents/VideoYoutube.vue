@@ -92,7 +92,7 @@
             </div>
         </div>
         <div id="menu">
-            <MenuTask :indexVideo="indexVideo" :data="data" :playlistId="playlistId"/>
+            <MenuTask :indexVideo="indexVideo" :data="data" :playlist="playlist"/>
         </div>
     </section>
 </template>
@@ -117,8 +117,8 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    playlistId: {
-        type: String,
+    playlist: {
+        type: Object,
         required: true,
     },
 })
