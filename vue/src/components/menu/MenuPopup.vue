@@ -26,6 +26,14 @@
         @click="closePopup"
         @close-popup="closePopup()"
     />
+
+    <DeleteVideo
+        v-if="isDeleteVideo"
+        :indexVideo="indexVideo"
+        :dataVideo="dataVideo"
+        @click="closePopup"
+        @close-popup="closePopup()"
+    />
 </template>
 
 <script setup>
@@ -39,11 +47,13 @@ const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 
 const indexVideo = ref(0);
 const isReplaceVideo = ref(false);
+const isDeleteVideo = ref(false);
 const dataVideo = ref({});
 const playlist = ref({});
 
 import ButtonMenu from './ButtonMenu.vue';
 import ReplaceVideo from '../popup/ReplaceVideo.vue';
+import DeleteVideo from '../popup/DeleteVideo.vue';
 
 import ReplaceVideoIcon from '../../assets/icon/menu/replace-video.svg'
 import DeleteVideoIcon from '../../assets/icon/menu/delete-video.svg'
@@ -81,11 +91,16 @@ const handleClick = (id) => {
     if (id === 1) {
         isReplaceVideo.value = true;
     }
+
+    if (id === 2) {
+        isDeleteVideo.value = true;
+    }
 }
 
 // Hàm để đóng popup
 const closePopup = () => {
     isReplaceVideo.value = false;
+    isDeleteVideo.value = false;
 }
 
 // Hàm tính toán và cập nhật vị trí popup

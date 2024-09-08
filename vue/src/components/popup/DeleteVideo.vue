@@ -2,11 +2,7 @@
     <aside class="popup-overlay">
         <div class="popup-content" @click.stop>
             <h2 class="popup-h2">{{ videoId }}</h2>
-            <InputForm
-                label="Nhập URL video:"
-                placeholder="https://www.youtube.com/watch?v="
-                @inputValue="(payload) => onsubmit(payload.inputValue)"
-            />
+            <p class="confirm-text">Are you sure want to delete this video?</p>
             <button class="close-popup" @click="closePopup">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -19,6 +15,11 @@
                     ></path>
                 </svg>
             </button>
+
+            <div class="button-container">
+                <button class="button-yes">YES</button>
+                <button class="button-no">NO</button>
+            </div>
 
             <Loading v-if="isLoading" />
             <p
@@ -35,7 +36,6 @@
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
-import InputForm from '../input/InputForm.vue';
 import Loading from '../loading/Loading.vue';
 
 const props = defineProps({
@@ -129,7 +129,7 @@ const onsubmit = async (inputValue) => {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 90%;
-    height: 35%;
+    min-height: 35%;
     text-align: center;
 }
 
@@ -181,5 +181,52 @@ const onsubmit = async (inputValue) => {
 
 .video-replace-status.isReplaced {
     color: rgb(22, 222, 22);
+}
+
+.confirm-text {
+    font-size: 30px;
+    font-weight: 600;
+    color: #fa2424;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 30%;
+    height: 40px;
+    margin: 0 auto;
+}
+
+.button-container button {
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+.button-container .button-yes {
+    background-color: rgb(0, 102, 255);
+    color: #ffffff;
+}
+
+.button-container .button-yes:hover {
+    background-color: rgba(0, 102, 255, 0.664);
+}
+
+.button-container .button-yes:active {
+    background-color: rgb(0, 102, 255);
+}
+
+.button-container .button-no {
+    background-color: unset;
+    color: #ffffff;
+}
+
+.button-container .button-no:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.button-container .button-no:active {
+    background-color: unset;
 }
 </style>
