@@ -75,9 +75,7 @@ const deleteVideo = async (inputValue) => {
         // Gọi api để add playlist vào database
         const response = await axios.get('/api/video/delete', {
             params: {
-                playlistItemId: props.dataVideo.playlistItemId,
-                playlistId: props.dataVideo.playlistId,
-                videoId: inputValue,
+                videoId: props.dataVideo.videoId,
             }
         });
 

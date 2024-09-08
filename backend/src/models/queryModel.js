@@ -143,8 +143,6 @@ class QueryModel {
             await this.connect();
             const request = this.pool.request();
 
-            console.log(VideoId)
-
             // Biến iểm tra đã tồn tại PlaylistId trong database
             const existingChannel = await request
                 .input('CheckVideoId', sql.VarChar(50), VideoId)

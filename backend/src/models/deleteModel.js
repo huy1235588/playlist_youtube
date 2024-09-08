@@ -34,8 +34,8 @@ class DeleteModel {
 
             // Xóa khỏi PlaylistItems và Videos
             await request.input('videoId', sql.VarChar(50), videoId)
-            await request.query('DELETE FROM PlaylistItems WHERE id = @videoId');
-            await request.query('DELETE FROM Videos WHERE id = @videoId');
+            await request.query('DELETE FROM PlaylistItems WHERE VideoId = @videoId');
+            await request.query('DELETE FROM Videos WHERE VideoId = @videoId');
 
             // Xác nhận transaction nếu thành công
             await transaction.commit();

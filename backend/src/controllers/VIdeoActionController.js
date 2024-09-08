@@ -9,15 +9,18 @@ const deleteVideo = async (req, res) => {
         // Lấy videoId từ input
         let videoId = req.query.videoId;
 
+        // Kiểm tra xem có tồn tại playlistId hay chưa
+        const checkVideoIdtId = await queryModel.checkExistingVideoId(videoId);
+
         // Kiểm tra xem có tồn tại videoId
-        if (queryModel.checkExistingVideoId(videoId)) {
+        if (!checkVideoIdtId) {
             return await res.json({
                 isDeleted: false,
                 message: 'VideoId does not exist'
             });
         }
 
-        deleteModel.deleteByVideoId(videoId);
+        await deleteModel.deleteByVideoId(videoId);
 
         return await res.json({
             isDeleted: true,
