@@ -37,14 +37,13 @@ yarn-error.log*
 next-env.d.ts
 
 *.zip
-*.rar
+database.rar
 *.7zip
 
 **/README.md
 !/README.md
 
 database/*
-backend/src/config/*
 #Biến môi trường
 .env
 
