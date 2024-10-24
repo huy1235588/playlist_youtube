@@ -6,6 +6,9 @@ const deleteController = require('../controllers/videoActionController');
 // Route để lấy tất cả các video từ youtube api
 router.get('/video/fetch', videoController.fetchAndSaveVideos);
 
+// Route để lấy tất cả các video từ youtube api
+router.get('/video/update', videoController.updatePlaylist);
+
 // Route để xóa video trong database
 router.get('/video/delete', deleteController.deleteVideo);
 

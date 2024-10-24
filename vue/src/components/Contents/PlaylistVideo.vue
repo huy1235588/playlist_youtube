@@ -66,22 +66,20 @@ let isFetching = false; // ngăn chặn việc gọi API nhiều lần
 const isOverVideo = ref(false)
 
 // Hàm khi chọn playlist
-const selectPlaylist = (payload) => {
+const selectPlaylist = async (payload) => {
     playlistId.value = payload.playlistId;
     isShowHiddenVideo.value = false;
     isPlaylistYoutube.value = false;
     // Tìm playlist đã chọn
     playlist.value = playlists.value.find(item => item.PlaylistId === playlistId.value);
 
-    console.log(playlist.value)
-
-    videoStart = 1;
-    fetchData();
+    await firstFetchData();
 
     // Truyền playlistId
     emitter.emit('selected-playlist', {
         playlistId: payload.playlistId,
         playlistName: payload.playlistName,
+        videoId: data.value[0].VideoId
     });
 }
 
@@ -109,6 +107,12 @@ const getPlaylist = async () => {
             errorMessage: error.message
         });
     }
+}
+
+// Hàm để tải video lần đầu
+const firstFetchData = async () => {
+    videoStart = 1;
+    await fetchData();
 }
 
 // Hàm gọi api để lấy dữ liệu từ DB
@@ -177,6 +181,7 @@ const handleScroll = () => {
 // Hàm gọi api để tìm video từ DB
 const searchVideo = async (payload) => {
     isShowHiddenVideo.value = false;
+    isOverVideo.value = true;
 
     input.value = payload.input;
     if (input.value && input.value !== "") {
@@ -199,7 +204,7 @@ const searchVideo = async (payload) => {
         }
     }
     else {
-        selectPlaylist(playlistId.value);
+       firstFetchData();
     }
 }
 
@@ -228,7 +233,7 @@ const showHiddenVideo = async () => {
 onMounted(() => {
     getPlaylist();
     emitter.on('change-playlist', getPlaylist); // Lấy dữ liệu sự kiện lắng nghe "change-playlist"
-    emitter.on('filter', fetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
+    emitter.on('filter', firstFetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('show-hidden-video', showHiddenVideo); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('search-video', searchVideo); // Lấy dữ liệu sự kiện lắng nghe "search-video"
     window.addEventListener('scroll', handleScroll); // Sự kiện cuộn đến cuối trang
@@ -237,7 +242,7 @@ onMounted(() => {
 onUnmounted(() => {
     getPlaylist();
     emitter.off('change-playlist', getPlaylist);
-    emitter.off('filter', fetchData);
+    emitter.off('filter', firstFetchData);
     emitter.off('show-hidden-video', showHiddenVideo);
     emitter.off('search-video', searchVideo);
     window.removeEventListener('scroll', handleScroll);

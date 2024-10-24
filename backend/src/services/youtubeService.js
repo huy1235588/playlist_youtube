@@ -114,7 +114,7 @@ const getPlaylistDetails = async (playlistId) => {
     }
 }
 
-const getPlaylistItems = async (playlistId) => {
+const getPlaylistItems = async (playlistId, currentVideoId = null) => {
     // Làm giá trị của tham số pageToken 
     // để truy xuất trang tiếp theo trong tập kết quả.
     // https://developers.google.com/youtube/v3/docs/playlistItems/list#properties
@@ -123,6 +123,9 @@ const getPlaylistItems = async (playlistId) => {
     let videos = [];
     // Khai báo biến indexVideo
     let totalResults;
+
+    // Biến cờ để kiểm tra nếu cần dừng
+    let isExistVideo = false;
 
     try {
         do {
@@ -149,6 +152,12 @@ const getPlaylistItems = async (playlistId) => {
             for (const item of Videos) {
                 // Lấy ID của video
                 const videoId = item.contentDetails.videoId;
+
+                if (videoId === currentVideoId) {
+                    isExistVideo = true; // Đặt cờ để dừng vòng lặp ngoài
+                    break;
+                }
+
                 // Lấy ngày thêm video vào playlist
                 const videoPublishedAt = item.snippet.publishedAt;
 
@@ -160,6 +169,10 @@ const getPlaylistItems = async (playlistId) => {
                     channelId: item.snippet.videoOwnerChannelId,
                 });
 
+            }
+
+            if (isExistVideo) {
+                break; // Dừng vòng lặp do...while nếu cờ đã được đặt
             }
 
             // Cập nhật token cho trang tiếp theo

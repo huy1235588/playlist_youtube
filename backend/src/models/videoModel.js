@@ -164,6 +164,30 @@ class PlaylistModel {
             await this.disconnect();
         }
     }
+
+    // Insert vào bảng
+    async Update(playlist) {
+        try {
+            await this.connect();
+            const request = this.pool.request();
+
+            // Chèn dữ liệu vào bảng
+            await request
+                .input('PlaylistId', sql.VarChar(50), playlist.playlistId)
+                .input('ItemCount', sql.Int, playlist.itemCount)
+                .query(
+                    `UPDATE Playlists
+                    SET ItemCount = @ItemCount
+                    WHERE PlaylistId = @PlaylistId`
+                );
+
+        } catch (error) {
+            throw new Error(`Error updating to SQL Server: ${error.message}`);
+        } finally {
+            // Đóng kết nối khi không còn cần thiết
+            await this.disconnect();
+        }
+    }
 }
 
 class PlaylistItemsModel {

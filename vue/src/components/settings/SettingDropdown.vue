@@ -28,8 +28,7 @@
     />
     <UpdatePlaylist
         v-else-if="isUpdatePlaylist"
-        :playlistId="playlistId"
-        :playlistName="playlistName"
+        :playlistPayload="playlistPayload"
         @click="closePopup"
         @close-popup="closePopup()"
     />
@@ -50,8 +49,7 @@ const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 const isAddPlaylist = ref(false);
 const isUpdatePlaylist = ref(false);
 
-const playlistId = ref('');
-const playlistName = ref('');
+const playlistPayload= ref({});
 
 import AddVideoIcon from '../../assets/icon/setting/add-playlist.svg'
 import ShowVideoIcon from '../../assets/icon/setting/show-video.svg'
@@ -175,8 +173,7 @@ const cleanupEventListeners = () => {
 
 // Hàm nhận playlistId
 const selectedPlaylist = (payload) => {
-    playlistId.value = payload.playlistId;
-    playlistName.value = payload.playlistName;
+    playlistPayload.value = payload;
 };
 
 

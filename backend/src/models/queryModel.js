@@ -1,6 +1,5 @@
 const sql = require('mssql');
 const { sqlConfig } = require('../config/db');
-const { trace } = require('../routes/getVideoRoutes');
 
 class QueryModel {
     constructor() {

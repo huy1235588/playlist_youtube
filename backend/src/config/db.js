@@ -7,7 +7,7 @@ const sqlConfig = {
     database: process.env.DATABASE_NAME,
     server: process.env.SERVER_MSSQL,
     options: {
-        encrypt: true, // mã hóa ssl
+        encrypt: false, // Bật mã hóa nếu sử dụng với Azure
         trustServerCertificate: true,
     },
 };

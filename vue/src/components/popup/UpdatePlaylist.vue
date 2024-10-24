@@ -2,7 +2,7 @@
     <aside class="popup-overlay">
         <div class="popup-content" @click.stop>
             <p class="confirm-text">
-                Are you sure want to update "{{ props.playlistName }}"?
+                Are you sure want to update "{{ props.playlistPayload.playlistName }}"?
             </p>
             <button class="close-popup" @click="closePopup">
                 <svg
@@ -18,7 +18,7 @@
             </button>
 
             <div class="button-container">
-                <button class="button-yes" @click="deleteVideo">YES</button>
+                <button class="button-yes" @click="updateVideo">YES</button>
                 <button class="button-no" @click="closePopup">NO</button>
             </div>
 
@@ -26,9 +26,9 @@
             <p
                 v-else
                 class="video-delete-status"
-                :class="{ isDeleted: isDeletedVideo }"
+                :class="{ isDeleted: isUpdateVideo }"
             >
-                {{ deleteVideoText }}
+                {{ updateVideoText }}
             </p>
         </div>
     </aside>
@@ -38,23 +38,18 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import Loading from '../loading/Loading.vue';
+import emitter from '../../eventBus';
 
 const props = defineProps({
-    playlistId: {
-        type: String,
-        Required: true,
-    },
-    playlistName: {
-        type: String,
+    playlistPayload: {
+        type: Object,
         Required: true,
     },
 })
 
-const deleteVideoText = ref('');
-const isDeletedVideo = ref(false);
+const updateVideoText = ref('');
+const isUpdateVideo = ref(false);
 const isLoading = ref(false);
-
-const playlistId = ref('');
 
 // Định nghĩa emit để truyền sự kiện giữa parrent và child
 const emit = defineEmits(['close-popup']);
@@ -65,40 +60,41 @@ const closePopup = () => {
 }
 
 // Xử lý sự kiện submit form
-const deleteVideo = async (inputValue) => {
+const updateVideo = async () => {
     // hiện Loading-page trong khi đợi
     isLoading.value = true;
 
-    // try {
-    //     // Gọi api để add playlist vào database
-    //     const response = await axios.get('/api/video/delete', {
-    //         params: {
-    //             videoId: props.dataVideo.videoId,
-    //         }
-    //     });
+    try {
+        // Gọi api để add playlist vào database
+        const response = await axios.get('/api/video/update', {
+            params: {
+                playlistId: props.playlistPayload.playlistId,
+                currentVideoId: props.playlistPayload.videoId
+            }
+        });
 
-    //     // Lấy trạng thái api
-    //     const data = await response.data;
+        // Lấy trạng thái api
+        const data = await response.data;
 
-    //     // Kiểm tra xem playlist đã được thêm thành công thay chưa
-    //     if (data.isDeleted) {
-    //         deleteVideoText.value = "Delete video successfully";
-    //         isDeletedVideo.value = true;
-    //     }
-    //     else {
-    //         isDeletedVideo.value = false;
-    //         deleteVideoText.value = response.data.message;
-    //     }
+        // Kiểm tra xem playlist đã được thêm thành công thay chưa
+        if (data.isUpdated) {
+            updateVideoText.value = response.data.message;
+            isUpdateVideo.value = true;
+        }
+        else {
+            isUpdateVideo.value = false;
+            updateVideoText.value = response.data.message;
+        }
 
-    // } catch (error) {
-    //     // Xử lý lỗi mạng
-    //     emitter.emit('error-page', {
-    //         errorMessage: error.message
-    //     });
+    } catch (error) {
+        // Xử lý lỗi mạng
+        emitter.emit('error-page', {
+            errorMessage: error.message
+        });
 
-    // } finally {
-    //     isLoading.value = false;
-    // }
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 </script>

@@ -196,7 +196,10 @@ function formatData() {
         channelTitle.value = props.data.ChannelTitle;
         thumbnails.value = props.data.Thumbnails;
         indexVideo.value = props.data.IndexVideo;
-        index.value = props.index + 29;
+        index.value = props.index + 1;
+        if (index.value >= 135) {
+            index.value++;
+        }
 
         // Định dạng lượt xem
         viewCount.value = formatViewCount(props.data.ViewCount);

@@ -54,7 +54,9 @@ const emit = defineEmits(['close-popup']);
 
 // Sự lý sự kiện click
 const closePopup = () => {
-    emit('close-popup');
+    if (!isLoading.value) {
+        emit('close-popup');
+    }
 }
 
 
@@ -120,6 +122,7 @@ const onsubmit = async (inputValue) => {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 90%;
     height: 40%;
+    padding-bottom: 10px;
     text-align: center;
 }
 
