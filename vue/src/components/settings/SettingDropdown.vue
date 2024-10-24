@@ -16,6 +16,7 @@
                 :icon="button.icon"
                 @add-playlist="addPlaylist()"
                 @change-playlist="changePlaylist()"
+                @update-playlist="updatePlaylist()"
             />
         </ul>
     </aside>
@@ -25,10 +26,10 @@
         @click="closePopup"
         @close-popup="closePopup()"
     />
-
-    <ChangePlaylist
-        v-if="isChangePlaylist"
-        labelH2="Change Playlist"
+    <UpdatePlaylist
+        v-else-if="isUpdatePlaylist"
+        :playlistId="playlistId"
+        :playlistName="playlistName"
         @click="closePopup"
         @close-popup="closePopup()"
     />
@@ -39,7 +40,7 @@ import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 import ButtonSetting from './ButtonSetting.vue';
 import AddPlaylist from '../popup/AddPlaylist.vue';
-import ChangePlaylist from '../popup/ChangePlaylist.vue';
+import UpdatePlaylist from '../popup/UpdatePlaylist.vue';
 
 import emitter from '../../eventBus';
 
@@ -47,31 +48,40 @@ const isVisible = ref(false); // Check MenuPopup ẩn hay hiện
 const popupStyle = ref({}); // Sử dụng object để điều chỉnh vị trí của popup
 const menuPopup = ref(0); // Tham chiếu đến phần tử Menu popup
 const isAddPlaylist = ref(false);
-const isChangePlaylist = ref(false);
+const isUpdatePlaylist = ref(false);
+
+const playlistId = ref('');
+const playlistName = ref('');
 
 import AddVideoIcon from '../../assets/icon/setting/add-playlist.svg'
 import ShowVideoIcon from '../../assets/icon/setting/show-video.svg'
+import UpdatePlaylistIcon from '../../assets/icon/setting/update-playlist.svg'
 import ChangePlaylistIcon from '../../assets/icon/setting/change-playlist.svg'
 import DeleteVideoIcon from '../../assets/icon/setting/delete-playlist.svg'
 
 const buttons = [
     {
-        id: 1,
+        id: "addPlaylist",
         label: "Add new playlist",
         icon: AddVideoIcon,
     },
     {
-        id: 2,
+        id: "showHiddenVideos",
         label: "Show hidden videos",
         icon: ShowVideoIcon,
     },
     {
-        id: 3,
+        id: "updatePlaylist",
+        label: "Update Playlist",
+        icon: UpdatePlaylistIcon,
+    },
+    {
+        id: "changePlaylist",
         label: "Change playlist",
         icon: ChangePlaylistIcon,
     },
     {
-        id: 4,
+        id: "deletePlaylist",
         label: "Delete playlist",
         icon: DeleteVideoIcon,
     }
@@ -82,14 +92,18 @@ const addPlaylist = () => {
     isAddPlaylist.value = true;
 }
 
+const updatePlaylist = () => {
+    isUpdatePlaylist.value = true;
+}
+
 const changePlaylist = () => {
-    isChangePlaylist.value = true;
+    emitter.emit('change-playlist');
 }
 
 // Hàm để đóng popup AddPlaylist
 const closePopup = () => {
     isAddPlaylist.value = false;
-    isChangePlaylist.value = false;
+    isUpdatePlaylist.value = false;
 }
 
 // Hàm tính toán và cập nhật vị trí popup
@@ -159,12 +173,21 @@ const cleanupEventListeners = () => {
     window.removeEventListener('resize', updatePopupPosition);
 };
 
+// Hàm nhận playlistId
+const selectedPlaylist = (payload) => {
+    playlistId.value = payload.playlistId;
+    playlistName.value = payload.playlistName;
+};
+
+
 onMounted(() => {
     emitter.on("show-setting", showPopup);
+    emitter.on('selected-playlist', selectedPlaylist);
 });
 
 onUnmounted(() => {
     emitter.off("show-setting", showPopup);
+    emitter.off('selected-playlist', selectedPlaylist);
     cleanupEventListeners()
 })
 

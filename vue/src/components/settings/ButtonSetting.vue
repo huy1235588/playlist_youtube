@@ -14,7 +14,7 @@ import emitter from '../../eventBus';
 
 const props = defineProps({
     id: {
-        type: Number,
+        type: String,
         required: true,
     },
     label: {
@@ -28,17 +28,17 @@ const props = defineProps({
     onClick: Function,
 });
 
-const emit = defineEmits(['add-playlist', 'change-playlist'])
+const emit = defineEmits(['add-playlist', 'update-playlist' ,'change-playlist']);
 
 // Gửi sự kiện click cho PlaylistVideo
 const handleClick = (event) => {
     // Thêm playlist vào database
-    if (props.id === 1) {
+    if (props.id === "addPlaylist") {
         emit('add-playlist');
     }
     
     // Hiện video bị ẩn
-    if (props.id === 2) {
+    if (props.id === "showHiddenVideos") {
         // Phát sự kiện filter để gọi api
         emitter.emit('show-hidden-video', {
             column: props.column,
@@ -46,8 +46,13 @@ const handleClick = (event) => {
         });
     }
 
+    // Cập nhật playlist
+    if (props.id === "updatePlaylist"){
+        emit('update-playlist');
+    }
+
     // Thay đổi playlist
-    if (props.id === 3) {
+    if (props.id === "changePlaylist") {
         emit('change-playlist');
     }
 }

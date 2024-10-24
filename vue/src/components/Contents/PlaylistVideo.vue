@@ -8,19 +8,22 @@
                     v-for="(itemPlaylist, indexPlaylist) in dataPlaylist"
                     :key="indexPlaylist"
                     :data="itemPlaylist"
-                    @select-playlist="
-                        (payload) => selectPlaylist(payload.playlistId)
-                    "
+                    @select-playlist="(payload) => selectPlaylist(payload)"
                 />
             </div>
         </section>
-        <VideoYoutube
-            v-else-if="!isShowHiddenVideo"
-            v-for="(item, index) in data"
-            :key="index"
-            :data="item"
-            :playlist="playlist"
-        />
+        <div v-else-if="!isShowHiddenVideo">
+            <h2>
+                {{ playlist.Title }}
+            </h2>
+            <VideoYoutube
+                v-for="(item, index) in data"
+                :key="index"
+                :index="index"
+                :data="item"
+                :playlist="playlist"
+            />
+        </div>
         <hiddenVideo
             v-else
             v-for="(itemHidden, indexHidden) in dataHidden"
@@ -62,14 +65,24 @@ let videoStart = 1;
 let isFetching = false; // ngăn chặn việc gọi API nhiều lần
 const isOverVideo = ref(false)
 
-const selectPlaylist = (PlaylistId) => {
-    playlistId.value = PlaylistId;
+// Hàm khi chọn playlist
+const selectPlaylist = (payload) => {
+    playlistId.value = payload.playlistId;
     isShowHiddenVideo.value = false;
     isPlaylistYoutube.value = false;
     // Tìm playlist đã chọn
     playlist.value = playlists.value.find(item => item.PlaylistId === playlistId.value);
 
+    console.log(playlist.value)
+
+    videoStart = 1;
     fetchData();
+
+    // Truyền playlistId
+    emitter.emit('selected-playlist', {
+        playlistId: payload.playlistId,
+        playlistName: payload.playlistName,
+    });
 }
 
 // Hàm để lấy playlist
@@ -117,11 +130,17 @@ const fetchData = async (payload = {}) => {
             }
         });
 
-        // dữ liệu với các video đã tải về
-        const newVideos = response.data.videos || [];
+        // Kiểm tra đã có video chưa
+        if (videoStart === 1) {
+            data.value = response.data.videos || [];
+        }
+        else {
+            // dữ liệu với các video đã tải về
+            const newVideos = response.data.videos || [];
 
-        // Gộp video mới với video hiện tại
-        data.value = [...data.value, ...newVideos];
+            // Gộp video mới với video hiện tại
+            data.value = [...data.value, ...newVideos];
+        }
 
         if (response.data.isOverVideo) {
             isOverVideo.value = true;
@@ -131,21 +150,15 @@ const fetchData = async (payload = {}) => {
         videoStart += 1;
 
         // Đặt lại cờ
-        isFetching = false; 
+        isFetching = false;
 
     } catch (error) {
         // Đặt lại cờ khi gặp lỗi
-        isFetching = false; 
+        isFetching = false;
         // Xử lý lỗi mạng
         emitter.emit('error-page', {
             errorMessage: error.message
         });
-    }
-};
-
-const getMoreVideo = async () => {
-    if (!isFetching) {
-        await fetchData(); // Gọi API để tải thêm video
     }
 };
 
@@ -186,7 +199,7 @@ const searchVideo = async (payload) => {
         }
     }
     else {
-        fetchData();
+        selectPlaylist(playlistId.value);
     }
 }
 
@@ -214,6 +227,7 @@ const showHiddenVideo = async () => {
 
 onMounted(() => {
     getPlaylist();
+    emitter.on('change-playlist', getPlaylist); // Lấy dữ liệu sự kiện lắng nghe "change-playlist"
     emitter.on('filter', fetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('show-hidden-video', showHiddenVideo); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('search-video', searchVideo); // Lấy dữ liệu sự kiện lắng nghe "search-video"
@@ -222,6 +236,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     getPlaylist();
+    emitter.off('change-playlist', getPlaylist);
     emitter.off('filter', fetchData);
     emitter.off('show-hidden-video', showHiddenVideo);
     emitter.off('search-video', searchVideo);

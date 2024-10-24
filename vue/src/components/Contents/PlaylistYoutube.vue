@@ -196,7 +196,8 @@ async function formatData() {
 
 function selectPlaylist() {
     emit('select-playlist', {
-        playlistId: props.data.PlaylistId,
+        playlistId: playlistId.value,
+        playlistName: title.value,
     });
 }
 

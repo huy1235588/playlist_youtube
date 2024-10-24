@@ -1,7 +1,8 @@
 <template>
     <section :id="'video-' + indexVideo" class="video flex">
         <div id="index-container">
-            <div id="icon">
+            {{ index }}
+            <!-- <div id="icon">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24"
@@ -18,7 +19,7 @@
                 >
                     <path d="M21 10H3V9h18v1Zm0 4H3v1h18v-1Z"></path>
                 </svg>
-            </div>
+            </div> -->
         </div>
         <div id="content">
             <div id="thumbnail-container">
@@ -111,11 +112,16 @@ const duration = ref("");
 const publishedAt = ref("");
 const thumbnails = ref("");
 const indexVideo = ref(0);
+const index = ref("");
 
 const props = defineProps({
+    index: {
+        type: Number,
+        required: true,
+    },
     data: {
         type: Object,
-        required: true
+        required: true,
     },
     playlist: {
         type: Object,
@@ -190,6 +196,7 @@ function formatData() {
         channelTitle.value = props.data.ChannelTitle;
         thumbnails.value = props.data.Thumbnails;
         indexVideo.value = props.data.IndexVideo;
+        index.value = props.index + 29;
 
         // Định dạng lượt xem
         viewCount.value = formatViewCount(props.data.ViewCount);
@@ -232,9 +239,9 @@ watch(() => props.data, formatData, { deep: true });
 }
 
 /* Index */
-#index-container #icon {
-    padding: 0 6px;
-    fill: #fff;
+#index-container {
+    padding: 0 13px;
+    font-size: 20px;
 }
 
 /* Content */

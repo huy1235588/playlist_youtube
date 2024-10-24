@@ -25,7 +25,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from 'vue-router';
-import axios from "axios";
 
 import HelloWorld from "../components/HelloWorld.vue";
 import LoadingPage from "../components/LoadingPage.vue";
