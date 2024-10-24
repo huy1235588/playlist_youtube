@@ -43,7 +43,6 @@ database.rar
 **/README.md
 !/README.md
 
-database/*
 #Biến môi trường
 .env
 
@@ -60,3 +59,9 @@ database/*
 *.sw?
 
 ha.*
+
+
+# Database
+database/**
+!database/**/*.rar
+
