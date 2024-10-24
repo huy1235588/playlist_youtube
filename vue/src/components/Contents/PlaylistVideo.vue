@@ -28,6 +28,8 @@
             :data="itemHidden"
             :playlist="playlist"
         />
+
+        <LoadingVideo v-if="isLoadVideo"> </LoadingVideo>
     </main>
 </template>
 
@@ -41,6 +43,8 @@ import HiddenVideo from './HiddenVideo.vue';
 import NoPlaylistVideo from './NoPlaylistVideo.vue';
 import PlaylistYoutube from './PlaylistYoutube.vue';
 
+import LoadingVideo from '../loading/LoadingVideo.vue';
+
 const data = ref([]); // giữ dữ liệu video
 const dataPlaylist = ref([]); // giữ dữ liệu playlists
 const dataHidden = ref([]); // giữ dữ liệu video bị ẩn
@@ -48,10 +52,15 @@ const input = ref('');
 const isShowHiddenVideo = ref(false);
 const isNoPlaylist = ref(false);
 const isPlaylistYoutube = ref(false);
+const isLoadVideo = ref(false);
 
 const playlistId = ref(''); // Giữ playlistId
 const playlists = ref([]) // Giữ mảng dữ liệu playlist đã chọn
 const playlist = ref({}) // Giữ dữ liệu playlist đã chọn
+
+let videoStart = 1;
+let isFetching = false; // ngăn chặn việc gọi API nhiều lần
+const isOverVideo = ref(false)
 
 const selectPlaylist = (PlaylistId) => {
     playlistId.value = PlaylistId;
@@ -94,26 +103,61 @@ const fetchData = async (payload = {}) => {
     try {
         const { column = "AddedAt", order = "Desc" } = payload;
 
+        // Đánh dấu đang gọi API
+        isFetching = true;
 
         // Gọi API backend 
         const response = await axios.get("/api/video/get", {
             params: {
-                start: 1,
-                end: 50,
+                PageNumber: videoStart,
+                PageSize: 50,
                 column: column,
                 order: order,
                 playlistId: playlistId.value,
             }
         });
 
-        // Cập nhật dữ liệu với các video đã tải về
-        data.value = await response.data.videos || [];
+        // dữ liệu với các video đã tải về
+        const newVideos = response.data.videos || [];
+
+        // Gộp video mới với video hiện tại
+        data.value = [...data.value, ...newVideos];
+
+        if (response.data.isOverVideo) {
+            isOverVideo.value = true;
+        }
+
+        // Cập nhật videoStart
+        videoStart += 1;
+
+        // Đặt lại cờ
+        isFetching = false; 
 
     } catch (error) {
+        // Đặt lại cờ khi gặp lỗi
+        isFetching = false; 
         // Xử lý lỗi mạng
         emitter.emit('error-page', {
             errorMessage: error.message
         });
+    }
+};
+
+const getMoreVideo = async () => {
+    if (!isFetching) {
+        await fetchData(); // Gọi API để tải thêm video
+    }
+};
+
+const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const bottomPosition = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= bottomPosition - 10 && !isFetching && !isPlaylistYoutube.value && !isOverVideo.value) {
+        isLoadVideo.value = true;
+        fetchData();
+    } else {
+        isLoadVideo.value = false;
     }
 };
 
@@ -151,7 +195,7 @@ const showHiddenVideo = async () => {
     try {
         isShowHiddenVideo.value = !isShowHiddenVideo.value;
 
-        const response = await axios.get('/api/video/get/hidden-video',{
+        const response = await axios.get('/api/video/get/hidden-video', {
             params: {
                 playlistId: playlistId.value,
             }
@@ -173,6 +217,7 @@ onMounted(() => {
     emitter.on('filter', fetchData); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('show-hidden-video', showHiddenVideo); // Lấy dữ liệu sự kiện lắng nghe "filter"
     emitter.on('search-video', searchVideo); // Lấy dữ liệu sự kiện lắng nghe "search-video"
+    window.addEventListener('scroll', handleScroll); // Sự kiện cuộn đến cuối trang
 });
 
 onUnmounted(() => {
@@ -180,6 +225,7 @@ onUnmounted(() => {
     emitter.off('filter', fetchData);
     emitter.off('show-hidden-video', showHiddenVideo);
     emitter.off('search-video', searchVideo);
+    window.removeEventListener('scroll', handleScroll);
 })
 </script>
 

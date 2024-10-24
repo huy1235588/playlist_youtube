@@ -23,25 +23,29 @@ class QueryModel {
     }
 
     // Selct 50 Video đầu tiên theo thứ tự thêm vào 
-    async select50VideoBySortColumn(start, end, column, order, playlistId) {
+    async select50VideoBySortColumn(PageNumber, PageSize, column, order, playlistId, res) {
         try {
             await this.connect();
             const request = this.pool.request();
 
             // Chọn dữ liệu từ procedure Display50Video
             const result = await request
-                .input('start', sql.Int, start)
-                .input('end', sql.Int, end)
+                .input('PageNumber', sql.Int, PageNumber)
+                .input('PageSize', sql.Int, PageSize)
                 .input('column', sql.VarChar, column)
                 .input('order', sql.VarChar, order)
                 .input('playlistId', sql.VarChar, playlistId)
-                .query(`exec [Get 50 Videos By Sort Column] @start, @end, @column, @order, @playlistId`);
+                .query(`exec [Get 50 Videos By Sort Column] @PageNumber, @PageSize, @column, @order, @playlistId`);
 
             // Trả về dữ liệu nếu có
             if (result.recordset.length > 0) {
-                return result.recordset;
+                // Trả về dữ liệu
+                res.json({
+                    videos: result.recordset,
+                    isOverVideo: result.recordsets[1][0].NoMoreVideos,
+                });
             } else {
-                return { message: 'Videos not found' };
+                res.json({ message: 'Videos not found' });
             }
 
         } catch (error) {

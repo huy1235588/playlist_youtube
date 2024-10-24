@@ -6,17 +6,13 @@ const getVideoInfo = async (req, res) => {
 
         // Lấy video từ datbase
         const videos = await queryModel.select50VideoBySortColumn(
-            req.query.start,
-            req.query.end,
+            req.query.PageNumber,
+            req.query.PageSize,
             req.query.column,
             req.query.order,
             req.query.playlistId,
+            res,
         )
-
-        // Trả về giá trị
-        res.json({
-            videos
-        })
 
     } catch (error) {
         res.status(500).json({ message: 'Error getting video', error });
