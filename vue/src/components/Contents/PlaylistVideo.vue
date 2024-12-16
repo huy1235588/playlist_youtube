@@ -110,9 +110,9 @@ const getPlaylist = async () => {
 }
 
 // Hàm để tải video lần đầu
-const firstFetchData = async () => {
+const firstFetchData = async (payload = {}) => {
     videoStart = 1;
-    await fetchData();
+    await fetchData(payload);
 }
 
 // Hàm gọi api để lấy dữ liệu từ DB
