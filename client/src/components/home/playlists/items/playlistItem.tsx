@@ -53,7 +53,9 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
             <div id="content">
                 {/* Hình ảnh thumbnail */}
                 <div id="thumbnail-container" className="no-select">
-                    <a href="" id="thumbnail">
+                    <a href={`/playlist?list=${playlist.PlaylistId}`}
+                        id="thumbnail"
+                    >
                         {/* Hình ảnh thumbnail */}
 
                         <img src={playlist.Thumbnails ? playlist.Thumbnails : "/images/no_thumbnail.jpg"}
@@ -96,7 +98,7 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
                 <div className="meta">
                     {/* Tên Playlist */}
                     <h3 className="playlist-title-container">
-                        <a href=""
+                        <a href={`/playlist?list=${playlist.PlaylistId}`}
                             id="playlist-title"
                             className="no-select"
                         >
@@ -112,7 +114,9 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
                         <div className="channel-container no-select">
                             {/* Thumbnail chanel */}
                             <div className="thumbnail-channel">
-                                <a href="" className="thumbnail-channel-overplay">
+                                <a href={`https://youtube.com/channel/${channels?.ChannelId}`}
+                                    className="thumbnail-channel-overplay"
+                                >
                                     <img src={channels?.Thumbnails}
                                         alt="Thumbnail"
                                         id="thumbnail-img"
@@ -122,7 +126,7 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
 
                             {/* Tên kênh */}
                             <div className="channel-name-text">
-                                <a href=""
+                                <a href={`https://youtube.com/channel/${channels?.ChannelId}`}
                                     id="channel-name"
                                     className="no-select"
                                 >

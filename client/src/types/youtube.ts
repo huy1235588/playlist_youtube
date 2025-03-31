@@ -16,3 +16,17 @@ export type Channel = {
     SubscriberCount: number;
     ViewCount: number;
 }
+
+export type Video = {
+    playlistItemId: string;
+    VideoId: string;
+    VideoTitle: string;
+    ChannelId: string;
+    ChannelTitle: string;
+    ViewCount: string;
+    PublishedAt: string;
+    Thumbnails: string;
+    Duration: string;
+    AddedAt: string;
+    IndexVideo: number;
+}
