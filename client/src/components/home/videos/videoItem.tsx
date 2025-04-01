@@ -5,6 +5,7 @@ import { Video } from "@/types/youtube";
 import "./videoItem.css"; // Import CSS cho component
 import { useEffect, useState } from "react";
 import { formatDuration, formatViewCount, timeAgo } from "@/utils/formatDataVideo";
+import VideoItemMenu from "./videoItemMenu";
 
 interface VideoItemProps {
     video: Video;
@@ -109,6 +110,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 </div>
             </div>
 
+            {/* Menu video */}  
+            <VideoItemMenu />
         </div>
     );
 };

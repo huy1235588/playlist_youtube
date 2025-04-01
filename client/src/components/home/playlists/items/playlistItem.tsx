@@ -57,7 +57,6 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
                         id="thumbnail"
                     >
                         {/* Hình ảnh thumbnail */}
-
                         <img src={playlist.Thumbnails ? playlist.Thumbnails : "/images/no_thumbnail.jpg"}
                             alt="Thumbnail"
                             id="thumbnail-img"
