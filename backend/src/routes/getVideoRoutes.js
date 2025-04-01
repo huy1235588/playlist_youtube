@@ -14,6 +14,9 @@ router.get('/video/get/hidden-video', getHiddenVideoController.getHiddenVideo);
 // Route để lấy playlists từ database
 router.get('/playlist/get', getPlaylistsController.getPlaylists);
 
+// Route để lấy playlist theo id
+router.get('/playlist/get/:playlistId', getPlaylistsController.getPlaylistById);
+
 // Route để lấy channel của playlist
 router.get('/channel/get', getChannelController.getChannel);
 

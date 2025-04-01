@@ -2,7 +2,7 @@
 
 import Loading from "@/components/ui/loading/loading";
 import axios from "@/config/axios";
-import { Video } from "@/types/youtube";
+import { Playlist, Video } from "@/types/youtube";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,12 +15,26 @@ function PlaylistPage() {
     const [loading, setLoading] = useState(true); // Biến trạng thái loading
     const [loadingMore, setLoadingMore] = useState(false); // Biến trạng thái loading cho load thêm video
 
+    const [playlist, setPlaylist] = useState<Playlist>(); // Biến trạng thái playlist
     const [videoStart, setVideoStart] = useState(1); // Biến trạng thái videoStart
     const [videos, setVideos] = useState<Video[]>([]); // Danh sách video
     const [isOverVideo, setIsOverVideo] = useState(false); // Biến trạng thái isOverVideo
 
     // Lấy id playlist từ url
     const playlistId = searchParams.get("list") || null;
+
+    // Hàm để lấy thông tin playlist
+    const getPlaylist = async () => {
+        try {
+            // Gọi API backend 
+            const response = await axios.get(`/api/playlist/get/${playlistId}`);
+
+            return response.data
+        }
+        catch (error) {
+            console.error("Error fetching playlist:", error);
+        }
+    };
 
     // Hàm để lấy dữ liệu video
     const getVideos = async ({
@@ -76,7 +90,15 @@ function PlaylistPage() {
                 setLoading(true);
             }
 
-            // Gọi API backend 
+            // Gọi API để lấy thông tin playlist
+            const dataPlaylist = await getPlaylist();
+
+            // Kiểm tra đã có playlist chưa
+            if (!playlist) {
+                setPlaylist(dataPlaylist.playlist); // Cập nhật playlist
+            }
+
+            // Gọi API để lấy thông tin video 
             const data = await getVideos({
                 column,
                 order,
@@ -141,7 +163,7 @@ function PlaylistPage() {
     return (
         <main className="main">
             <h1>
-                {playlistId}
+                {playlist?.Title}
             </h1>
 
             {/* Kiểm tra trạng thái loading */}

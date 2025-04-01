@@ -118,6 +118,33 @@ class QueryModel {
         }
     }
 
+    // Select playlist by PlaylistId
+    async getPlaylist(PlaylistId) {
+        try {
+            // Kết nối đến SQL Server
+            await this.connect();
+            const request = this.pool.request();
+
+            const result = await request
+                .input('PlaylistId', sql.VarChar(50), PlaylistId)
+                .query(`select * from Playlists where PlaylistId = @PlaylistId`);
+
+            // Trả về dữ liệu đầu tiên
+            if (result.recordset.length > 0) {
+                return result.recordset[0];
+            }
+            else {
+                return null; // Nếu không tìm thấy, trả về null
+            }
+            
+        } catch (error) {
+            throw new Error(`Error getting playlists in SQL Server: ${error.message}`);
+        } finally {
+            // Đóng kết nối khi không còn cần thiết
+            await this.disconnect();
+        }
+    }
+
     // Select channel playlist
     async getChannel(ChannelId) {
         try {
