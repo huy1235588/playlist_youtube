@@ -30,7 +30,7 @@ class PlaylistsController {
             const queryModel = new QueryModel();
 
             // Lấy playlist theo playlistId từ database
-            const playlist = await queryModel.getPlaylist(playlistId);
+            const playlist = await queryModel.getPlaylistById(playlistId);
 
             if (!playlist) {
                 return res.status(404).json({ message: 'Playlist not found' });
