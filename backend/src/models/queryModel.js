@@ -118,6 +118,26 @@ class QueryModel {
         }
     }
 
+    // Select playlist by playlistId
+    async getPlaylistById(playlistId) {
+        try {
+            await this.connect();
+            const request = this.pool.request();
+
+            const result = await request
+                .input('playlistId', sql.VarChar(50), playlistId)
+                .query(`SELECT TOP 1 * FROM Playlists WHERE PlaylistId = @playlistId`);
+
+            // Trả về dữ liệu
+            return result.recordset[0];
+
+        } catch (error) {
+            throw new Error(`Error getting playlist by playlistId in SQL Server: ${error.message}`);
+        } finally {
+            await this.disconnect();
+        }
+    }
+
     // Select channel playlist
     async getChannel(ChannelId) {
         try {
