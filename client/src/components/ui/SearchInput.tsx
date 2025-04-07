@@ -5,9 +5,16 @@ import Loading from './loading/loading';
 
 interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
     loading?: boolean;
+    onClear?: () => void;
 }
 
-const SearchInput = ({ value, onChange, loading = false, ...props }: SearchInputProps) => {
+const SearchInput: React.FC<SearchInputProps> = ({
+    value,
+    onChange,
+    loading = false,
+    onClear,
+    ...props
+}: SearchInputProps) => {
     const [inputValue, setInputValue] = useState(value || '');
 
     // Hàm thay đổi dữ liệu
@@ -27,6 +34,7 @@ const SearchInput = ({ value, onChange, loading = false, ...props }: SearchInput
 
         // Gọi hàm thay đổi dữ liệu
         onChange?.(event);
+        onClear?.();
 
         // Focus vào input
         const inputElement = document.querySelector('input');

@@ -1,34 +1,29 @@
-'use client';
-
-import Loading from "@/components/ui/loading/loading";
-import { Playlist, Video } from "@/types/youtube";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+// Import các thư viện và component cần thiết
 import { gql } from '@apollo/client';
-import client from '@/config/apollo';
+import client from '@/config/apollo'; // Đảm bảo client này hoạt động phía server
+import { Playlist, Video } from '@/types/youtube';
+import PlaylistClientContent from '@/components/playlist/playlistClientContent'; // Component phía client để hiển thị nội dung
 
-import './playlistPage.css?v=1.0.0'; // Import CSS cho component
-import VideoItem from "@/components/home/videos/videoItem";
-import SearchInput from "@/components/ui/SearchInput";
-import { FaArrowUp } from "react-icons/fa";
-// Hàm để tìm kiếm video
-const useDebounce = (value: string, delay: number) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
+// Định nghĩa truy vấn GraphQL để lấy thông tin playlist theo ID
+const GET_PLAYLISTS_BY_ID = gql`
+    query GetPlaylistsById($playlistId: String!) {
+        playlist(id: $playlistId) {
+            success
+            data {
+                PlaylistId
+                Title
+                PublishedAt
+                Thumbnails
+                ChannelId
+                ChannelTitle
+                ItemCount
+            }
+            error
+        }
+    }
+`;
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedValue(value);
-        }, delay);
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [value, delay]);
-
-    return debouncedValue;
-};
-
-// Hàm để lấy video
+// Định nghĩa truy vấn GraphQL để lấy danh sách video từ playlist
 const GET_VIDEOS = gql`
     query GetVideos($PageNumber: Int, $PageSize: Int, $column: String, $order: String, $playlistId: String) {
         videos(PageNumber: $PageNumber, PageSize: $PageSize, column: $column, order: $order, playlistId: $playlistId) {
@@ -53,331 +48,131 @@ const GET_VIDEOS = gql`
     }
 `;
 
-// Hàm để lấy playlist by playlistId
-const GET_PLAYLISTS_BY_ID = gql`
-    query GetPlaylistsById($playlistId: String!) {
-        playlist(id: $playlistId) {
-            success
-            data {
-                PlaylistId
-                Title
-                PublishedAt
-                Thumbnails
-                ChannelId
-                ChannelTitle
-                ItemCount
-            }
-            error
-        }
-    }
-`;
+// Số lượng video được load ban đầu
+const INITIAL_PAGE_SIZE = 50;
 
-// Hàm để tìm kiếm video
-const SEARCH_VIDEOS = gql`
-    query SearchVideos($query: String!, $playlistId: String!, $PageNumber: Int, $PageSize: Int) {
-        searchVideos(query: $query, playlistId: $playlistId, PageNumber: $PageNumber, PageSize: $PageSize) {
-            success
-            data {
-                VideoId
-                VideoTitle
-                ChannelId
-                ChannelTitle
-                ViewCount
-                PublishedAt
-                Thumbnails
-                Duration
-                AddedAt
-                IndexVideo
-            }
-            error
-        }
-    }
-`;
-
-function PlaylistPage() {
-    const searchParams = useSearchParams();
-    // Khai báo biến
-    const [loading, setLoading] = useState(true); // Biến trạng thái loading
-    const [loadingMore, setLoadingMore] = useState(false); // Biến trạng thái loading cho load thêm video
-    const [searchQuery, setSearchQuery] = useState(""); // State for search input
-    const [isSearching, setIsSearching] = useState(false); // State for search loading
-    const debouncedSearchQuery = useDebounce(searchQuery, 500); // Debounced search query
-
-    const [playlistName, setPlaylistName] = useState("");
-    const [videoStart, setVideoStart] = useState(1); // Biến trạng thái videoStart
-    const [videos, setVideos] = useState<Video[]>([]); // Danh sách video
-    const [isOverVideo, setIsOverVideo] = useState(false); // Biến trạng thái isOverVideo
-
-    // Lấy id playlist từ url
-    const playlistId = searchParams.get("list") || null;
-
-    // Hàm để lấy playlist by playlistId
-    const getPlaylistById = async (): Promise<Playlist> => {
-        try {
-            // Gọi API backend 
-            const { data } = await client.query({
-                query: GET_PLAYLISTS_BY_ID,
-                variables: {
-                    playlistId: playlistId
-                }
-            });
-
-            // Trả về dữ liệu
-            return data.playlist.data;
-        }
-        catch (error) {
-            console.error("Error fetching playlist name:", error);
-            // Re-throw the error to be caught by the caller
-            throw error;
-        }
-    }
-
-    // Hàm để lấy dữ liệu video
-    const getVideos = async ({
-        column = "publishedAt",
-        order = "desc",
-    }) => {
-        try {
-            const { data } = await client.query({
-                query: GET_VIDEOS,
-                variables: {
-                    PageNumber: videoStart,
-                    PageSize: 50,
-                    column: column,
-                    order: order,
-                    playlistId: playlistId,
-                }
-            });
-
-            return data.videos.data;
-        }
-        catch (error) {
-            console.error("Error fetching videos:", error);
-        }
-        finally {
-            setLoading(false);
-        }
-    };
-
-    // Hàm để tải thêm video
-    const loadMoreVideos = async () => {
-        if (isOverVideo) return; // Nếu đã tải hết video thì không làm gì cả
-
-        // Gọi hàm lấy dữ liệu video
-        await fetchData({
-            column: "publishedAt",
-            order: "desc",
-            isLoadMore: true,
-        });
-    };
-
-    // Hàm để lấy dữ liệu 
-    const fetchData = async ({
-        column = "publishedAt",
-        order = "desc",
-        isLoadMore = false,
-    }) => {
-        try {
-            // Đánh dấu đang gọi API theo mode
-            if (isLoadMore) {
-                setLoadingMore(true);
-            } else {
-                setLoading(true);
-            }
-
-            // Lấy tên playlist
-            const playlist = await getPlaylistById();
-            setPlaylistName(playlist.Title);
-
-            // Gọi API backend 
-            const data = await getVideos({
-                column,
-                order,
-            });
-
-            // Kiểm tra đã có video chưa
-            if (videoStart === 1) {
-                setVideos(data.videos || []);
-            }
-            else {
-                // dữ liệu với các video đã tải về
-                const newVideos = data.videos || [];
-
-                // Gộp video mới với video hiện tại
-                setVideos((prevVideos) => [...prevVideos, ...newVideos]);
-            }
-
-            // Kiểm tra xem có video nào không
-            if (data.isOverVideo) {
-                setIsOverVideo(true); // Đánh dấu đã tải hết video
-            }
-
-            // Cập nhật videoStart
-            setVideoStart((prev) => prev + 1);
-
-        } catch (error) {
-            console.error("Error fetching videos:", error);
-        } finally {
-            // Đánh dấu không còn gọi API
-            if (isLoadMore) {
-                setLoadingMore(false);
-            } else {
-                setLoading(false);
-            }
-        }
-    };
-
-    // Hàm để tìm kiếm video
-    const searchVideos = async (query: string) => {
-        try {
-            setIsSearching(true);
-            const { data } = await client.query({
-                query: SEARCH_VIDEOS,
-                variables: {
-                    query,
-                    playlistId: playlistId,
-                    PageNumber: 1,
-                    PageSize: 50,
-                }
-            });
-
-            // Cập nhật danh sách video
-            setVideos(data.searchVideos.data);
-        }
-        catch (error) {
-            console.error("Error fetching videos:", error);
-        }
-        finally {
-            setIsSearching(false);
-        }
-    }
-
-    // Hàm để tìm kiếm video khi có sự thay đổi
-    useEffect(() => {
-        if (debouncedSearchQuery) {
-            searchVideos(debouncedSearchQuery);
-        } else {
-            // Reset to initial data when search is cleared
-            setVideoStart(1);
-            setIsOverVideo(false);
-            fetchData({});
-        }
-    }, [debouncedSearchQuery]);
-
-    // Hàm để xử lý sự kiện cuộn chuột
-    const handleScroll = useCallback(() => {
-        // Kiểm tra xem đã tải hết video chưa
-        if (isOverVideo) return;
-
-        // Kiểm tra có tìm kiếm video không
-        if (debouncedSearchQuery) return;
-
-        // Kiểm tra vị trí cuộn chuột
-        const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-
-        // Nếu cuộn đến gần cuối trang và không đang tải video (đặc biệt là cả loadingMore)
-        if (scrollTop + clientHeight >= scrollHeight - 10 && !loading && !loadingMore) {
-            loadMoreVideos();
-        }
-    }, [loading, loadingMore]);
-
-    // Thêm sự kiện cuộn chuột khi component được mount
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [handleScroll]);
-
-
-    // Hàm để lấy dữ liệu khi component được mount
-    useEffect(() => {
-        fetchData({}); // Gọi hàm lấy dữ liệu
-
-    }, [playlistId]); // Chỉ gọi khi playlistId thay đổi
-
-    // Hàm để scroll lên trên
-    const scrollToTop = () => {
-        const duration = 1000; // Thời gian cuộn (ms)
-        const start = window.pageYOffset;
-        const startTime = performance.now();
-
-        const easeInOutCubic = (t: number) => {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        };
-
-        const animateScroll = (currentTime: number) => {
-            const elapsedTime = currentTime - startTime;
-            const progress = Math.min(elapsedTime / duration, 1);
-            const easedProgress = easeInOutCubic(progress);
-            
-            window.scrollTo(0, start * (1 - easedProgress));
-            
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll);
-            }
-        };
-
-        requestAnimationFrame(animateScroll);
-    };
-
-    return (
-        <main className="main">
-            <h1 className="playlist-name">
-                {playlistName}
-            </h1>
-
-            <SearchInput
-                placeholder="Tìm kiếm video..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                loading={isSearching}
-            />
-
-            {/* Kiểm tra trạng thái loading */}
-            {loading && (
-                <Loading
-                    size="400px"
-                    color="rgb(165, 165, 165);"
-                />
-            )}
-
-            {/* Kiểm tra trạng thái không có video */}
-            {!loading && videos.length === 0 && (
-                <div className="no-video">
-                    <p>No videos found.</p>
-                </div>
-            )}
-
-            {/* Hiển thị danh sách video */}
-            {!loading && videos.length > 0 && (
-                <div className="video-list">
-                    {videos.map((video, index) => (
-                        <VideoItem
-                            key={index}
-                            index={index + 1}
-                            video={video}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {/* Kiểm tra trạng thái loading thêm video */}
-            {loadingMore && (
-                <Loading
-                    size="200px"
-                    color="rgb(165, 165, 165);"
-                />
-            )}
-
-            {/* Nút scroll lên trên */}
-            <button 
-                id="scroll-to-top" 
-                className="scroll-to-top"
-                onClick={scrollToTop}
-            >
-                <FaArrowUp />
-            </button>
-        </main>
-    );
+interface PlaylistPageProps {
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default PlaylistPage;
+// Hàm fetch dữ liệu ban đầu từ server
+async function getInitialData(playlistId: string | null) {
+    if (!playlistId) {
+        // Trường hợp không có playlistId
+        return {
+            playlist: null,
+            initialVideos: [],
+            initialIsOverVideo: true,
+            error: 'No playlist ID provided'
+        };
+    }
+
+    try {
+        // Gọi song song 2 truy vấn: lấy thông tin playlist và danh sách video
+        const [playlistResult, videosResult] = await Promise.all([
+            client.query<{
+                playlist: {
+                    success: boolean;
+                    data: Playlist | null; error?: string
+                }
+            }>({
+                query: GET_PLAYLISTS_BY_ID,
+                variables: { playlistId },
+                // Có thể cân nhắc thêm fetchPolicy để xử lý cache
+            }),
+            client.query<{
+                videos: {
+                    success: boolean;
+                    data: {
+                        videos: Video[];
+                        isOverVideo: boolean
+                    } | null; error?: string
+                }
+            }>({
+                query: GET_VIDEOS,
+                variables: {
+                    PageNumber: 1,
+                    PageSize: INITIAL_PAGE_SIZE,
+                    column: "publishedAt", // Sắp xếp mặc định theo thời gian đăng
+                    order: "desc",         // Giảm dần
+                    playlistId,
+                },
+                // Có thể thêm fetchPolicy nếu cần
+            })
+        ]);
+
+        const playlistData = playlistResult.data?.playlist;
+        const videosData = videosResult.data?.videos;
+
+        // Kiểm tra dữ liệu playlist hợp lệ
+        if (!playlistData?.success || !playlistData.data) {
+            throw new Error(playlistData?.error || 'Failed to fetch playlist details');
+        }
+
+        // Nếu video không fetch được, trả về danh sách rỗng
+        if (!videosData?.success || !videosData.data) {
+            console.warn("Failed to fetch initial videos:", videosData?.error);
+            return {
+                playlist: playlistData.data,
+                initialVideos: [],
+                initialIsOverVideo: true,
+                error: videosData?.error
+            };
+        }
+
+        // Trả về dữ liệu playlist và danh sách video ban đầu
+        return {
+            playlist: playlistData.data,
+            initialVideos: videosData.data.videos || [],
+            initialIsOverVideo: videosData.data.isOverVideo,
+            error: null
+        };
+
+    } catch (error) {
+        console.error("Error fetching initial data:", error);
+        let errorMessage = 'Failed to load playlist data.';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+        // Trả về lỗi nếu xảy ra exception
+        return {
+            playlist: null,
+            initialVideos: [],
+            initialIsOverVideo: true,
+            error: errorMessage
+        };
+    }
+}
+
+// Component chính cho trang playlist (đây là một Server Component)
+export default async function PlaylistPage({ searchParams }: PlaylistPageProps) {
+    const resolvedSearchParams = await searchParams;
+    const playlistId = typeof resolvedSearchParams.list === 'string' ? resolvedSearchParams.list : null;
+
+    // Gọi hàm fetch dữ liệu ban đầu
+    const { playlist, initialVideos, initialIsOverVideo, error } = await getInitialData(playlistId);
+
+    // Nếu có lỗi hoặc không có playlist, hiển thị giao diện thông báo lỗi
+    if (error || !playlist) {
+        return (
+            <main className="main">
+                <div className="error-message">
+                    <h1>Error</h1>
+                    <p>{error || 'Playlist not found or could not be loaded.'}</p>
+                    {/* Có thể thêm link quay lại trang chủ */}
+                </div>
+            </main>
+        );
+    }
+
+    // Nếu mọi thứ hợp lệ, render Client Component và truyền dữ liệu ban đầu
+    return (
+        <PlaylistClientContent
+            playlist={playlist}
+            initialVideos={initialVideos}
+            initialIsOverVideo={initialIsOverVideo}
+            playlistId={playlistId!} // PlaylistId chắc chắn không null vì đã kiểm tra phía trên
+            initialPageSize={INITIAL_PAGE_SIZE}
+        ></PlaylistClientContent>
+    );
+}
