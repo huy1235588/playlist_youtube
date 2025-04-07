@@ -1,14 +1,13 @@
 'use client';
 
 import Loading from "@/components/ui/loading/loading";
-import axios from "@/config/axios";
 import { Playlist, Video } from "@/types/youtube";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { gql, useQuery } from '@apollo/client';
+import { gql } from '@apollo/client';
 import client from '@/config/apollo';
 
-import './playlistPage.css'; // Import CSS cho component
+import './playlistPage.css?v=1.0.0'; // Import CSS cho component
 import VideoItem from "@/components/home/videos/videoItem";
 
 const GET_VIDEOS = gql`

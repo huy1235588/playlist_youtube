@@ -15,8 +15,14 @@ const playlistSchema = `
         error: String
     }   
 
+    type PlaylistsResponse {
+        success: Boolean!
+        data: [Playlist]
+        error: String
+    }
+
     type Query {
-        playlists: PlaylistResponse
+        playlists: PlaylistsResponse
         playlist(id: String!): PlaylistResponse
     }
 

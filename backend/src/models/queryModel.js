@@ -23,10 +23,10 @@ class QueryModel {
 
     // Select 50 Video đầu tiên theo thứ tự thêm vào 
     async select50VideoBySortColumn(
-        PageNumber, 
-        PageSize, 
-        column = 'PublishedAt', 
-        order = 'DESC', 
+        PageNumber,
+        PageSize,
+        column = 'PublishedAt',
+        order = 'DESC',
         playlistId
     ) {
         try {
@@ -174,18 +174,43 @@ class QueryModel {
         }
     }
 
-    // Select channel playlist
-    async getChannel(ChannelId) {
+    // Select channel
+    async getChannels() {
         try {
             await this.connect();
             const request = this.pool.request();
 
             const result = await request
-                .query(`exec [Get Channel by ChannelId] ${ChannelId}`);
+                .query(`SELECT * FROM Channels`);
 
             return {
                 success: true,
                 data: result.recordset
+            };
+
+        } catch (error) {
+            return {
+                success: false,
+                error: `Error getting channels in SQL Server: ${error.message}`
+            };
+        } finally {
+            await this.disconnect();
+        }
+    }
+
+    // Select channel by channelId
+    async getChannelByChannelId(ChannelId) {
+        try {
+            await this.connect();
+            const request = this.pool.request();
+
+            const result = await request
+                .input('ChannelId', sql.VarChar(50), ChannelId)
+                .query(`exec [Get Channel by ChannelId] @ChannelId`);
+
+            return {
+                success: true,
+                data: result.recordset[0]
             };
 
         } catch (error) {

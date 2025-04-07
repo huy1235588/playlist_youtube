@@ -1,18 +1,35 @@
 'use client';
 
-import axios from "@/config/axios";
 import { Channel, Playlist } from "@/types/youtube";
 import { CgPlayList } from "react-icons/cg";
 import { FaPlay } from "react-icons/fa";
 
-import './playlistItem.css'; // Import CSS cho component
+import './playlistItem.css?v=1.0.0'; // Import CSS cho component
 import { useEffect, useState } from "react";
 import PlaylistItemMenu from "./playlistItemMenu";
+import { gql } from "@apollo/client";
+import client from "@/config/apollo";
 
 // Định nghĩa các props nếu cần thiết
 interface PlaylistItemProps {
     playlist: Playlist
 }
+
+const GET_CHANNEL_BY_CHANNEL_ID = gql`
+    query GetChannelByChannelId($channelId: String!) {
+        channel(channelId: $channelId) {
+            success
+            data {
+                ChannelId
+                Title
+                Thumbnails
+                SubscriberCount
+                ViewCount
+            }
+            error
+        }
+    }
+`;
 
 const PlaylistItem: React.FC<PlaylistItemProps> = ({
     playlist
@@ -25,14 +42,15 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
     const getChannel = async () => {
         try {
             // Gọi api
-            const response = await axios.get('/api/channel/get', {
-                params: {
-                    channelId: playlist.ChannelId // Lấy channelId từ playlist
+            const { data } = await client.query({
+                query: GET_CHANNEL_BY_CHANNEL_ID,
+                variables: {
+                    channelId: playlist.ChannelId
                 }
             });
 
             // Lấy dữ liệu
-            const result = await response.data.channel[0];
+            const result = data.channel.data;
             setChannels(result); // Cập nhật danh sách kênh
 
         } catch (error) {
@@ -50,7 +68,7 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
             onMouseEnter={() => setIsHover(true)} // Khi hover vào
             onMouseLeave={() => setIsHover(false)} // Khi hover ra
         >
-            <div id="content">
+            <div id="content-playlist-item">
                 {/* Hình ảnh thumbnail */}
                 <div id="thumbnail-container" className="no-select">
                     <a href={`/playlist?list=${playlist.PlaylistId}`}

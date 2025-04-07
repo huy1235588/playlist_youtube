@@ -1,11 +1,30 @@
 'use client';
 
-import axios from "@/config/axios";
 import PlaylistItem from "./items/playlistItem";
 import { useEffect, useState } from "react";
 import { Playlist } from "@/types/youtube";
+import { gql } from "@apollo/client";
 
 import './playlistYoutube.css'; // Import CSS cho component
+import client from "@/config/apollo";
+
+const GET_PLAYLISTS = gql`
+    query GetPlaylists {
+        playlists {
+             success
+            data {
+                PlaylistId
+                Title
+                PublishedAt
+                Thumbnails
+                ChannelId
+                ChannelTitle
+                ItemCount
+            }
+            error
+        }
+    }
+`;
 
 function PlaylistYoutube() {
     // Khai báo biến
@@ -15,10 +34,12 @@ function PlaylistYoutube() {
     const getPlaylists = async () => {
         try {
             // Gọi api
-            const response = await axios.get('/api/playlist/get');
+            const { data } = await client.query({
+                query: GET_PLAYLISTS,
+            });
 
             // Lấy dữ liệu
-            const result = await response.data.playlists;
+            const result = data.playlists.data;
             setPlaylists(result); // Cập nhật danh sách playlist
 
 
@@ -35,7 +56,7 @@ function PlaylistYoutube() {
     return (
         <div className="content-playlist">
             {/* Tiêu đề */}
-            <h1>
+            <h1 className="title-playlist">
                 Playlist Youtube
             </h1>
 
