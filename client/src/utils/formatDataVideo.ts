@@ -19,7 +19,7 @@ export function formatViewCount(count: string) {
 // Hàm tính khoảng cách thời gian
 export function timeAgo(dateString: string) {
     const now = new Date();
-    const pastDate = new Date(dateString);
+    const pastDate = new Date(Number(dateString)); // Chuyển đổi chuỗi thành số
 
     const diffInDays = Math.floor((now.getTime() - pastDate.getTime()) / (1000 * 60 * 60 * 24));
 
