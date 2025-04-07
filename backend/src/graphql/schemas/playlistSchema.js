@@ -11,17 +11,13 @@ const playlistSchema = `
 
     type PlaylistResponse {
         success: Boolean!
-        data: PlaylistData
+        data: Playlist
         error: String
     }   
 
-    type PlaylistData {
-        playlists: [Playlist]
-    }
-
     type Query {
         playlists: PlaylistResponse
-        playlist(id: ID!): PlaylistResponse
+        playlist(id: String!): PlaylistResponse
     }
 
     type Mutation {

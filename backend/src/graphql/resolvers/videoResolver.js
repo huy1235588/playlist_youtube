@@ -11,18 +11,8 @@ const videoResolver = {
             playlistId
         }) => {
             try {
-                console.log('Resolver called with params:', {
-                    PageNumber,
-                    PageSize,
-                    column,
-                    order,
-                    playlistId
-                });
-
                 // Khởi tạo đối tượng
                 const queryModel = new QueryModel();
-
-                console.log('QueryModel initialized');
 
                 // Lấy video từ datbase
                 const result = await queryModel.select50VideoBySortColumn(
@@ -32,8 +22,6 @@ const videoResolver = {
                     order || 'DESC',
                     playlistId,
                 );
-
-                console.log('Query result:', result);
 
                 // Nếu có lỗi, trả về response với success = false
                 if (!result.success) {
@@ -47,7 +35,7 @@ const videoResolver = {
                 return result;
 
             } catch (error) {
-                console.error('Error in videos resolver:', error);
+                console.error('Error fetching videos:', error);
                 return {
                     success: false,
                     error: error.message,

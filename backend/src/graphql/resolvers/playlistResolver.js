@@ -11,11 +11,18 @@ const playlistResolver = {
                 // Lấy video từ database
                 const playlists = await queryModel.getPlaylists();
 
-                return {
-                    success: true,
-                    data: playlists,
-                    error: null
-                };
+                // Nếu có lỗi, trả về response với success = false
+                if (!playlists.success) {
+                    return {
+                        success: false,
+                        error: playlists.error,
+                        data: null
+                    };
+                }
+
+                // Trả về dữ liệu
+                return playlists;
+
             } catch (error) {
                 return {
                     success: false,
@@ -34,8 +41,6 @@ const playlistResolver = {
                 // Lấy playlist theo id
                 const playlist = await queryModel.getPlaylistById(id);
 
-                console.log(playlist);
-
                 // Nếu có lỗi, trả về response với success = false
                 if (!playlist.success) {
                     return {
@@ -45,6 +50,7 @@ const playlistResolver = {
                     };
                 }
 
+                // Trả về dữ liệu
                 return playlist;
 
             } catch (error) {

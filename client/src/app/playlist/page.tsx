@@ -35,6 +35,24 @@ const GET_VIDEOS = gql`
     }
 `;
 
+const GET_PLAYLISTS_BY_ID = gql`
+    query GetPlaylistsById($playlistId: String!) {
+        playlist(id: $playlistId) {
+            success
+            data {
+                PlaylistId
+                Title
+                PublishedAt
+                Thumbnails
+                ChannelId
+                ChannelTitle
+                ItemCount
+            }
+            error
+        }
+    }
+`;
+
 function PlaylistPage() {
     const searchParams = useSearchParams();
     // Khai báo biến
@@ -53,12 +71,15 @@ function PlaylistPage() {
     const getPlaylistById = async (): Promise<Playlist> => {
         try {
             // Gọi API backend 
-            const response = await axios.get<{
-                playlist: Playlist
-            }>(`/api/playlist/get/${playlistId}`);
+            const { data } = await client.query({
+                query: GET_PLAYLISTS_BY_ID,
+                variables: {
+                    playlistId: playlistId
+                }
+            });
 
             // Trả về dữ liệu
-            return response.data.playlist;
+            return data.playlist.data;
         }
         catch (error) {
             console.error("Error fetching playlist name:", error);
