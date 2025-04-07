@@ -49,9 +49,44 @@ const videoResolver = {
             return null;
         },
 
-        searchVideos: async (_, { query }) => {
-            // TODO: Implement video search
-            return [];
+        searchVideos: async (_, { 
+            query,
+            playlistId,
+            PageNumber,
+            PageSize
+        }) => {
+            try {
+                // Khởi tạo đối tượng
+                const queryModel = new QueryModel();
+
+                // Lấy video từ datbase
+                const result = await queryModel.search50VideoByTitleVideo(
+                    query,
+                    playlistId,
+                    PageNumber || 1,
+                    PageSize || 50
+                );
+
+                // Nếu có lỗi, trả về response với success = false
+                if (!result.success) {
+                    return {
+                        success: false,
+                        error: result.error,
+                        data: null
+                    };
+                }
+
+                // Trả về response
+                return result;
+
+            } catch (error) {
+                console.error('Error fetching videos:', error);
+                return {
+                    success: false,
+                    error: error.message,
+                    data: null
+                };
+            }
         }
     },
     Mutation: {

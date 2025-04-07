@@ -12,9 +12,21 @@ const videoSchema = `
         IndexVideo: Int
     }
 
-    type VideoResponse {
+    type VideosResponse {
         success: Boolean!
         data: VideoData
+        error: String
+    }
+
+    type VideoResponse {
+        success: Boolean!
+        data: Video
+        error: String
+    }
+
+    type SearchVideosResponse {
+        success: Boolean!
+        data: [Video]
         error: String
     }
 
@@ -24,9 +36,22 @@ const videoSchema = `
     }
 
     type Query {
-        videos(PageNumber: Int, PageSize: Int, column: String, order: String, playlistId: String): VideoResponse
+        videos(
+            PageNumber: Int,
+            PageSize: Int,
+            column: String,
+            order: String,
+            playlistId: String
+        ): VideosResponse
+
         video(id: ID!): Video
-        searchVideos(query: String!): [Video]
+        
+        searchVideos(
+            query: String!,
+            playlistId: String,
+            PageNumber: Int,
+            PageSize: Int
+        ): SearchVideosResponse
     }
 
     type Mutation {

@@ -1,10 +1,13 @@
 import './SearchInput.css';
 import { InputHTMLAttributes, useState } from 'react';
 import { FaSearch, FaTimes } from 'react-icons/fa';
+import Loading from './loading/loading';
 
-interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> { }
+interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
+    loading?: boolean;
+}
 
-const SearchInput = ({ value, onChange, ...props }: SearchInputProps) => {
+const SearchInput = ({ value, onChange, loading = false, ...props }: SearchInputProps) => {
     const [inputValue, setInputValue] = useState(value || '');
 
     // Hàm thay đổi dữ liệu
@@ -43,12 +46,16 @@ const SearchInput = ({ value, onChange, ...props }: SearchInputProps) => {
                     onChange={handleChange}
                     {...props}
                 />
-                {inputValue && (
+                {loading ? (
+                    <div className="loading-icon">
+                        <Loading size="16px" color="#94a3b8" />
+                    </div>
+                ) : inputValue ? (
                     <FaTimes
                         className="clear-icon"
                         onClick={handleClear}
                     />
-                )}
+                ) : null}
             </div>
         </div>
     )

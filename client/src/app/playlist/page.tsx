@@ -11,6 +11,24 @@ import './playlistPage.css?v=1.0.0'; // Import CSS cho component
 import VideoItem from "@/components/home/videos/videoItem";
 import SearchInput from "@/components/ui/SearchInput";
 
+// Hàm để tìm kiếm video
+const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
+
+// Hàm để lấy video
 const GET_VIDEOS = gql`
     query GetVideos($PageNumber: Int, $PageSize: Int, $column: String, $order: String, $playlistId: String) {
         videos(PageNumber: $PageNumber, PageSize: $PageSize, column: $column, order: $order, playlistId: $playlistId) {
@@ -35,6 +53,7 @@ const GET_VIDEOS = gql`
     }
 `;
 
+// Hàm để lấy playlist by playlistId
 const GET_PLAYLISTS_BY_ID = gql`
     query GetPlaylistsById($playlistId: String!) {
         playlist(id: $playlistId) {
@@ -53,11 +72,36 @@ const GET_PLAYLISTS_BY_ID = gql`
     }
 `;
 
+// Hàm để tìm kiếm video
+const SEARCH_VIDEOS = gql`
+    query SearchVideos($query: String!, $playlistId: String!, $PageNumber: Int, $PageSize: Int) {
+        searchVideos(query: $query, playlistId: $playlistId, PageNumber: $PageNumber, PageSize: $PageSize) {
+            success
+            data {
+                VideoId
+                VideoTitle
+                ChannelId
+                ChannelTitle
+                ViewCount
+                PublishedAt
+                Thumbnails
+                Duration
+                AddedAt
+                IndexVideo
+            }
+            error
+        }
+    }
+`;
+
 function PlaylistPage() {
     const searchParams = useSearchParams();
     // Khai báo biến
     const [loading, setLoading] = useState(true); // Biến trạng thái loading
     const [loadingMore, setLoadingMore] = useState(false); // Biến trạng thái loading cho load thêm video
+    const [searchQuery, setSearchQuery] = useState(""); // State for search input
+    const [isSearching, setIsSearching] = useState(false); // State for search loading
+    const debouncedSearchQuery = useDebounce(searchQuery, 500); // Debounced search query
 
     const [playlistName, setPlaylistName] = useState("");
     const [videoStart, setVideoStart] = useState(1); // Biến trạng thái videoStart
@@ -183,8 +227,51 @@ function PlaylistPage() {
         }
     };
 
+    // Hàm để tìm kiếm video
+    const searchVideos = async (query: string) => {
+        try {
+            setIsSearching(true);
+            const { data } = await client.query({
+                query: SEARCH_VIDEOS,
+                variables: {
+                    query,
+                    playlistId: playlistId,
+                    PageNumber: 1,
+                    PageSize: 50,
+                }
+            });
+
+            // Cập nhật danh sách video
+            setVideos(data.searchVideos.data);
+        }
+        catch (error) {
+            console.error("Error fetching videos:", error);
+        }
+        finally {
+            setIsSearching(false);
+        }
+    }
+
+    // Hàm để tìm kiếm video khi có sự thay đổi
+    useEffect(() => {
+        if (debouncedSearchQuery) {
+            searchVideos(debouncedSearchQuery);
+        } else {
+            // Reset to initial data when search is cleared
+            setVideoStart(1);
+            setIsOverVideo(false);
+            fetchData({});
+        }
+    }, [debouncedSearchQuery]);
+
     // Hàm để xử lý sự kiện cuộn chuột
     const handleScroll = useCallback(() => {
+        // Kiểm tra xem đã tải hết video chưa
+        if (isOverVideo) return;
+
+        // Kiểm tra có tìm kiếm video không
+        if (debouncedSearchQuery) return;
+
         // Kiểm tra vị trí cuộn chuột
         const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
 
@@ -215,6 +302,9 @@ function PlaylistPage() {
 
             <SearchInput
                 placeholder="Tìm kiếm video..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                loading={isSearching}
             />
 
             {/* Kiểm tra trạng thái loading */}

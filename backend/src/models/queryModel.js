@@ -69,7 +69,12 @@ class QueryModel {
     }
 
     // Tìm video theo tên
-    async searchVideo(input, playlistId) {
+    async search50VideoByTitleVideo(
+        input,
+        playlistId,
+        PageNumber = 1,
+        PageSize = 50
+    ) {
         try {
             await this.connect();
             const request = this.pool.request();
@@ -77,7 +82,9 @@ class QueryModel {
             const result = await request
                 .input('input', sql.VarChar, input)
                 .input('playlistId', sql.VarChar(50), playlistId)
-                .query(`exec [Search 50 Videos By TitleVideo] @input, @playlistId`);
+                .input('PageNumber', sql.Int, PageNumber)
+                .input('PageSize', sql.Int, PageSize)
+                .query(`exec [Search 50 Videos By TitleVideo] @input, @playlistId, @PageNumber, @PageSize`);
 
             return {
                 success: true,
@@ -210,7 +217,7 @@ class QueryModel {
 
             return {
                 success: true,
-                data: result.recordset[0]
+                data: result.recordset
             };
 
         } catch (error) {

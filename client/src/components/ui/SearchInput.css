@@ -55,3 +55,11 @@
 .clear-icon:hover {
     color: #fff;
 }
+
+.loading-icon {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
