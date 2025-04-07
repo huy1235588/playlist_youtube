@@ -3,7 +3,7 @@
 import Loading from "@/components/ui/loading/loading";
 import { Playlist, Video } from "@/types/youtube";
 // import { useSearchParams } from "next/navigation"; // Bỏ import useSearchParams vì playlistId được truyền qua prop
-import { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { gql } from '@apollo/client';
 import client from '@/config/apollo'; // Đảm bảo client này hoạt động phía client
 
@@ -142,8 +142,6 @@ function PlaylistClientContent({
 
     // Debounce search query để giảm số lần gọi API khi người dùng gõ
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
-    const isMounted = useRef(false); // Ref to track initial mount
 
     // Hook để cuộn về đầu trang
     const scrollToTop = useScrollToTop();
@@ -376,7 +374,10 @@ function PlaylistClientContent({
             // Điều này tránh giữ lại kết quả tìm kiếm cũ hoặc chỉ đặt lại thành initialVideos
             // Kiểm tra xem trạng thái video có khác với trạng thái ban đầu không để tránh tải không cần thiết khi gắn kết
             if (videos !== initialVideos || isOverVideo !== initialIsOverVideo) {
-                getVideos({}); // Gọi handleClear để khôi phục lại
+                getVideos({
+                    column: sort.column,
+                    order: sort.order,
+                }); // Gọi handleClear để khôi phục lại
             }
         }
     }, [debouncedSearchQuery, searchVideos, scrollToTop, initialVideos, initialIsOverVideo]);
