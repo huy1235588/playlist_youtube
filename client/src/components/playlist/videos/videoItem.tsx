@@ -6,7 +6,7 @@ import "./videoItem.css"; // Import CSS cho component
 import { useEffect, useState } from "react";
 import { formatDuration, formatViewCount, timeAgo } from "@/utils/formatDataVideo";
 import VideoItemMenu from "./videoItemMenu";
-
+import Loading from "@/components/ui/loading/loading";
 interface VideoItemProps {
     video: Video;
     index: number;
@@ -17,13 +17,19 @@ const VideoItem: React.FC<VideoItemProps> = ({
     index,
 }) => {
     const [formattedVideo, setFormattedVideo] = useState<Video>(video);
+    const [isLoading, setIsLoading] = useState(true); // Biến trạng thái loading
 
     // format dữ liệu
     useEffect(() => {
-        const newVideo = { ...video }; // clone đối tượng video để không mutate props
+        // clone đối tượng video để không mutate props
+        const newVideo = { ...video }; 
+
+        // format các thuộc tính video
         newVideo.ViewCount = formatViewCount(newVideo.ViewCount);
         newVideo.Duration = formatDuration(newVideo.Duration);
         newVideo.PublishedAt = timeAgo(newVideo.PublishedAt);
+
+        // format videoId
         setFormattedVideo(newVideo);
     }, [video]);
 

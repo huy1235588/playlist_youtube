@@ -217,7 +217,7 @@ class QueryModel {
 
             return {
                 success: true,
-                data: result.recordset
+                data: result.recordset[0]
             };
 
         } catch (error) {

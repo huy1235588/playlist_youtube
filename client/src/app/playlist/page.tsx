@@ -147,10 +147,18 @@ async function getInitialData(playlistId: string | null) {
 // Component chính cho trang playlist (đây là một Server Component)
 export default async function PlaylistPage({ searchParams }: PlaylistPageProps) {
     const resolvedSearchParams = await searchParams;
-    const playlistId = typeof resolvedSearchParams.list === 'string' ? resolvedSearchParams.list : null;
+    const playlistId =
+        typeof resolvedSearchParams.list === 'string'
+            ? resolvedSearchParams.list
+            : null;
 
     // Gọi hàm fetch dữ liệu ban đầu
-    const { playlist, initialVideos, initialIsOverVideo, error } = await getInitialData(playlistId);
+    const {
+        playlist,
+        initialVideos,
+        initialIsOverVideo,
+        error
+    } = await getInitialData(playlistId);
 
     // Nếu có lỗi hoặc không có playlist, hiển thị giao diện thông báo lỗi
     if (error || !playlist) {
@@ -173,6 +181,6 @@ export default async function PlaylistPage({ searchParams }: PlaylistPageProps) 
             initialIsOverVideo={initialIsOverVideo}
             playlistId={playlistId!} // PlaylistId chắc chắn không null vì đã kiểm tra phía trên
             initialPageSize={INITIAL_PAGE_SIZE}
-        ></PlaylistClientContent>
+        />
     );
 }

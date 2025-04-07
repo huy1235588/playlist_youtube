@@ -135,6 +135,7 @@ function PlaylistClientContent({
 
     // Debounce search query để giảm số lần gọi API khi người dùng gõ
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
     // Hook để cuộn về đầu trang
     const scrollToTop = useScrollToTop();
 
@@ -203,7 +204,6 @@ function PlaylistClientContent({
         }
     }, [playlistId, videoPage, loadingMore, isOverVideo, initialPageSize, debouncedSearchQuery]);
 
-
     // Hàm tìm kiếm video (phía client)
     const searchVideos = useCallback(async (query: string) => {
         // Nếu query rỗng sau debounce thì không thực hiện tìm kiếm
@@ -236,6 +236,7 @@ function PlaylistClientContent({
                 setIsOverVideo(true); // Ngăn không cho load thêm sau khi tìm kiếm thất bại
                 setCurrentError(data.searchVideos?.error || 'Failed to perform search.');
             }
+            
         } catch (error) {
             console.error("Error searching videos:", error);
             setVideos([]); // Xóa danh sách video nếu có lỗi trong quá trình tìm kiếm
