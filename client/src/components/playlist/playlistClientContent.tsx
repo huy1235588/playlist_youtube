@@ -328,8 +328,11 @@ function PlaylistClientContent({
         }
 
         if (scrollTop + clientHeight >= scrollHeight - buffer) {
-            // console.log("Reached bottom, loading more...");
-            getMoreVideos({}); // Gọi hàm tải thêm video
+            // Gọi hàm tải thêm video
+            getMoreVideos({
+                column: sort.column,
+                order: sort.order,
+            });
         }
     }, [loadingMore, isOverVideo, isSearching, debouncedSearchQuery, getMoreVideos]);
 
