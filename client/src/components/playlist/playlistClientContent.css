@@ -28,3 +28,9 @@ main.playlist-page {
     color: #fff;
 }
 
+.playlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}

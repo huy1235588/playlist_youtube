@@ -7,10 +7,11 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 import { gql } from '@apollo/client';
 import client from '@/config/apollo'; // Đảm bảo client này hoạt động phía client
 
-import './playlistPage.css'; // Import CSS, có thể quản lý global
+import './playlistClientContent.css'; // Import CSS, có thể quản lý global
 import VideoItem from "@/components/playlist/videos/videoItem";
 import SearchInput from "@/components/ui/SearchInput";
 import { FaArrowUp } from "react-icons/fa";
+import PlaylistMenu from "./playlistMenu";
 
 // Custom hook để debounce giá trị
 const useDebounce = (value: string, delay: number) => {
@@ -238,7 +239,7 @@ function PlaylistClientContent({
                 setIsOverVideo(true); // Ngăn không cho load thêm sau khi tìm kiếm thất bại
                 setCurrentError(data.searchVideos?.error || 'Failed to perform search.');
             }
-            
+
         } catch (error) {
             console.error("Error searching videos:", error);
             setVideos([]); // Xóa danh sách video nếu có lỗi trong quá trình tìm kiếm
@@ -317,14 +318,19 @@ function PlaylistClientContent({
                 {playlistName}
             </h1>
 
-            {/* Input tìm kiếm video trong playlist */}
-            <SearchInput
-                placeholder="Tìm kiếm video trong playlist..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                loading={isSearching}
-                onClear={handleClear} // Sử dụng handler để xóa tìm kiếm
-            />
+            <div className="playlist-header">
+                {/* Input tìm kiếm video trong playlist */}
+                <SearchInput
+                    placeholder="Tìm kiếm video trong playlist..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    loading={isSearching}
+                    onClear={handleClear} // Sử dụng handler để xóa tìm kiếm
+                />
+
+
+                <PlaylistMenu />
+            </div>
 
             {/* Hiển thị thông báo lỗi phía client nếu có */}
             {currentError && (
