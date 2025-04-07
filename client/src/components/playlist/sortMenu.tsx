@@ -1,9 +1,34 @@
 import { useEffect, useRef, useState } from "react";
-import Button from "../ui/Button";
-import { BsSortAlphaDown, BsSortAlphaUpAlt, BsCalendarDate, BsCalendarDateFill } from "react-icons/bs";
-import './sortMenu.css'; // Import CSS file for styling
+import Button from "../ui/Button"; // Giả sử Button component đã được import đúng
+import {
+    BsSortAlphaDown,
+    BsSortAlphaUpAlt,
+    BsCalendarDate,
+    BsCalendarDateFill,
+    BsSortDown,
+    BsSortUp
+} from "react-icons/bs";
 import { MdSort } from "react-icons/md";
-import { BsSortDown, BsSortUp } from "react-icons/bs";
+import './sortMenu.css'; // Đảm bảo file CSS này tồn tại và được import
+
+// Định nghĩa kiểu cho một tùy chọn sắp xếp
+interface SortOption {
+    column: string;
+    order: string;
+    label: string;
+    icon: React.ElementType; // Sử dụng React.ElementType cho component icon
+}
+
+// Mảng chứa các tùy chọn sắp xếp
+const sortOptions: SortOption[] = [
+    { column: 'AddedAt', order: 'desc', label: 'Ngày thêm (Mới nhất)', icon: BsSortUp },
+    { column: 'AddedAt', order: 'asc', label: 'Ngày thêm (Cũ nhất)', icon: BsSortDown },
+    { column: 'ViewCount', order: 'desc', label: 'Phổ biến nhất', icon: MdSort }, // Sử dụng MdSort cho phổ biến nhất
+    { column: 'VideoTitle', order: 'asc', label: 'Tên (A-Z)', icon: BsSortAlphaDown },
+    { column: 'VideoTitle', order: 'desc', label: 'Tên (Z-A)', icon: BsSortAlphaUpAlt },
+    { column: 'publishedAt', order: 'desc', label: 'Ngày phát hành (Mới nhất)', icon: BsCalendarDate },
+    { column: 'publishedAt', order: 'asc', label: 'Ngày phát hành (Cũ nhất)', icon: BsCalendarDateFill },
+];
 
 interface SortMenuProps {
     onSortChange: (column: string, order: string) => void;
@@ -17,23 +42,22 @@ const SortMenu: React.FC<SortMenuProps> = ({ onSortChange, defaultColumn, defaul
 
     // Hàm để mở/đóng dropdown
     const toggleDropdown = () => {
-        setDropdownVisible(!isDropdownVisible);
+        setDropdownVisible(prev => !prev); // Sử dụng callback để đảm bảo state luôn mới nhất
     };
 
     // Đóng dropdown khi nhấn ra ngoài
-    const handleClickOutside = (event: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-            setDropdownVisible(false);
-        }
-    };
-
-    // Sử dụng useEffect để thêm sự kiện click ra ngoài
     useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownVisible(false);
+            }
+        };
+
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, []);
+    }, []); // Dependency array rỗng đảm bảo effect chỉ chạy một lần khi mount
 
     // Hàm xử lý khi nhấn vào một mục
     const handleSortChange = (column: string, order: string) => {
@@ -49,93 +73,38 @@ const SortMenu: React.FC<SortMenuProps> = ({ onSortChange, defaultColumn, defaul
     return (
         <div className="sort-menu" ref={dropdownRef}>
             <Button className="sort-menu-button" onClick={toggleDropdown}>
-                <MdSort
-                    className="sort-menu-icon"
-                    size={20}
-                />
-                <span className="sort-menu-text">
-                    Sắp xếp
-                </span>
+                <MdSort className="sort-menu-icon" size={20} />
+                <span className="sort-menu-text">Sắp xếp</span>
             </Button>
+
             {isDropdownVisible && (
+                // Có thể thêm animation class nếu cần, ví dụ dùng thư viện như framer-motion
                 <div className={`sort-menu-dropdown ${isDropdownVisible ? 'show' : ''}`}>
                     <ul className="sort-menu-list">
-                        <li className={`sort-menu-item ${isActive('AddedAt', 'desc') ? 'active' : ''}`} onClick={() => handleSortChange('AddedAt', 'desc')}>
-                            <BsSortUp
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Ngày thêm (Mới nhất)
-                            </span>
-                        </li>
-
-                        <li className={`sort-menu-item ${isActive('AddedAt', 'asc') ? 'active' : ''}`} onClick={() => handleSortChange('AddedAt', 'asc')}>
-                            <BsSortDown
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Ngày thêm (Cũ nhất)
-                            </span>
-                        </li>
-
-                        <li className={`sort-menu-item ${isActive('ViewCount', 'desc') ? 'active' : ''}`} onClick={() => handleSortChange('ViewCount', 'desc')}>
-                            <MdSort
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Phổ biến nhất
-                            </span>
-                        </li>
-
-                        <li className={`sort-menu-item ${isActive('VideoTitle', 'asc') ? 'active' : ''}`} onClick={() => handleSortChange('VideoTitle', 'asc')}>
-                            <BsSortAlphaDown
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Tên (A-Z)
-                            </span>
-                        </li>
-
-                        <li className={`sort-menu-item ${isActive('VideoTitle', 'desc') ? 'active' : ''}`} onClick={() => handleSortChange('VideoTitle', 'desc')}>
-                            <BsSortAlphaUpAlt
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Tên (Z-A)
-                            </span>
-                        </li>
-
-                        <li className={`sort-menu-item ${isActive('publishedAt', 'desc') ? 'active' : ''}`} onClick={() => handleSortChange('publishedAt', 'desc')}>
-                            <BsCalendarDate
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Ngày phát hành (Mới nhất)
-                            </span>
-                        </li>
-
-                        <li className={`sort-menu-item ${isActive('publishedAt', 'asc') ? 'active' : ''}`} onClick={() => handleSortChange('publishedAt', 'asc')}>
-                            <BsCalendarDateFill
-                                className="sort-menu-icon"
-                                size={20}
-                            />
-
-                            <span className="sort-menu-text">
-                                Ngày phát hành (Cũ nhất)
-                            </span>
-                        </li>
+                        {sortOptions.map((option) => {
+                            // Lấy component Icon từ định nghĩa
+                            const IconComponent = option.icon;
+                            return (
+                                <li
+                                    // Sử dụng key duy nhất và ổn định
+                                    key={`${option.column}-${option.order}`}
+                                    className={`sort-menu-item ${isActive(option.column, option.order) ? 'active' : ''}`}
+                                    onClick={() => {
+                                        if (!isActive(option.column, option.order)) {
+                                            handleSortChange(option.column, option.order);
+                                        }
+                                    }}
+                                >
+                                    <IconComponent
+                                        className="sort-menu-icon"
+                                        size={20}
+                                    />
+                                    <span className="sort-menu-text">
+                                        {option.label}
+                                    </span>
+                                </li>
+                            );
+                        })}
                     </ul>
                 </div>
             )}
