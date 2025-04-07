@@ -1,5 +1,5 @@
 import { CiMenuBurger } from "react-icons/ci";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import './playlistMenu.css';
 import Button from "../ui/Button";
 import { BiHide } from "react-icons/bi";
@@ -8,13 +8,30 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 
 const PlaylistMenu = () => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // Hàm để mở/đóng dropdown
     const toggleDropdown = () => {
         setDropdownVisible(!isDropdownVisible);
     };
 
+    // Đóng dropdown khi nhấn ra ngoài
+    const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            setDropdownVisible(false);
+        }
+    };
+
+    // Sử dụng useEffect để thêm sự kiện click ra ngoài
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="playlist-menu">
+        <div className="playlist-menu" ref={dropdownRef}>
             <Button className="playlist-menu-button" onClick={toggleDropdown}>
                 <CiMenuBurger className="playlist-menu-icon" />
             </Button>

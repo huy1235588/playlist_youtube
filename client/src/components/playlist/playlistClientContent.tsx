@@ -12,6 +12,7 @@ import VideoItem from "@/components/playlist/videos/videoItem";
 import SearchInput from "@/components/ui/SearchInput";
 import { FaArrowUp } from "react-icons/fa";
 import PlaylistMenu from "./playlistMenu";
+import SortMenu from "./sortMenu";
 
 // Custom hook để debounce giá trị
 const useDebounce = (value: string, delay: number) => {
@@ -328,9 +329,12 @@ function PlaylistClientContent({
                     onClear={handleClear} // Sử dụng handler để xóa tìm kiếm
                 />
 
-
+                {/* Menu */}
                 <PlaylistMenu />
             </div>
+
+            {/* Menu sắp xếp video */}
+            <SortMenu />
 
             {/* Hiển thị thông báo lỗi phía client nếu có */}
             {currentError && (

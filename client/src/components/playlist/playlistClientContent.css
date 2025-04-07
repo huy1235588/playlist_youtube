@@ -32,5 +32,5 @@ main.playlist-page {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 0.25rem;
 }
