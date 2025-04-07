@@ -70,9 +70,9 @@ const PlaylistItem: React.FC<PlaylistItemProps> = ({
         >
             <div id="content-playlist-item">
                 {/* Hình ảnh thumbnail */}
-                <div id="thumbnail-container" className="no-select">
+                <div id="thumbnail-playlist-item-container" className="no-select">
                     <a href={`/playlist?list=${playlist.PlaylistId}`}
-                        id="thumbnail"
+                        id="thumbnail-playlist-item"
                     >
                         {/* Hình ảnh thumbnail */}
                         <img src={playlist.Thumbnails ? playlist.Thumbnails : "/images/no_thumbnail.jpg"}

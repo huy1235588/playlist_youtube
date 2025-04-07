@@ -41,13 +41,13 @@
 }
 
 /* Thumbnail */
-#thumbnail-container {
+#thumbnail-video-item-container {
     width: 320px;
     height: 180px;
     margin-right: 8px;
 }
 
-#thumbnail {
+#thumbnail-video-item {
     display: block;
     width: 100%;
     height: 100%;
@@ -56,7 +56,7 @@
     position: relative;
 }
 
-#thumbnail img {
+#thumbnail-video-item img {
     width: 320px;
     height: 240px;
     margin: -30px 0 0 0;
@@ -82,7 +82,7 @@
 }
 
 /* Meta */
-#meta {
+#meta-video-item {
     flex: 1;
     flex-basis: 0.0000001px;
 }

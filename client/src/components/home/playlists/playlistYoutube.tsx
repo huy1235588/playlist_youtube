@@ -7,6 +7,7 @@ import { gql } from "@apollo/client";
 
 import './playlistYoutube.css'; // Import CSS cho component
 import client from "@/config/apollo";
+import { useRouter } from "next/navigation";
 
 const GET_PLAYLISTS = gql`
     query GetPlaylists {
@@ -27,6 +28,8 @@ const GET_PLAYLISTS = gql`
 `;
 
 function PlaylistYoutube() {
+    const router = useRouter();
+
     // Khai báo biến
     const [playlists, setPlaylists] = useState<Playlist[]>([]); // Danh sách playlist
 
@@ -48,6 +51,11 @@ function PlaylistYoutube() {
         }
     };
 
+    // Hàm chuyển hướng đến trang playlist
+    const navigateToPlaylist = (playlistId: string) => {
+        router.push(`/playlist?list=${playlistId}`);
+    };
+
     // Gọi hàm lấy playlist khi component được mount
     useEffect(() => {
         getPlaylists();
@@ -63,7 +71,7 @@ function PlaylistYoutube() {
             {/* Danh sách playlist */}
             <ul className="playlist-list">
                 {playlists.map((playlist, index) => (
-                    <li key={index}>
+                    <li key={index} onClick={() => navigateToPlaylist(playlist.PlaylistId)}>
                         <PlaylistItem playlist={playlist} />
                     </li>
                 ))}

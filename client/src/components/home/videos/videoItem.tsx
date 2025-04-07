@@ -40,8 +40,8 @@ const VideoItem: React.FC<VideoItemProps> = ({
             {/* Nội dung chính */}
             <div className="content">
                 {/* Hình ảnh video */}
-                <div id="thumbnail-container">
-                    <a id="thumbnail">
+                <div id="thumbnail-video-item-container">
+                    <a id="thumbnail-video-item">
                         {/* Hình ảnh video */}
                         <img src={formattedVideo.Thumbnails}
                             alt={formattedVideo.VideoTitle}
@@ -60,7 +60,7 @@ const VideoItem: React.FC<VideoItemProps> = ({
                 </div>
 
                 {/* Nội dung video */}
-                <div id="meta">
+                <div id="meta-video-item">
                     {/* Tên video */}
                     <h3 className="video-title-container">
                         <a href=""
