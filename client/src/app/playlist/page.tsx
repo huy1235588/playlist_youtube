@@ -10,7 +10,7 @@ import client from '@/config/apollo';
 import './playlistPage.css?v=1.0.0'; // Import CSS cho component
 import VideoItem from "@/components/home/videos/videoItem";
 import SearchInput from "@/components/ui/SearchInput";
-
+import { FaArrowUp } from "react-icons/fa";
 // Hàm để tìm kiếm video
 const useDebounce = (value: string, delay: number) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -294,6 +294,31 @@ function PlaylistPage() {
 
     }, [playlistId]); // Chỉ gọi khi playlistId thay đổi
 
+    // Hàm để scroll lên trên
+    const scrollToTop = () => {
+        const duration = 1000; // Thời gian cuộn (ms)
+        const start = window.pageYOffset;
+        const startTime = performance.now();
+
+        const easeInOutCubic = (t: number) => {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        const animateScroll = (currentTime: number) => {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / duration, 1);
+            const easedProgress = easeInOutCubic(progress);
+            
+            window.scrollTo(0, start * (1 - easedProgress));
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        };
+
+        requestAnimationFrame(animateScroll);
+    };
+
     return (
         <main className="main">
             <h1 className="playlist-name">
@@ -342,6 +367,15 @@ function PlaylistPage() {
                     color="rgb(165, 165, 165);"
                 />
             )}
+
+            {/* Nút scroll lên trên */}
+            <button 
+                id="scroll-to-top" 
+                className="scroll-to-top"
+                onClick={scrollToTop}
+            >
+                <FaArrowUp />
+            </button>
         </main>
     );
 }
