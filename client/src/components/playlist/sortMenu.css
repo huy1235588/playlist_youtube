@@ -71,6 +71,11 @@
     transition: background-color 0.3s ease;
 }
 
+.sort-menu-dropdown li.sort-menu-item.active {
+    background-color: #444;
+    color: #fff;
+}
+
 .sort-menu-dropdown li.sort-menu-item:hover {
     background-color: #444;
 }

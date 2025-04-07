@@ -128,14 +128,17 @@ function PlaylistClientContent({
 }: PlaylistClientContentProps) {
 
     // Quản lý state với giá trị khởi tạo từ props
+    const [loading, setLoading] = useState(false); // Quản lý trạng thái loading
     const [loadingMore, setLoadingMore] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
     const [videos, setVideos] = useState<Video[]>(initialVideos);
+
     // Nếu có video ban đầu, bắt đầu tải từ trang 2; nếu không thì từ trang 1
     const [videoPage, setVideoPage] = useState(initialVideos.length > 0 ? 2 : 1);
     const [isOverVideo, setIsOverVideo] = useState(initialIsOverVideo);
     const [currentError, setCurrentError] = useState<string | null>(null); // Quản lý lỗi phía client nếu có
+    const [sort, setSort] = useState({ column: "publishedAt", order: "desc" }); // Mặc định sắp xếp theo publishedAt giảm dần
 
     // Debounce search query để giảm số lần gọi API khi người dùng gõ
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -145,6 +148,43 @@ function PlaylistClientContent({
 
     // Lấy tên playlist từ props
     const playlistName = playlist.Title;
+
+    // Hàm để lấy dữ liệu video
+    const getVideos = async ({
+        column = "publishedAt",
+        order = "desc",
+    }) => {
+        try {
+            setLoading(true);
+            setCurrentError(null);
+
+            const { data } = await client.query({
+                query: GET_VIDEOS,
+                variables: {
+                    PageNumber: 1, // Luôn tải từ trang đầu tiên khi gọi hàm này
+                    PageSize: initialPageSize,
+                    column,
+                    order,
+                    playlistId,
+                },
+                fetchPolicy: 'network-only',
+            });
+
+            if (data.videos?.success && data.videos.data) {
+                setVideos(data.videos.data.videos);
+                setIsOverVideo(data.videos.data.isOverVideo);
+                setVideoPage(data.videos.data.isOverVideo ? 1 : 2); // Nếu đã hết video, giữ nguyên trang 1
+            } else {
+                throw new Error(data.videos?.error || 'Failed to fetch videos');
+            }
+
+        } catch (error) {
+            console.error("Error fetching videos:", error);
+            setCurrentError(error instanceof Error ? error.message : 'An unknown error occurred while fetching videos.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Memoize danh sách video để tránh render lại không cần thiết
     const videoList = useMemo(() => (
@@ -296,7 +336,7 @@ function PlaylistClientContent({
     // Effect để thêm và xóa scroll listener
     useEffect(() => {
         // Chỉ thêm listener nếu chưa load hết video và không đang tìm kiếm
-        if (!isOverVideo && !debouncedSearchQuery) {
+        if (!isOverVideo && !debouncedSearchQuery && !loading) {
             window.addEventListener("scroll", handleScroll);
             // console.log("Scroll listener added.");
         } else {
@@ -309,7 +349,23 @@ function PlaylistClientContent({
             // console.log("Removing scroll listener.");
             window.removeEventListener("scroll", handleScroll);
         };
-    }, [handleScroll, isOverVideo, debouncedSearchQuery]); // Re-evaluate khi các giá trị thay đổi
+    }, [handleScroll, isOverVideo, debouncedSearchQuery, loading]); // Re-evaluate khi các giá trị thay đổi
+
+    // Hàm xử lý thay đổi sắp xếp video
+    const handleSortChange = useCallback(async (column: string, order: string) => {
+        setSort({ column, order });
+        setLoading(true);
+        setCurrentError(null);
+
+        try {
+            await getVideos({ column, order });
+        } catch (error) {
+            console.error("Error fetching sorted videos:", error);
+            setCurrentError(error instanceof Error ? error.message : 'An unknown error occurred while sorting videos.');
+        } finally {
+            setLoading(false);
+        }
+    }, [getVideos]);
 
     // --- Render giao diện ---
     return (
@@ -334,7 +390,19 @@ function PlaylistClientContent({
             </div>
 
             {/* Menu sắp xếp video */}
-            <SortMenu />
+            <SortMenu
+                onSortChange={handleSortChange}
+                defaultColumn={sort.column} // Truyền giá trị mặc định cho menu
+                defaultOrder={sort.order} // Truyền giá trị mặc định cho menu
+            />
+
+            {/* Kiểm tra trạng thái loading */}
+            {loading && (
+                <Loading
+                    size="400px"
+                    color="rgb(165, 165, 165);"
+                />
+            )}
 
             {/* Hiển thị thông báo lỗi phía client nếu có */}
             {currentError && (
@@ -359,10 +427,12 @@ function PlaylistClientContent({
             )}
 
             {/* Hiển thị danh sách video nếu có */}
-            {videos.length > 0 && videoList}
+            {videos.length > 0 && !loading && !isSearching && !currentError
+                && videoList
+            }
 
             {/* Hiển thị indicator khi đang tải thêm hoặc tìm kiếm */}
-            {(loadingMore || isSearching) && (
+            {(loadingMore || isSearching || loading) && (
                 <Loading
                     size={loadingMore ? "200px" : "300px"} // Kích thước khác nhau tùy trạng thái
                     color="rgb(165, 165, 165);"
