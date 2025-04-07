@@ -9,6 +9,7 @@ import client from '@/config/apollo';
 
 import './playlistPage.css?v=1.0.0'; // Import CSS cho component
 import VideoItem from "@/components/home/videos/videoItem";
+import SearchInput from "@/components/ui/SearchInput";
 
 const GET_VIDEOS = gql`
     query GetVideos($PageNumber: Int, $PageSize: Int, $column: String, $order: String, $playlistId: String) {
@@ -211,6 +212,10 @@ function PlaylistPage() {
             <h1 className="playlist-name">
                 {playlistName}
             </h1>
+
+            <SearchInput
+                placeholder="Tìm kiếm video..."
+            />
 
             {/* Kiểm tra trạng thái loading */}
             {loading && (
