@@ -370,6 +370,30 @@ function PlaylistClientContent({
         }
     }, [getVideos]);
 
+    // Hàm xử lý thêm playlist mới
+    const handleAddPlaylist = useCallback(() => {
+        console.log("Add new playlist clicked");
+        // Logic thêm playlist mới ở đây
+    }, []);
+
+    // Hàm xử lý hiển thị video ẩn
+    const handleShowHidden = useCallback(() => {
+        console.log("Show hidden videos clicked");
+        // Logic hiển thị video ẩn ở đây
+    }, []);
+
+    // Hàm xử lý cập nhật playlist
+    const handleUpdatePlaylist = useCallback(() => {
+        console.log("Update playlist clicked");
+        // Logic cập nhật playlist ở đây
+    }, []);
+
+    // Hàm xử lý xóa playlist
+    const handleDeletePlaylist = useCallback(() => {
+        console.log("Delete playlist clicked");
+        // Logic xóa playlist ở đây
+    }, []);
+
     // --- Render giao diện ---
     return (
         <main className={`main ${cssClass}`}>
@@ -389,7 +413,12 @@ function PlaylistClientContent({
                 />
 
                 {/* Menu */}
-                <PlaylistMenu />
+                <PlaylistMenu
+                    onAddPlaylist={handleAddPlaylist}
+                    onShowHiddenVideos={handleShowHidden}
+                    onUpdatePlaylist={handleUpdatePlaylist}
+                    onDeletePlaylist={handleDeletePlaylist}
+                />
             </div>
 
             {/* Menu sắp xếp video */}
