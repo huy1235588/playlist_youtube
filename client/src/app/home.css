@@ -36,7 +36,7 @@ Author       : LeThienHuy.
     --button-bg-hover: #3b90e0;
 }
 
-.main {
+.main.home-page {
     display: flex;
     flex-direction: column;
     align-items: center;

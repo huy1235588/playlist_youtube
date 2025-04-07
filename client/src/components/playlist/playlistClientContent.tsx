@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 import { gql } from '@apollo/client';
 import client from '@/config/apollo'; // Đảm bảo client này hoạt động phía client
 
-import './playlistPage.css?v=1.0.0'; // Import CSS, có thể quản lý global
+import './playlistPage.css'; // Import CSS, có thể quản lý global
 import VideoItem from "@/components/playlist/videos/videoItem";
 import SearchInput from "@/components/ui/SearchInput";
 import { FaArrowUp } from "react-icons/fa";
@@ -113,6 +113,7 @@ interface PlaylistClientContentProps {
     initialIsOverVideo: boolean;
     playlistId: string;
     initialPageSize: number;
+    cssClass?: string; // Thêm css_class nếu cần
 }
 
 function PlaylistClientContent({
@@ -120,7 +121,8 @@ function PlaylistClientContent({
     initialVideos,
     initialIsOverVideo,
     playlistId,
-    initialPageSize
+    initialPageSize,
+    cssClass = "", // Giá trị mặc định là chuỗi rỗng
 }: PlaylistClientContentProps) {
 
     // Quản lý state với giá trị khởi tạo từ props
@@ -309,7 +311,7 @@ function PlaylistClientContent({
 
     // --- Render giao diện ---
     return (
-        <main className="main">
+        <main className={`main ${cssClass}`}>
             {/* Hiển thị tên playlist */}
             <h1 className="playlist-name">
                 {playlistName}

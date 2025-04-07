@@ -4,6 +4,9 @@ import client from '@/config/apollo'; // Đảm bảo client này hoạt động
 import { Playlist, Video } from '@/types/youtube';
 import PlaylistClientContent from '@/components/playlist/playlistClientContent'; // Component phía client để hiển thị nội dung
 
+// Định nghĩa class CSS cho trang playlist
+const CSS_CLASS = "playlist-page"; 
+
 // Định nghĩa truy vấn GraphQL để lấy thông tin playlist theo ID
 const GET_PLAYLISTS_BY_ID = gql`
     query GetPlaylistsById($playlistId: String!) {
@@ -181,6 +184,7 @@ export default async function PlaylistPage({ searchParams }: PlaylistPageProps) 
             initialIsOverVideo={initialIsOverVideo}
             playlistId={playlistId!} // PlaylistId chắc chắn không null vì đã kiểm tra phía trên
             initialPageSize={INITIAL_PAGE_SIZE}
+            cssClass={CSS_CLASS} // Class CSS cho trang
         />
     );
 }

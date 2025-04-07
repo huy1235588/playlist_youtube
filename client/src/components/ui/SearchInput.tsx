@@ -8,6 +8,8 @@ interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
     onClear?: () => void;
 }
 
+const CSS_CLASS = "search-input";
+
 const SearchInput: React.FC<SearchInputProps> = ({
     value,
     onChange,
@@ -44,7 +46,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     };
 
     return (
-        <div className="search-container">
+        <div className={`search-container `}>
             <div className="search-input-wrapper">
                 <FaSearch className="search-icon" />
                 <input
