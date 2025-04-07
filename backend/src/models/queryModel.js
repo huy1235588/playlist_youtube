@@ -21,8 +21,14 @@ class QueryModel {
         }
     }
 
-    // Selct 50 Video đầu tiên theo thứ tự thêm vào 
-    async select50VideoBySortColumn(PageNumber, PageSize, column, order, playlistId, res) {
+    // Select 50 Video đầu tiên theo thứ tự thêm vào 
+    async select50VideoBySortColumn(
+        PageNumber, 
+        PageSize, 
+        column = 'PublishedAt', 
+        order = 'DESC', 
+        playlistId
+    ) {
         try {
             await this.connect();
             const request = this.pool.request();
@@ -38,19 +44,26 @@ class QueryModel {
 
             // Trả về dữ liệu nếu có
             if (result.recordset.length > 0) {
-                // Trả về dữ liệu
-                res.json({
-                    videos: result.recordset,
-                    isOverVideo: result.recordsets[1][0].NoMoreVideos,
-                });
+                return {
+                    success: true,
+                    data: {
+                        videos: result.recordset,
+                        isOverVideo: result.recordsets[1][0].NoMoreVideos,
+                    }
+                };
             } else {
-                res.json({ message: 'Videos not found' });
+                return {
+                    success: false,
+                    error: 'Videos not found'
+                };
             }
 
         } catch (error) {
-            throw new Error(`Error querying SQL Server ${error.message}`);
+            return {
+                success: false,
+                error: `Error querying SQL Server: ${error.message}`
+            };
         } finally {
-            // Đảm bảo kết nối được đóng dù có lỗi xảy ra hay không.
             await this.disconnect();
         }
     }
@@ -61,17 +74,21 @@ class QueryModel {
             await this.connect();
             const request = this.pool.request();
 
-            // Chọn dữ liệu từ procedure Display50Video
             const result = await request
                 .input('input', sql.VarChar, input)
                 .input('playlistId', sql.VarChar(50), playlistId)
                 .query(`exec [Search 50 Videos By TitleVideo] @input, @playlistId`);
 
-            // Trả về dữ liệu nếu có
-            return result.recordset;
+            return {
+                success: true,
+                data: result.recordset
+            };
 
         } catch (error) {
-            throw new Error(`Error search Video from SQL Server ${error.message}`);
+            return {
+                success: false,
+                error: `Error search Video from SQL Server: ${error.message}`
+            };
         } finally {
             await this.disconnect();
         }
@@ -83,15 +100,19 @@ class QueryModel {
             await this.connect();
             const request = this.pool.request();
 
-            // Chọn dữ liệu từ bảng Video nhưng lọc các cột Title = null
             const result = await request
                 .query(`exec [Get Hidden Video Procedure] ${playlistId}`);
 
-            // Trả về dữ liệu
-            return result.recordset;
+            return {
+                success: true,
+                data: result.recordset
+            };
 
         } catch (error) {
-            throw new Error(`Error while select hidden video: ${error.message}`);
+            return {
+                success: false,
+                error: `Error while select hidden video: ${error.message}`
+            };
         } finally {
             await this.disconnect();
         }
@@ -100,20 +121,23 @@ class QueryModel {
     // Select playlist
     async getPlaylists() {
         try {
-            // Kết nối đến SQL Server
             await this.connect();
             const request = this.pool.request();
 
             const result = await request
                 .query(`SELECT * FROM Playlists`);
 
-            // Trả về dữ liệu
-            return result.recordset;
+            return {
+                success: true,
+                data: result.recordset
+            };
 
         } catch (error) {
-            throw new Error(`Error getting playlists in SQL Server: ${error.message}`);
+            return {
+                success: false,
+                error: `Error getting playlists in SQL Server: ${error.message}`
+            };
         } finally {
-            // Đóng kết nối khi không còn cần thiết
             await this.disconnect();
         }
     }
@@ -128,11 +152,23 @@ class QueryModel {
                 .input('playlistId', sql.VarChar(50), playlistId)
                 .query(`SELECT TOP 1 * FROM Playlists WHERE PlaylistId = @playlistId`);
 
-            // Trả về dữ liệu
-            return result.recordset[0];
+            if (result.recordset.length > 0) {
+                return {
+                    success: true,
+                    data: result.recordset[0]
+                };
+            } else {
+                return {
+                    success: false,
+                    error: 'Playlist not found'
+                };
+            }
 
         } catch (error) {
-            throw new Error(`Error getting playlist by playlistId in SQL Server: ${error.message}`);
+            return {
+                success: false,
+                error: `Error getting playlist by playlistId in SQL Server: ${error.message}`
+            };
         } finally {
             await this.disconnect();
         }
@@ -141,20 +177,23 @@ class QueryModel {
     // Select channel playlist
     async getChannel(ChannelId) {
         try {
-            // Kết nối đến SQL Server
             await this.connect();
             const request = this.pool.request();
 
             const result = await request
                 .query(`exec [Get Channel by ChannelId] ${ChannelId}`);
 
-            // Trả về dữ liệu
-            return result.recordset;
+            return {
+                success: true,
+                data: result.recordset
+            };
 
         } catch (error) {
-            throw new Error(`Error getting playlists in SQL Server: ${error.message}`);
+            return {
+                success: false,
+                error: `Error getting channel in SQL Server: ${error.message}`
+            };
         } finally {
-            // Đóng kết nối khi không còn cần thiết
             await this.disconnect();
         }
     }
@@ -162,27 +201,24 @@ class QueryModel {
     // Kiểm tra videoId trong bảng Playlist
     async checkExistingVideoId(VideoId) {
         try {
-            // Kết nối đến SQL Server
             await this.connect();
             const request = this.pool.request();
 
-            // Biến iểm tra đã tồn tại PlaylistId trong database
             const existingChannel = await request
                 .input('CheckVideoId', sql.VarChar(50), VideoId)
                 .query(`SELECT COUNT(*) AS Count FROM Videos WHERE VideoId = @CheckVideoId`);
 
-            // Nếu đã tồn tại, thì return true
-            if (existingChannel.recordset[0].Count === 0) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            return {
+                success: true,
+                data: existingChannel.recordset[0].Count > 0
+            };
 
         } catch (error) {
-            throw new Error(`Error checking playlists in SQL Server: ${error.message}`);
+            return {
+                success: false,
+                error: `Error checking videoId in SQL Server: ${error.message}`
+            };
         } finally {
-            // Đóng kết nối khi không còn cần thiết
             await this.disconnect();
         }
     }
@@ -190,27 +226,24 @@ class QueryModel {
     // Kiểm tra PlaylistId trong bảng Playlist
     async checkExistingPlaylist(PlaylistId) {
         try {
-            // Kết nối đến SQL Server
             await this.connect();
             const request = this.pool.request();
 
-            // Biến iểm tra đã tồn tại PlaylistId trong database
             const existingChannel = await request
                 .input('CheckPlaylistId', sql.VarChar(50), PlaylistId)
                 .query(`SELECT COUNT(*) AS Count FROM Playlists WHERE PlaylistId = @CheckPlaylistId`);
 
-            // Nếu đã tồn tại, thì return true
-            if (existingChannel.recordset[0].Count === 0) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            return {
+                success: true,
+                data: existingChannel.recordset[0].Count > 0
+            };
 
         } catch (error) {
-            throw new Error(`Error checking playlists in SQL Server: ${error.message}`);
+            return {
+                success: false,
+                error: `Error checking playlistId in SQL Server: ${error.message}`
+            };
         } finally {
-            // Đóng kết nối khi không còn cần thiết
             await this.disconnect();
         }
     }

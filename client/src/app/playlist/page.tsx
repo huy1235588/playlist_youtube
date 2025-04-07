@@ -5,9 +5,35 @@ import axios from "@/config/axios";
 import { Playlist, Video } from "@/types/youtube";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { gql, useQuery } from '@apollo/client';
+import client from '@/config/apollo';
 
 import './playlistPage.css'; // Import CSS cho component
 import VideoItem from "@/components/home/videos/videoItem";
+
+const GET_VIDEOS = gql`
+    query GetVideos($PageNumber: Int, $PageSize: Int, $column: String, $order: String, $playlistId: String) {
+        videos(PageNumber: $PageNumber, PageSize: $PageSize, column: $column, order: $order, playlistId: $playlistId) {
+            success
+            data {
+                videos {
+                    VideoId
+                    VideoTitle
+                    ChannelId
+                    ChannelTitle
+                    ViewCount
+                    PublishedAt
+                    Thumbnails
+                    Duration
+                    AddedAt
+                    IndexVideo
+                }
+                isOverVideo
+            }
+            error
+        }
+    }
+`;
 
 function PlaylistPage() {
     const searchParams = useSearchParams();
@@ -47,9 +73,9 @@ function PlaylistPage() {
         order = "desc",
     }) => {
         try {
-            // Gọi API backend 
-            const response = await axios.get("/api/video/get", {
-                params: {
+            const { data } = await client.query({
+                query: GET_VIDEOS,
+                variables: {
                     PageNumber: videoStart,
                     PageSize: 50,
                     column: column,
@@ -58,13 +84,12 @@ function PlaylistPage() {
                 }
             });
 
-            return response.data
+            return data.videos.data;
         }
         catch (error) {
             console.error("Error fetching videos:", error);
         }
         finally {
-            // Đánh dấu không còn gọi API
             setLoading(false);
         }
     };

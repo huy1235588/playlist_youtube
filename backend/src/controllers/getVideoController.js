@@ -8,11 +8,13 @@ const getVideoInfo = async (req, res) => {
         const videos = await queryModel.select50VideoBySortColumn(
             req.query.PageNumber,
             req.query.PageSize,
-            req.query.column,
-            req.query.order,
-            req.query.playlistId,
-            res,
+            req.query.column || 'PublishedAt',
+            req.query.order || 'DESC',
+            req.query.playlistId
         )
+
+        // Trả về giá trị
+        res.json(videos);
 
     } catch (error) {
         res.status(500).json({ message: 'Error getting video', error });
