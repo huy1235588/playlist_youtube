@@ -1,11 +1,12 @@
 import { CiMenuBurger } from "react-icons/ci";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, Dispatch, SetStateAction } from "react";
 import './playlistMenu.css'; // Đảm bảo file CSS này tồn tại và được import
 import Button from "../ui/Button"; // Giả sử Button component đã được import đúng
 import { BiHide } from "react-icons/bi";
 import { GrAdd, GrUpdate } from "react-icons/gr";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { usePopup } from "@/contexts/PopupContext";
+import { Video } from "@/types/youtube";
 
 // Định nghĩa kiểu cho một mục trong menu playlist
 interface PlaylistItem {
@@ -18,18 +19,15 @@ interface PlaylistItem {
 
 // Định nghĩa Props cho PlaylistMenu, bao gồm các hàm callback
 interface PlaylistMenuProps {
-    // onAddPlaylist: () => void;
-    // onShowHiddenVideos: () => void;
-    // onUpdatePlaylist: () => void;
-    // onDeletePlaylist: () => void;
-    // Thêm các props khác nếu cần
+    setVideos: Dispatch<SetStateAction<Video[]>>; // Hàm để cập nhật danh sách video
+    setLoading?: Dispatch<SetStateAction<boolean>>; // Hàm để cập nhật trạng thái loading (tùy chọn)
+    setError?: Dispatch<SetStateAction<string | null>>; // Hàm để cập nhật trạng thái lỗi (tùy chọn)
 }
 
 const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
-    // onAddPlaylist,
-    // onShowHiddenVideos,
-    // onUpdatePlaylist,
-    // onDeletePlaylist,
+    setVideos, // Hàm để cập nhật danh sách video
+    setLoading, // Hàm để cập nhật trạng thái loading (tùy chọn)
+    setError, // Hàm để cập nhật trạng thái lỗi (tùy chọn)
 }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -51,6 +49,26 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
         // Logic hiển thị video ẩn ở đây
     }, []);
 
+
+    const updatePlaylist = useCallback(async () => {
+        try {
+            setLoading && setLoading(true);
+
+            await new Promise((resolve) => setTimeout(resolve, 2000)); // Giả lập thời gian tải dữ liệu
+
+
+        } catch (error) {
+            console.error("Error updating playlist:", error);
+            if (setError) {
+                setError("Có lỗi xảy ra khi cập nhật playlist.");
+            }
+        } finally {
+            if (setLoading) {
+                setLoading(false); // Đặt trạng thái loading về false sau khi hoàn thành
+            }
+        }
+    }, []);
+
     // Hàm xử lý cập nhật playlist
     const handleUpdatePlaylist = useCallback(async () => {
         // Mở popup khi nhấn vào "Update playlist"
@@ -64,7 +82,7 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
                     <div className="popup-actions">
                         <button
                             className="confirm-button"
-                            onClick={() => console.log("Cập nhật playlist")}
+                            onClick={updatePlaylist}
                         >
                             Có
                         </button>

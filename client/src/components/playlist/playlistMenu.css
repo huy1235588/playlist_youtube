@@ -115,9 +115,9 @@
 }
 
 .popup-actions button.confirm-button {
-    background-color: #ff0000; /* Màu đỏ cho nút xác nhận */
+    background-color: #248f3b; /* Màu đỏ cho nút xác nhận */
     margin-right: 10px; /* Khoảng cách giữa các nút */
 }
 .popup-actions button.confirm-button:hover {
-    background-color: #cc0000; /* Màu đỏ đậm hơn khi hover */
+    background-color: #1e7a31; /* Màu đỏ đậm hơn khi hover */
 }

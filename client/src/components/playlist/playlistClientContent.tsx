@@ -337,8 +337,6 @@ function PlaylistClientContent({
     }, [loading, loadingMore, isSearching, isOverVideo, debouncedSearchQuery, getMoreVideos]);
 
 
-    
-
     // --- Effects ---
     // Effect để xử lý thay đổi của debouncedSearchQuery
     useEffect(() => {
@@ -411,10 +409,9 @@ function PlaylistClientContent({
 
                 {/* Menu */}
                 <PlaylistMenu
-                    // onAddPlaylist={handleAddPlaylist}
-                    // onShowHiddenVideos={handleShowHidden}
-                    // onUpdatePlaylist={handleUpdatePlaylist}
-                    // onDeletePlaylist={handleDeletePlaylist}
+                   setVideos={setVideos}
+                   setLoading={setLoading}
+                   setError={setCurrentError} // Truyền hàm setError để cập nhật lỗi
                 />
             </div>
 

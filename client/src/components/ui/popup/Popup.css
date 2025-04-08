@@ -4,7 +4,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8); /* Màu tối hơn */
+    background-color: rgba(0, 0, 0, 0.4); /* Màu tối hơn */
     display: flex;
     align-items: center;
     justify-content: center;
