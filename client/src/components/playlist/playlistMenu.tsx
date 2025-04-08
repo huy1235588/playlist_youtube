@@ -34,7 +34,10 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const { openPopup } = usePopup();
+    const {
+        openPopup,
+        closePopup,
+    } = usePopup();
 
     // Hàm xử lý thêm playlist mới
     const handleAddPlaylist = useCallback(() => {
@@ -54,15 +57,25 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
         openPopup(
             (
                 <div className="popup-content">
-                    <p>Bạn có muốn cập nhật playlist không?</p>
+                    <p className="popup-message">
+                        Bạn có muốn cập nhật playlist không?
+                    </p>
 
-                    <button onClick={() => console.log("Cập nhật playlist")}>
-                        Có
-                    </button>
+                    <div className="popup-actions">
+                        <button
+                            className="confirm-button"
+                            onClick={() => console.log("Cập nhật playlist")}
+                        >
+                            Có
+                        </button>
 
-                    <button onClick={() => console.log("Hủy bỏ")}>
-                        Hủy bỏ
-                    </button>
+                        <button
+                            className="cancel-button"
+                            onClick={closePopup}
+                        >
+                            Hủy bỏ
+                        </button>
+                    </div>
                 </div>
             ),
             "Cập nhật playlist"
