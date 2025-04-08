@@ -1,10 +1,11 @@
 import { CiMenuBurger } from "react-icons/ci";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import './playlistMenu.css'; // Đảm bảo file CSS này tồn tại và được import
 import Button from "../ui/Button"; // Giả sử Button component đã được import đúng
 import { BiHide } from "react-icons/bi";
 import { GrAdd, GrUpdate } from "react-icons/gr";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { usePopup } from "@/contexts/PopupContext";
 
 // Định nghĩa kiểu cho một mục trong menu playlist
 interface PlaylistItem {
@@ -17,21 +18,54 @@ interface PlaylistItem {
 
 // Định nghĩa Props cho PlaylistMenu, bao gồm các hàm callback
 interface PlaylistMenuProps {
-    onAddPlaylist: () => void;
-    onShowHiddenVideos: () => void;
-    onUpdatePlaylist: () => void;
-    onDeletePlaylist: () => void;
+    // onAddPlaylist: () => void;
+    // onShowHiddenVideos: () => void;
+    // onUpdatePlaylist: () => void;
+    // onDeletePlaylist: () => void;
     // Thêm các props khác nếu cần
 }
 
 const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
-    onAddPlaylist,
-    onShowHiddenVideos,
-    onUpdatePlaylist,
-    onDeletePlaylist,
+    // onAddPlaylist,
+    // onShowHiddenVideos,
+    // onUpdatePlaylist,
+    // onDeletePlaylist,
 }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const { openPopup } = usePopup();
+
+    // Hàm xử lý thêm playlist mới
+    const handleAddPlaylist = useCallback(() => {
+        console.log("Add new playlist clicked");
+        // Logic thêm playlist mới ở đây
+    }, []);
+
+    // Hàm xử lý hiển thị video ẩn
+    const handleShowHidden = useCallback(() => {
+        console.log("Show hidden videos clicked");
+        // Logic hiển thị video ẩn ở đây
+    }, []);
+
+    // Hàm xử lý cập nhật playlist
+    const handleUpdatePlaylist = useCallback(async () => {
+        // Mở popup khi nhấn vào "Update playlist"
+        openPopup(
+            <div className="">
+                {/* Nội dung popup ở đây */}
+                <h2>Cập nhật playlist</h2>
+                <p>Chức năng này chưa được triển khai.</p>
+            </div>
+        );
+
+    }, []);
+
+    // Hàm xử lý xóa playlist
+    const handleDeletePlaylist = useCallback(() => {
+        console.log("Delete playlist clicked");
+        // Logic xóa playlist ở đây
+    }, []);
 
     // Danh sách các mục menu được định nghĩa dưới dạng dữ liệu
     const menuItems: PlaylistItem[] = [
@@ -39,25 +73,25 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
             id: 'add',
             label: 'Add new playlist',
             icon: GrAdd, iconSize: 20,
-            action: onAddPlaylist
+            action: handleAddPlaylist
         },
         {
             id: 'show-hidden',
             label: 'Show hidden videos',
             icon: BiHide, iconSize: 20,
-            action: onShowHiddenVideos
+            action: handleShowHidden
         },
         {
             id: 'update',
             label: 'Update playlist',
             icon: GrUpdate, iconSize: 20,
-            action: onUpdatePlaylist
+            action: handleUpdatePlaylist
         },
         {
             id: 'delete',
             label: 'Delete playlist',
             icon: RiDeleteBin6Line, iconSize: 20,
-            action: onDeletePlaylist
+            action: handleDeletePlaylist
         },
     ];
 
@@ -85,6 +119,7 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
         itemAction(); // Thực thi hành động tương ứng
         setDropdownVisible(false); // Đóng dropdown
     };
+
 
     return (
         <div className="playlist-menu" ref={dropdownRef}>

@@ -13,6 +13,7 @@ import SearchInput from "@/components/ui/SearchInput";
 import { FaArrowUp } from "react-icons/fa";
 import PlaylistMenu from "./playlistMenu";
 import SortMenu from "./sortMenu";
+import axios from "@/config/axios";
 
 // Custom hook để debounce giá trị
 const useDebounce = (value: string, delay: number) => {
@@ -336,33 +337,9 @@ function PlaylistClientContent({
     }, [loading, loadingMore, isSearching, isOverVideo, debouncedSearchQuery, getMoreVideos]);
 
 
-    // Hàm xử lý thêm playlist mới
-    const handleAddPlaylist = useCallback(() => {
-        console.log("Add new playlist clicked");
-        // Logic thêm playlist mới ở đây
-    }, []);
-
-    // Hàm xử lý hiển thị video ẩn
-    const handleShowHidden = useCallback(() => {
-        console.log("Show hidden videos clicked");
-        // Logic hiển thị video ẩn ở đây
-    }, []);
-
-    // Hàm xử lý cập nhật playlist
-    const handleUpdatePlaylist = useCallback(() => {
-        console.log("Update playlist clicked");
-        // Logic cập nhật playlist ở đây
-    }, []);
-
-    // Hàm xử lý xóa playlist
-    const handleDeletePlaylist = useCallback(() => {
-        console.log("Delete playlist clicked");
-        // Logic xóa playlist ở đây
-    }, []);
-
+    
 
     // --- Effects ---
-
     // Effect để xử lý thay đổi của debouncedSearchQuery
     useEffect(() => {
         if (debouncedSearchQuery) {
@@ -400,7 +377,6 @@ function PlaylistClientContent({
 
 
     // --- Memoized Video List ---
-
     // Memoize danh sách video để tránh render lại không cần thiết
     const videoList = useMemo(() => (
         <div className="video-list">
@@ -435,10 +411,10 @@ function PlaylistClientContent({
 
                 {/* Menu */}
                 <PlaylistMenu
-                    onAddPlaylist={handleAddPlaylist}
-                    onShowHiddenVideos={handleShowHidden}
-                    onUpdatePlaylist={handleUpdatePlaylist}
-                    onDeletePlaylist={handleDeletePlaylist}
+                    // onAddPlaylist={handleAddPlaylist}
+                    // onShowHiddenVideos={handleShowHidden}
+                    // onUpdatePlaylist={handleUpdatePlaylist}
+                    // onDeletePlaylist={handleDeletePlaylist}
                 />
             </div>
 
