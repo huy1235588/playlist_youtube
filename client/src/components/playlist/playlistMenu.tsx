@@ -52,11 +52,20 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
     const handleUpdatePlaylist = useCallback(async () => {
         // Mở popup khi nhấn vào "Update playlist"
         openPopup(
-            <div className="">
-                {/* Nội dung popup ở đây */}
-                <h2>Cập nhật playlist</h2>
-                <p>Chức năng này chưa được triển khai.</p>
-            </div>
+            (
+                <div className="popup-content">
+                    <p>Bạn có muốn cập nhật playlist không?</p>
+
+                    <button onClick={() => console.log("Cập nhật playlist")}>
+                        Có
+                    </button>
+
+                    <button onClick={() => console.log("Hủy bỏ")}>
+                        Hủy bỏ
+                    </button>
+                </div>
+            ),
+            "Cập nhật playlist"
         );
 
     }, []);

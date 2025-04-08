@@ -80,3 +80,9 @@
     line-height: 40px;
     font-weight: 400;
 }
+
+/* Popup */
+.popup-content {
+    width: 400px;
+    height: 300px;
+}
