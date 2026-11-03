@@ -1,10 +1,12 @@
 use crate::app::{App, Message};
 use crate::core::utils::format_short_date;
-use iced::widget::{Column, center, column, container, row, space, text};
-use iced::{Alignment, Element, Length, Theme};
+use crate::features::playlists::model::Playlist;
+use crate::features::settings::ViewLayout;
+use iced::widget::{Column, Row, center, column, container, row, space, text};
+use iced::{Alignment, Element, Length, Pixels, Theme};
 use shadcn_iced::alert_dialog::alert_dialog;
 use shadcn_iced::badge::{self, badge};
-use shadcn_iced::button::{self, button};
+use shadcn_iced::button::{self, button, icon_button};
 use shadcn_iced::card::card;
 use shadcn_iced::dialog::dialog;
 use shadcn_iced::empty::empty;
@@ -13,6 +15,8 @@ use shadcn_iced::prelude::*;
 use shadcn_iced::scroll_area::scroll_area;
 use shadcn_iced::spinner::spinner;
 use shadcn_iced::{font, style, tokens};
+
+const PLAYLIST_GRID_COLUMNS: usize = 3;
 
 impl App {
     pub fn view_playlists_dashboard(&self) -> Element<'_, Message> {
@@ -37,6 +41,130 @@ impl App {
             .into();
         }
 
+        let body_col = match self.settings_state.view_layout {
+            ViewLayout::Grid => self.view_playlists_grid(),
+            ViewLayout::List => self.view_playlists_list(),
+        };
+
+        scroll_area(container(body_col).padding([8, 24]))
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .into()
+    }
+
+    fn view_playlists_grid(&self) -> Column<'_, Message> {
+        let mut grid_col = Column::new().spacing(16).width(Length::Fill);
+
+        for chunk in self.playlists_state.playlists.chunks(PLAYLIST_GRID_COLUMNS) {
+            let mut row_items = Row::new().spacing(16).width(Length::Fill);
+
+            for pl in chunk {
+                row_items = row_items.push(self.view_playlist_grid_card(pl));
+            }
+
+            for _ in chunk.len()..PLAYLIST_GRID_COLUMNS {
+                row_items = row_items.push(space::horizontal().width(Length::Fill));
+            }
+
+            grid_col = grid_col.push(row_items);
+        }
+
+        grid_col
+    }
+
+    fn view_playlist_grid_card<'a>(&'a self, pl: &'a Playlist) -> Element<'a, Message> {
+        let title = pl
+            .title
+            .clone()
+            .unwrap_or_else(|| "[Không tìm thấy tiêu đề]".to_string());
+        let channel_name = pl
+            .channel_title
+            .clone()
+            .unwrap_or_else(|| "Kênh không xác định".to_string());
+        let pub_date = format_short_date(pl.published_at.as_deref());
+        let pid = pl.playlist_id.clone();
+        let yt_url = format!("https://www.youtube.com/playlist?list={pid}");
+
+        let media = self
+            .thumbnails
+            .view_media_thumbnail(pl.thumbnails.as_deref());
+
+        let header_row = row![
+            container(
+                text(title.clone())
+                    .size(style::text::BASE)
+                    .font(font::heading(iced::font::Weight::Medium))
+                    .line_height(iced::widget::text::LineHeight::Absolute(Pixels(21.0))),
+            )
+            .width(Length::Fill)
+            .height(Length::Fixed(42.0))
+            .clip(true),
+            badge(format!("{} videos", pl.item_count)).variant(badge::Variant::Secondary),
+        ]
+        .spacing(8)
+        .align_y(Alignment::Start)
+        .width(Length::Fill);
+
+        let meta_box = container(
+            column![
+                text(format!("Kênh: {channel_name}"))
+                    .size(style::text::SM)
+                    .line_height(iced::widget::text::LineHeight::Absolute(Pixels(18.0)))
+                    .wrapping(iced::widget::text::Wrapping::None)
+                    .style(|theme: &Theme| text::Style {
+                        color: Some(tokens(theme).palette.muted_foreground),
+                    }),
+                text(format!("Ngày tạo: {pub_date}  •  ID: {pid}"))
+                    .size(style::text::SM)
+                    .line_height(iced::widget::text::LineHeight::Absolute(Pixels(18.0)))
+                    .wrapping(iced::widget::text::Wrapping::None)
+                    .style(|theme: &Theme| text::Style {
+                        color: Some(tokens(theme).palette.muted_foreground),
+                    }),
+            ]
+            .spacing(4)
+            .width(Length::Fill),
+        )
+        .width(Length::Fill)
+        .height(Length::Fixed(40.0))
+        .clip(true);
+
+        let info_section = column![header_row, meta_box]
+            .spacing(6)
+            .width(Length::Fill);
+
+        card()
+            .width(Length::Fill)
+            .media(media)
+            .content(info_section)
+            .footer(
+                row![
+                    button("Xem Video")
+                        .size(button::Size::Sm)
+                        .icon(lucide::PLAY)
+                        .on_press(Message::SelectPlaylist(pid.clone())),
+                    button("YouTube")
+                        .size(button::Size::Sm)
+                        .variant(button::Variant::Outline)
+                        .icon(lucide::EXTERNAL_LINK)
+                        .on_press(Message::OpenUrl(yt_url)),
+                    space::horizontal(),
+                    icon_button(lucide::TRASH_2)
+                        .size(button::Size::Sm)
+                        .variant(button::Variant::Destructive)
+                        .on_press(Message::OpenDeletePlaylistModal {
+                            playlist_id: pid,
+                            playlist_title: title,
+                        }),
+                ]
+                .spacing(8)
+                .align_y(Alignment::Center)
+                .width(Length::Fill),
+            )
+            .into()
+    }
+
+    fn view_playlists_list(&self) -> Column<'_, Message> {
         let mut list_col = Column::new().spacing(12).width(Length::Fill);
 
         for pl in &self.playlists_state.playlists {
@@ -80,38 +208,33 @@ impl App {
             .align_y(Alignment::Center)
             .width(Length::Fill);
 
-            let card_item = card()
-                .content(body_row)
-                .footer(
-                    row![
-                        button("Xem tất cả Video")
-                            .icon(lucide::PLAY)
-                            .on_press(Message::SelectPlaylist(pid.clone())),
-                        button("Mở trên YouTube")
-                            .variant(button::Variant::Outline)
-                            .icon(lucide::EXTERNAL_LINK)
-                            .on_press(Message::OpenUrl(yt_url)),
-                        space::horizontal(),
-                        button("Xóa Playlist")
-                            .variant(button::Variant::Destructive)
-                            .icon(lucide::TRASH_2)
-                            .on_press(Message::OpenDeletePlaylistModal {
-                                playlist_id: pid,
-                                playlist_title: title,
-                            }),
-                    ]
-                    .spacing(8)
-                    .align_y(Alignment::Center)
-                    .width(Length::Fill),
-                );
+            let card_item = card().content(body_row).footer(
+                row![
+                    button("Xem tất cả Video")
+                        .icon(lucide::PLAY)
+                        .on_press(Message::SelectPlaylist(pid.clone())),
+                    button("Mở trên YouTube")
+                        .variant(button::Variant::Outline)
+                        .icon(lucide::EXTERNAL_LINK)
+                        .on_press(Message::OpenUrl(yt_url)),
+                    space::horizontal(),
+                    button("Xóa Playlist")
+                        .variant(button::Variant::Destructive)
+                        .icon(lucide::TRASH_2)
+                        .on_press(Message::OpenDeletePlaylistModal {
+                            playlist_id: pid,
+                            playlist_title: title,
+                        }),
+                ]
+                .spacing(8)
+                .align_y(Alignment::Center)
+                .width(Length::Fill),
+            );
 
             list_col = list_col.push(card_item);
         }
 
-        scroll_area(container(list_col).padding([8, 24]))
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into()
+        list_col
     }
 
     pub fn view_add_playlist_modal<'a>(&'a self, base: Element<'a, Message>) -> Element<'a, Message> {

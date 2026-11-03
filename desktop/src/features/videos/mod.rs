@@ -6,7 +6,7 @@ pub mod view;
 use crate::core::db::Database;
 use crate::features::videos::model::{SortColumn, SortOrder, VideoItemView};
 
-pub const PAGE_SIZE: usize = 50;
+pub const PAGE_SIZE: usize = 48;
 
 pub struct VideosState {
     pub videos: Vec<VideoItemView>,

@@ -2,10 +2,18 @@ pub mod view;
 
 use shadcn_iced::prelude::Mode;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum ViewLayout {
+    #[default]
+    Grid,
+    List,
+}
+
 pub struct SettingsState {
     pub api_key: String,
     pub api_key_draft: String,
     pub theme_mode: Mode,
+    pub view_layout: ViewLayout,
 }
 
 impl SettingsState {
@@ -14,6 +22,7 @@ impl SettingsState {
             api_key_draft: api_key.clone(),
             api_key,
             theme_mode: Mode::Dark,
+            view_layout: ViewLayout::Grid,
         }
     }
 

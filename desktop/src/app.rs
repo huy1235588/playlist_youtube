@@ -3,7 +3,7 @@ use crate::core::thumbnails::{ThumbnailCache, download_thumbnail_bytes};
 use crate::core::utils::{extract_playlist_id, extract_video_id};
 use crate::features::playlists::PlaylistsState;
 use crate::features::playlists::api::fetch_playlist_bundle;
-use crate::features::settings::SettingsState;
+use crate::features::settings::{SettingsState, ViewLayout};
 use crate::features::videos::VideosState;
 use crate::features::videos::api::fetch_single_video;
 use crate::features::videos::model::SortColumn;
@@ -52,6 +52,7 @@ pub struct App {
 pub enum Message {
     // Điều hướng & Giao diện
     ToggleTheme,
+    ViewLayoutChanged(ViewLayout),
     BackToPlaylists,
     SelectPlaylist(String),
     OpenUrl(String),
@@ -196,6 +197,9 @@ impl App {
         match message {
             Message::ToggleTheme => {
                 self.settings_state.toggle_theme();
+            }
+            Message::ViewLayoutChanged(layout) => {
+                self.settings_state.view_layout = layout;
             }
             Message::DismissBanner => {
                 self.status_banner = None;

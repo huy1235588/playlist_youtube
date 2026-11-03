@@ -1,4 +1,5 @@
 use crate::app::{App, Message};
+use crate::features::settings::ViewLayout;
 use iced::widget::{Column, container, row, space, text};
 use iced::{Alignment, Element, Length};
 use shadcn_iced::alert::{self, alert};
@@ -7,6 +8,8 @@ use shadcn_iced::button::{self, button};
 use shadcn_iced::dialog::dialog;
 use shadcn_iced::input::input;
 use shadcn_iced::prelude::*;
+use shadcn_iced::toggle;
+use shadcn_iced::toggle_group::toggle_group;
 
 impl App {
     pub fn view_top_bar(&self) -> Element<'_, Message> {
@@ -40,6 +43,23 @@ impl App {
                 .into()
             };
 
+        let layout_switcher = toggle_group(
+            std::slice::from_ref(&self.settings_state.view_layout),
+            Message::ViewLayoutChanged,
+        )
+        .variant(toggle::Variant::Outline)
+        .spacing(0.0)
+        .item(
+            ViewLayout::Grid,
+            Some(lucide::LAYOUT_GRID),
+            Some("Grid".to_string()),
+        )
+        .item(
+            ViewLayout::List,
+            Some(lucide::LIST),
+            Some("List".to_string()),
+        );
+
         let api_status_badge = if self.settings_state.api_key.is_empty() {
             badge("Chưa có API Key").variant(badge::Variant::Destructive)
         } else {
@@ -52,6 +72,7 @@ impl App {
         };
 
         let right_actions = row![
+            layout_switcher,
             api_status_badge,
             button("Thêm Playlist")
                 .icon(lucide::PLUS)

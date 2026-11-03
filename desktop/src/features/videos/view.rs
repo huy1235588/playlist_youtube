@@ -1,12 +1,13 @@
 use crate::app::{App, Message};
 use crate::core::utils::{format_duration, format_short_date, format_view_count};
+use crate::features::settings::ViewLayout;
 use crate::features::videos::PAGE_SIZE;
-use crate::features::videos::model::{SortColumn, SortOrder};
-use iced::widget::{Column, center, column, container, row, space, text};
-use iced::{Alignment, Element, Length, Theme};
+use crate::features::videos::model::{SortColumn, SortOrder, VideoItemView};
+use iced::widget::{Column, Row, center, column, container, row, space, text};
+use iced::{Alignment, Element, Length, Pixels, Theme};
 use shadcn_iced::alert_dialog::alert_dialog;
 use shadcn_iced::badge::{self, badge};
-use shadcn_iced::button::{self, button};
+use shadcn_iced::button::{self, button, icon_button};
 use shadcn_iced::card::card;
 use shadcn_iced::dialog::dialog;
 use shadcn_iced::empty::empty;
@@ -17,6 +18,8 @@ use shadcn_iced::scroll_area::scroll_area;
 use shadcn_iced::select::select;
 use shadcn_iced::spinner::spinner;
 use shadcn_iced::{font, style, tokens};
+
+const VIDEO_GRID_COLUMNS: usize = 4;
 
 impl App {
     pub fn view_playlist_videos(&self) -> Element<'_, Message> {
@@ -101,107 +104,12 @@ impl App {
             .padding(24)
             .into()
         } else {
-            let mut rows_col = Column::new().spacing(10).width(Length::Fill);
+            let body_col = match self.settings_state.view_layout {
+                ViewLayout::Grid => self.view_videos_grid(),
+                ViewLayout::List => self.view_videos_list(),
+            };
 
-            for (idx, v) in vstate.videos.iter().enumerate() {
-                let display_order = (vstate.current_page.saturating_sub(1)) * PAGE_SIZE + idx + 1;
-                let is_deleted = v.is_hidden_or_deleted();
-
-                let title_str = v
-                    .video_title
-                    .clone()
-                    .unwrap_or_else(|| format!("[Video bị ẩn / đã xóa] ({})", v.video_id));
-
-                let channel_str = v
-                    .channel_title
-                    .as_deref()
-                    .filter(|s| !s.is_empty())
-                    .unwrap_or("Không rõ kênh");
-
-                let duration_badge = if is_deleted {
-                    badge("Đã ẩn / Xóa").variant(badge::Variant::Destructive)
-                } else {
-                    badge(format_duration(v.duration.as_deref())).variant(badge::Variant::Secondary)
-                };
-
-                let meta_text = if is_deleted {
-                    format!(
-                        "#{} (Index gốc: {})  •  Video ID: {}  •  Ngày thêm: {}",
-                        display_order,
-                        v.index_video,
-                        v.video_id,
-                        format_short_date(Some(&v.added_at))
-                    )
-                } else {
-                    format!(
-                        "#{} (Index: {})  •  Kênh: {}  •  {} lượt xem  •  Đăng: {}  •  Thêm vào PL: {}",
-                        display_order,
-                        v.index_video,
-                        channel_str,
-                        format_view_count(v.view_count),
-                        format_short_date(v.published_at.as_deref()),
-                        format_short_date(Some(&v.added_at))
-                    )
-                };
-
-                let watch_url = format!("https://www.youtube.com/watch?v={}", v.video_id);
-
-                let thumbnail_el =
-                    self.thumbnails
-                        .view_thumbnail(v.thumbnails.as_deref(), 128.0, 72.0);
-
-                let titles_col = column![
-                    text(title_str.clone())
-                        .size(style::text::SM)
-                        .font(font::heading(iced::font::Weight::Medium)),
-                    text(meta_text)
-                        .size(style::text::SM)
-                        .style(|theme: &Theme| text::Style {
-                            color: Some(tokens(theme).palette.muted_foreground),
-                        }),
-                ]
-                .spacing(4)
-                .width(Length::Fill);
-
-                let actions_row = row![
-                    duration_badge,
-                    button("Mở YouTube")
-                        .size(button::Size::Sm)
-                        .variant(button::Variant::Outline)
-                        .icon(lucide::EXTERNAL_LINK)
-                        .on_press(Message::OpenUrl(watch_url)),
-                    button("Thay thế")
-                        .size(button::Size::Sm)
-                        .variant(button::Variant::Secondary)
-                        .on_press(Message::OpenReplaceVideoModal {
-                            playlist_item_id: v.playlist_item_id.clone(),
-                            old_video_id: v.video_id.clone(),
-                        }),
-                    button("Xóa")
-                        .size(button::Size::Sm)
-                        .variant(button::Variant::Destructive)
-                        .icon(lucide::TRASH_2)
-                        .on_press(Message::OpenDeleteVideoModal {
-                            video_id: v.video_id.clone(),
-                            video_title: title_str.clone(),
-                        }),
-                ]
-                .spacing(6)
-                .align_y(Alignment::Center);
-
-                let video_row = row![thumbnail_el, titles_col, actions_row]
-                    .spacing(14)
-                    .align_y(Alignment::Center)
-                    .width(Length::Fill);
-
-                let video_card = card()
-                    .size(shadcn_iced::card::Size::Sm)
-                    .content(video_row);
-
-                rows_col = rows_col.push(video_card);
-            }
-
-            scroll_area(container(rows_col).padding([4, 24]))
+            scroll_area(container(body_col).padding([4, 24]))
                 .width(Length::Fill)
                 .height(Length::Fill)
                 .into()
@@ -237,6 +145,260 @@ impl App {
         .width(Length::Fill)
         .height(Length::Fill)
         .into()
+    }
+
+    fn view_videos_grid(&self) -> Column<'_, Message> {
+        let vstate = &self.videos_state;
+        let mut grid_col = Column::new().spacing(14).width(Length::Fill);
+        let page_offset = vstate.current_page.saturating_sub(1) * PAGE_SIZE;
+
+        for (chunk_idx, chunk) in vstate.videos.chunks(VIDEO_GRID_COLUMNS).enumerate() {
+            let mut row_items = Row::new().spacing(14).width(Length::Fill);
+
+            for (offset, v) in chunk.iter().enumerate() {
+                let display_order = page_offset + chunk_idx * VIDEO_GRID_COLUMNS + offset + 1;
+                row_items = row_items.push(self.view_video_grid_card(v, display_order));
+            }
+
+            for _ in chunk.len()..VIDEO_GRID_COLUMNS {
+                row_items = row_items.push(space::horizontal().width(Length::Fill));
+            }
+
+            grid_col = grid_col.push(row_items);
+        }
+
+        grid_col
+    }
+
+    fn view_video_grid_card<'a>(
+        &'a self,
+        v: &'a VideoItemView,
+        display_order: usize,
+    ) -> Element<'a, Message> {
+        let is_deleted = v.is_hidden_or_deleted();
+
+        let title_str = v
+            .video_title
+            .clone()
+            .unwrap_or_else(|| format!("[Video bị ẩn / đã xóa] ({})", v.video_id));
+
+        let channel_str = v
+            .channel_title
+            .as_deref()
+            .filter(|s| !s.is_empty())
+            .unwrap_or("Không rõ kênh");
+
+        let duration_badge = if is_deleted {
+            badge("Đã ẩn / Xóa").variant(badge::Variant::Destructive)
+        } else {
+            badge(format_duration(v.duration.as_deref())).variant(badge::Variant::Secondary)
+        };
+
+        let (meta_line_1, meta_line_2) = if is_deleted {
+            (
+                format!(
+                    "#{} (Index: {})  •  ID: {}",
+                    display_order, v.index_video, v.video_id
+                ),
+                format!("Thêm vào PL: {}", format_short_date(Some(&v.added_at))),
+            )
+        } else {
+            (
+                format!(
+                    "#{} (Index: {})  •  {}",
+                    display_order, v.index_video, channel_str
+                ),
+                format!(
+                    "{} lượt xem  •  Đăng: {}  •  Thêm: {}",
+                    format_view_count(v.view_count),
+                    format_short_date(v.published_at.as_deref()),
+                    format_short_date(Some(&v.added_at))
+                ),
+            )
+        };
+
+        let watch_url = format!("https://www.youtube.com/watch?v={}", v.video_id);
+        let media = self.thumbnails.view_media_thumbnail(v.thumbnails.as_deref());
+
+        // Cố định chiều cao vùng tiêu đề (đúng 2 dòng = 38px) để mọi card bằng nhau
+        let title_box = container(
+            text(title_str.clone())
+                .size(style::text::SM)
+                .font(font::heading(iced::font::Weight::Medium))
+                .line_height(iced::widget::text::LineHeight::Absolute(Pixels(19.0))),
+        )
+        .width(Length::Fill)
+        .height(Length::Fixed(38.0))
+        .clip(true);
+
+        // Cố định chiều cao vùng metadata (2 dòng đơn = 40px)
+        let meta_box = container(
+            column![
+                text(meta_line_1)
+                    .size(style::text::SM)
+                    .line_height(iced::widget::text::LineHeight::Absolute(Pixels(18.0)))
+                    .wrapping(iced::widget::text::Wrapping::None)
+                    .style(|theme: &Theme| text::Style {
+                        color: Some(tokens(theme).palette.muted_foreground),
+                    }),
+                text(meta_line_2)
+                    .size(style::text::SM)
+                    .line_height(iced::widget::text::LineHeight::Absolute(Pixels(18.0)))
+                    .wrapping(iced::widget::text::Wrapping::None)
+                    .style(|theme: &Theme| text::Style {
+                        color: Some(tokens(theme).palette.muted_foreground),
+                    }),
+            ]
+            .spacing(4)
+            .width(Length::Fill),
+        )
+        .width(Length::Fill)
+        .height(Length::Fixed(40.0))
+        .clip(true);
+
+        let info_section = column![title_box, meta_box]
+            .spacing(6)
+            .width(Length::Fill);
+
+        let footer_row = row![
+            duration_badge,
+            space::horizontal(),
+            button("YouTube")
+                .size(button::Size::Xs)
+                .variant(button::Variant::Outline)
+                .icon(lucide::EXTERNAL_LINK)
+                .on_press(Message::OpenUrl(watch_url)),
+            button("Thay thế")
+                .size(button::Size::Xs)
+                .variant(button::Variant::Secondary)
+                .on_press(Message::OpenReplaceVideoModal {
+                    playlist_item_id: v.playlist_item_id.clone(),
+                    old_video_id: v.video_id.clone(),
+                }),
+            icon_button(lucide::TRASH_2)
+                .size(button::Size::Xs)
+                .variant(button::Variant::Destructive)
+                .on_press(Message::OpenDeleteVideoModal {
+                    video_id: v.video_id.clone(),
+                    video_title: title_str,
+                }),
+        ]
+        .spacing(6)
+        .align_y(Alignment::Center)
+        .width(Length::Fill);
+
+        card()
+            .size(shadcn_iced::card::Size::Sm)
+            .width(Length::Fill)
+            .media(media)
+            .content(info_section)
+            .footer(footer_row)
+            .into()
+    }
+
+    fn view_videos_list(&self) -> Column<'_, Message> {
+        let vstate = &self.videos_state;
+        let mut rows_col = Column::new().spacing(10).width(Length::Fill);
+
+        for (idx, v) in vstate.videos.iter().enumerate() {
+            let display_order = (vstate.current_page.saturating_sub(1)) * PAGE_SIZE + idx + 1;
+            let is_deleted = v.is_hidden_or_deleted();
+
+            let title_str = v
+                .video_title
+                .clone()
+                .unwrap_or_else(|| format!("[Video bị ẩn / đã xóa] ({})", v.video_id));
+
+            let channel_str = v
+                .channel_title
+                .as_deref()
+                .filter(|s| !s.is_empty())
+                .unwrap_or("Không rõ kênh");
+
+            let duration_badge = if is_deleted {
+                badge("Đã ẩn / Xóa").variant(badge::Variant::Destructive)
+            } else {
+                badge(format_duration(v.duration.as_deref())).variant(badge::Variant::Secondary)
+            };
+
+            let meta_text = if is_deleted {
+                format!(
+                    "#{} (Index gốc: {})  •  Video ID: {}  •  Ngày thêm: {}",
+                    display_order,
+                    v.index_video,
+                    v.video_id,
+                    format_short_date(Some(&v.added_at))
+                )
+            } else {
+                format!(
+                    "#{} (Index: {})  •  Kênh: {}  •  {} lượt xem  •  Đăng: {}  •  Thêm vào PL: {}",
+                    display_order,
+                    v.index_video,
+                    channel_str,
+                    format_view_count(v.view_count),
+                    format_short_date(v.published_at.as_deref()),
+                    format_short_date(Some(&v.added_at))
+                )
+            };
+
+            let watch_url = format!("https://www.youtube.com/watch?v={}", v.video_id);
+
+            let thumbnail_el =
+                self.thumbnails
+                    .view_thumbnail(v.thumbnails.as_deref(), 128.0, 72.0);
+
+            let titles_col = column![
+                text(title_str.clone())
+                    .size(style::text::SM)
+                    .font(font::heading(iced::font::Weight::Medium)),
+                text(meta_text)
+                    .size(style::text::SM)
+                    .style(|theme: &Theme| text::Style {
+                        color: Some(tokens(theme).palette.muted_foreground),
+                    }),
+            ]
+            .spacing(4)
+            .width(Length::Fill);
+
+            let actions_row = row![
+                duration_badge,
+                button("Mở YouTube")
+                    .size(button::Size::Sm)
+                    .variant(button::Variant::Outline)
+                    .icon(lucide::EXTERNAL_LINK)
+                    .on_press(Message::OpenUrl(watch_url)),
+                button("Thay thế")
+                    .size(button::Size::Sm)
+                    .variant(button::Variant::Secondary)
+                    .on_press(Message::OpenReplaceVideoModal {
+                        playlist_item_id: v.playlist_item_id.clone(),
+                        old_video_id: v.video_id.clone(),
+                    }),
+                button("Xóa")
+                    .size(button::Size::Sm)
+                    .variant(button::Variant::Destructive)
+                    .icon(lucide::TRASH_2)
+                    .on_press(Message::OpenDeleteVideoModal {
+                        video_id: v.video_id.clone(),
+                        video_title: title_str.clone(),
+                    }),
+            ]
+            .spacing(6)
+            .align_y(Alignment::Center);
+
+            let video_row = row![thumbnail_el, titles_col, actions_row]
+                .spacing(14)
+                .align_y(Alignment::Center)
+                .width(Length::Fill);
+
+            let video_card = card()
+                .size(shadcn_iced::card::Size::Sm)
+                .content(video_row);
+
+            rows_col = rows_col.push(video_card);
+        }
+
+        rows_col
     }
 
     pub fn view_replace_video_modal<'a>(

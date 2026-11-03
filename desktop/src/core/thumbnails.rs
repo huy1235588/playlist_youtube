@@ -1,6 +1,7 @@
 use iced::widget::image::{Handle, Image};
 use iced::{ContentFit, Element, Length};
 use reqwest::Client;
+use shadcn_iced::aspect_ratio::aspect_ratio;
 use std::collections::{HashMap, HashSet};
 
 const FALLBACK_THUMBNAIL_BYTES: &[u8] =
@@ -42,6 +43,7 @@ impl ThumbnailCache {
         self.fallback.clone()
     }
 
+    /// Ảnh thu nhỏ kích thước cố định (dùng cho chế độ List và Top Bar)
     pub fn view_thumbnail<'a, Message: 'a>(
         &self,
         url: Option<&str>,
@@ -54,6 +56,18 @@ impl ThumbnailCache {
             .content_fit(ContentFit::Cover)
             .border_radius(8.0)
             .into()
+    }
+
+    /// Ảnh bìa co giãn tỉ lệ 16:9 tràn viền trên của Card (dùng cho chế độ Grid)
+    pub fn view_media_thumbnail<'a, Message: 'a>(&self, url: Option<&str>) -> Element<'a, Message> {
+        aspect_ratio(
+            16.0 / 9.0,
+            Image::new(self.handle_for(url))
+                .width(Length::Fill)
+                .height(Length::Fill)
+                .content_fit(ContentFit::Cover),
+        )
+        .into()
     }
 
     /// Lọc ra danh sách URL ảnh bìa chưa từng được tải trong phiên làm việc
