@@ -3,8 +3,8 @@ use crate::core::utils::{format_duration, format_short_date, format_view_count};
 use crate::features::settings::ViewLayout;
 use crate::features::videos::PAGE_SIZE;
 use crate::features::videos::model::{SortColumn, SortOrder, VideoItemView};
-use iced::widget::{Column, Row, center, column, container, row, space, text};
-use iced::{Alignment, Element, Length, Pixels, Theme};
+use iced::widget::{Column, Row, center, column, container, mouse_area, row, space, text};
+use iced::{Alignment, Element, Length, Pixels, Theme, mouse};
 use shadcn_iced::alert_dialog::alert_dialog;
 use shadcn_iced::badge::{self, badge};
 use shadcn_iced::button::{self, button, icon_button};
@@ -218,7 +218,12 @@ impl App {
         };
 
         let watch_url = format!("https://www.youtube.com/watch?v={}", v.video_id);
-        let media = self.thumbnails.view_media_thumbnail(v.thumbnails.as_deref());
+        let media = mouse_area(
+            self.thumbnails
+                .view_media_thumbnail(v.thumbnails.as_deref()),
+        )
+        .on_press(Message::OpenUrl(watch_url.clone()))
+        .interaction(mouse::Interaction::Pointer);
 
         // Cố định chiều cao vùng tiêu đề (đúng 2 dòng = 38px) để mọi card bằng nhau
         let title_box = container(
@@ -256,9 +261,13 @@ impl App {
         .height(Length::Fixed(40.0))
         .clip(true);
 
-        let info_section = column![title_box, meta_box]
-            .spacing(6)
-            .width(Length::Fill);
+        let info_section = mouse_area(
+            column![title_box, meta_box]
+                .spacing(6)
+                .width(Length::Fill),
+        )
+        .on_press(Message::OpenUrl(watch_url.clone()))
+        .interaction(mouse::Interaction::Pointer);
 
         let footer_row = row![
             duration_badge,
@@ -366,7 +375,7 @@ impl App {
                     .size(button::Size::Sm)
                     .variant(button::Variant::Outline)
                     .icon(lucide::EXTERNAL_LINK)
-                    .on_press(Message::OpenUrl(watch_url)),
+                    .on_press(Message::OpenUrl(watch_url.clone())),
                 button("Thay thế")
                     .size(button::Size::Sm)
                     .variant(button::Variant::Secondary)
@@ -386,7 +395,16 @@ impl App {
             .spacing(6)
             .align_y(Alignment::Center);
 
-            let video_row = row![thumbnail_el, titles_col, actions_row]
+            let clickable_info = mouse_area(
+                row![thumbnail_el, titles_col]
+                    .spacing(14)
+                    .align_y(Alignment::Center)
+                    .width(Length::Fill),
+            )
+            .on_press(Message::OpenUrl(watch_url.clone()))
+            .interaction(mouse::Interaction::Pointer);
+
+            let video_row = row![clickable_info, actions_row]
                 .spacing(14)
                 .align_y(Alignment::Center)
                 .width(Length::Fill);

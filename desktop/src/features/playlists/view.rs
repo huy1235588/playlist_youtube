@@ -2,8 +2,8 @@ use crate::app::{App, Message};
 use crate::core::utils::format_short_date;
 use crate::features::playlists::model::Playlist;
 use crate::features::settings::ViewLayout;
-use iced::widget::{Column, Row, center, column, container, row, space, text};
-use iced::{Alignment, Element, Length, Pixels, Theme};
+use iced::widget::{Column, Row, center, column, container, mouse_area, row, space, text};
+use iced::{Alignment, Element, Length, Pixels, Theme, mouse};
 use shadcn_iced::alert_dialog::alert_dialog;
 use shadcn_iced::badge::{self, badge};
 use shadcn_iced::button::{self, button, icon_button};
@@ -85,9 +85,12 @@ impl App {
         let pid = pl.playlist_id.clone();
         let yt_url = format!("https://www.youtube.com/playlist?list={pid}");
 
-        let media = self
-            .thumbnails
-            .view_media_thumbnail(pl.thumbnails.as_deref());
+        let media = mouse_area(
+            self.thumbnails
+                .view_media_thumbnail(pl.thumbnails.as_deref()),
+        )
+        .on_press(Message::SelectPlaylist(pid.clone()))
+        .interaction(mouse::Interaction::Pointer);
 
         let header_row = row![
             container(
@@ -129,9 +132,13 @@ impl App {
         .height(Length::Fixed(40.0))
         .clip(true);
 
-        let info_section = column![header_row, meta_box]
-            .spacing(6)
-            .width(Length::Fill);
+        let info_section = mouse_area(
+            column![header_row, meta_box]
+                .spacing(6)
+                .width(Length::Fill),
+        )
+        .on_press(Message::SelectPlaylist(pid.clone()))
+        .interaction(mouse::Interaction::Pointer);
 
         card()
             .width(Length::Fill)
@@ -199,14 +206,18 @@ impl App {
             .spacing(6)
             .width(Length::Fill);
 
-            let body_row = row![
-                thumbnail_el,
-                info_col,
-                badge(format!("{} videos", pl.item_count)).variant(badge::Variant::Secondary),
-            ]
-            .spacing(16)
-            .align_y(Alignment::Center)
-            .width(Length::Fill);
+            let body_row = mouse_area(
+                row![
+                    thumbnail_el,
+                    info_col,
+                    badge(format!("{} videos", pl.item_count)).variant(badge::Variant::Secondary),
+                ]
+                .spacing(16)
+                .align_y(Alignment::Center)
+                .width(Length::Fill),
+            )
+            .on_press(Message::SelectPlaylist(pid.clone()))
+            .interaction(mouse::Interaction::Pointer);
 
             let card_item = card().content(body_row).footer(
                 row![

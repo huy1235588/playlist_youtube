@@ -17,7 +17,7 @@ fn main() -> iced::Result {
     }
 
     iced::application(App::new, App::update, App::view)
-        .title("YouTube Playlist Manager (Iced + shadcn + SQLite)")
+        .title("YouTube Playlist Manager")
         .theme(|state: &App| {
             theme::zinc(state.settings_state.theme_mode)
                 .accent(Accent::Green)
