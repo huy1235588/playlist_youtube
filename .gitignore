@@ -65,3 +65,5 @@ ha.*
 database/**
 !database/**/*.rar
 
+# Rust
+desktop/target/

@@ -1,0 +1,15 @@
+[package]
+name = "playlist-youtube-desktop"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dotenvy = "0.15"
+iced = { version = "0.14", features = ["advanced", "canvas", "image", "svg", "tokio"] }
+open = "5"
+reqwest = { version = "0.12", features = ["json"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+shadcn-iced = "0.3.0"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync"] }
