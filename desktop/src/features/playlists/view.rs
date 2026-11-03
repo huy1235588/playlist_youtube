@@ -1,7 +1,7 @@
 use crate::app::{App, Message};
 use crate::core::utils::format_short_date;
-use iced::widget::{Column, center, container, row, space, text};
-use iced::{Alignment, Element, Length};
+use iced::widget::{Column, center, column, container, row, space, text};
+use iced::{Alignment, Element, Length, Theme};
 use shadcn_iced::alert_dialog::alert_dialog;
 use shadcn_iced::badge::{self, badge};
 use shadcn_iced::button::{self, button};
@@ -12,6 +12,7 @@ use shadcn_iced::input::input;
 use shadcn_iced::prelude::*;
 use shadcn_iced::scroll_area::scroll_area;
 use shadcn_iced::spinner::spinner;
+use shadcn_iced::{font, style, tokens};
 
 impl App {
     pub fn view_playlists_dashboard(&self) -> Element<'_, Message> {
@@ -51,14 +52,36 @@ impl App {
             let pid = pl.playlist_id.clone();
             let yt_url = format!("https://www.youtube.com/playlist?list={pid}");
 
-            let card_item = card()
-                .title(title.clone())
-                .description(format!(
+            let thumbnail_el =
+                self.thumbnails
+                    .view_thumbnail(pl.thumbnails.as_deref(), 160.0, 90.0);
+
+            let info_col = column![
+                text(title.clone())
+                    .size(style::text::BASE)
+                    .font(font::heading(iced::font::Weight::Medium)),
+                text(format!(
                     "Kênh: {channel_name}  •  Ngày tạo: {pub_date}  •  ID: {pid}"
                 ))
-                .action(
-                    badge(format!("{} videos", pl.item_count)).variant(badge::Variant::Secondary),
-                )
+                .size(style::text::SM)
+                .style(|theme: &Theme| text::Style {
+                    color: Some(tokens(theme).palette.muted_foreground),
+                }),
+            ]
+            .spacing(6)
+            .width(Length::Fill);
+
+            let body_row = row![
+                thumbnail_el,
+                info_col,
+                badge(format!("{} videos", pl.item_count)).variant(badge::Variant::Secondary),
+            ]
+            .spacing(16)
+            .align_y(Alignment::Center)
+            .width(Length::Fill);
+
+            let card_item = card()
+                .content(body_row)
                 .footer(
                     row![
                         button("Xem tất cả Video")

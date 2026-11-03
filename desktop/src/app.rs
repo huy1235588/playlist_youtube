@@ -1,4 +1,5 @@
 use crate::core::db::Database;
+use crate::core::thumbnails::{ThumbnailCache, download_thumbnail_bytes};
 use crate::core::utils::{extract_playlist_id, extract_video_id};
 use crate::features::playlists::PlaylistsState;
 use crate::features::playlists::api::fetch_playlist_bundle;
@@ -36,6 +37,7 @@ pub enum ActiveModal {
 
 pub struct App {
     pub db: Database,
+    pub thumbnails: ThumbnailCache,
     pub settings_state: SettingsState,
     pub playlists_state: PlaylistsState,
     pub videos_state: VideosState,
@@ -97,6 +99,7 @@ pub enum Message {
     // Kết quả trả về từ Async Task
     PlaylistFetchedResult(Result<(String, usize), String>),
     VideoReplacedResult(Result<String, String>),
+    ThumbnailLoaded(String, Option<Vec<u8>>),
 }
 
 impl App {
@@ -105,8 +108,9 @@ impl App {
         let api_key = std::env::var("YOUTUBE_API_KEY").unwrap_or_default();
         let playlists = db.get_playlists().unwrap_or_default();
 
-        let app = Self {
+        let mut app = Self {
             db,
+            thumbnails: ThumbnailCache::new(),
             settings_state: SettingsState::new(api_key),
             playlists_state: PlaylistsState::new(playlists),
             videos_state: VideosState::new(),
@@ -115,24 +119,66 @@ impl App {
             status_banner: None,
         };
 
-        let startup_task = iced::window::oldest().and_then(|id| {
+        let window_task = iced::window::oldest().and_then(|id| {
             Task::batch([
                 iced::window::minimize(id, false),
                 iced::window::maximize(id, true),
                 iced::window::gain_focus(id),
             ])
         });
+        let thumb_task = app.spawn_playlist_thumbnail_tasks();
 
-        (app, startup_task)
+        (app, Task::batch([window_task, thumb_task]))
     }
 
-    pub fn reload_playlists(&mut self) {
+    fn spawn_thumbnail_tasks_for_urls(
+        &mut self,
+        urls: impl IntoIterator<Item = Option<String>>,
+    ) -> Task<Message> {
+        let missing = self.thumbnails.take_unloaded_urls(urls);
+        if missing.is_empty() {
+            return Task::none();
+        }
+        let client = self.thumbnails.client();
+        let tasks = missing.into_iter().map(move |url| {
+            let c = client.clone();
+            Task::perform(download_thumbnail_bytes(c, url), |(u, bytes)| {
+                Message::ThumbnailLoaded(u, bytes)
+            })
+        });
+        Task::batch(tasks)
+    }
+
+    pub fn spawn_playlist_thumbnail_tasks(&mut self) -> Task<Message> {
+        let urls: Vec<Option<String>> = self
+            .playlists_state
+            .playlists
+            .iter()
+            .map(|p| p.thumbnails.clone())
+            .collect();
+        self.spawn_thumbnail_tasks_for_urls(urls)
+    }
+
+    pub fn spawn_video_thumbnail_tasks(&mut self) -> Task<Message> {
+        let urls: Vec<Option<String>> = self
+            .videos_state
+            .videos
+            .iter()
+            .map(|v| v.thumbnails.clone())
+            .collect();
+        self.spawn_thumbnail_tasks_for_urls(urls)
+    }
+
+    pub fn reload_playlists(&mut self) -> Task<Message> {
         if let Err(e) = self.playlists_state.reload(&self.db) {
             self.status_banner = Some((format!("Lỗi tải danh sách playlist: {e}"), true));
+            Task::none()
+        } else {
+            self.spawn_playlist_thumbnail_tasks()
         }
     }
 
-    pub fn reload_videos(&mut self) {
+    pub fn reload_videos(&mut self) -> Task<Message> {
         let pid = self
             .playlists_state
             .selected_playlist
@@ -140,6 +186,9 @@ impl App {
             .map(|p| p.playlist_id.as_str());
         if let Err(e) = self.videos_state.reload(&self.db, pid) {
             self.status_banner = Some((format!("Lỗi truy vấn video: {e}"), true));
+            Task::none()
+        } else {
+            self.spawn_video_thumbnail_tasks()
         }
     }
 
@@ -154,7 +203,7 @@ impl App {
             Message::BackToPlaylists => {
                 self.playlists_state.selected_playlist = None;
                 self.videos_state.clear();
-                self.reload_playlists();
+                return self.reload_playlists();
             }
             Message::SelectPlaylist(playlist_id) => {
                 if let Some(pl) = self
@@ -166,7 +215,7 @@ impl App {
                 {
                     self.playlists_state.selected_playlist = Some(pl);
                     self.videos_state.reset_for_playlist();
-                    self.reload_videos();
+                    return self.reload_videos();
                 }
             }
             Message::OpenUrl(url) => {
@@ -176,32 +225,32 @@ impl App {
                 self.videos_state.search_query = q;
                 self.videos_state.current_page = 1;
                 self.videos_state.show_hidden_only = false;
-                self.reload_videos();
+                return self.reload_videos();
             }
             Message::ClearSearch => {
                 self.videos_state.search_query.clear();
                 self.videos_state.current_page = 1;
-                self.reload_videos();
+                return self.reload_videos();
             }
             Message::SortColumnChanged(col) => {
                 self.videos_state.sort_column = col;
                 self.videos_state.current_page = 1;
                 self.videos_state.show_hidden_only = false;
-                self.reload_videos();
+                return self.reload_videos();
             }
             Message::ToggleSortOrder => {
                 self.videos_state.sort_order = self.videos_state.sort_order.toggle();
                 self.videos_state.current_page = 1;
-                self.reload_videos();
+                return self.reload_videos();
             }
             Message::ToggleHiddenVideos => {
                 self.videos_state.show_hidden_only = !self.videos_state.show_hidden_only;
                 self.videos_state.current_page = 1;
-                self.reload_videos();
+                return self.reload_videos();
             }
             Message::PageChanged(page) => {
                 self.videos_state.current_page = page;
-                self.reload_videos();
+                return self.reload_videos();
             }
             Message::OpenAddPlaylistModal => {
                 self.playlists_state.add_playlist_input.clear();
@@ -374,12 +423,13 @@ impl App {
                 self.modal = ActiveModal::None;
                 match res {
                     Ok((title, count)) => {
-                        self.reload_playlists();
-                        self.reload_videos();
+                        let t1 = self.reload_playlists();
+                        let t2 = self.reload_videos();
                         self.status_banner = Some((
                             format!("Đã đồng bộ thành công '{title}' ({count} video mới)."),
                             false,
                         ));
+                        return Task::batch([t1, t2]);
                     }
                     Err(err) => {
                         self.status_banner = Some((err, true));
@@ -431,11 +481,12 @@ impl App {
                 self.modal = ActiveModal::None;
                 match res {
                     Ok(title) => {
-                        self.reload_videos();
+                        let t = self.reload_videos();
                         self.status_banner = Some((
                             format!("Đã thay thế thành công bằng video '{title}'."),
                             false,
                         ));
+                        return t;
                     }
                     Err(e) => {
                         self.status_banner = Some((e, true));
@@ -453,11 +504,12 @@ impl App {
                     self.modal = ActiveModal::None;
                     match self.db.delete_video(&vid) {
                         Ok(()) => {
-                            self.reload_videos();
+                            let t = self.reload_videos();
                             self.status_banner = Some((
                                 format!("Đã xóa video '{vtitle}' khỏi SQLite Database."),
                                 false,
                             ));
+                            return t;
                         }
                         Err(e) => {
                             self.status_banner = Some((e, true));
@@ -484,18 +536,22 @@ impl App {
                             {
                                 self.playlists_state.selected_playlist = None;
                             }
-                            self.reload_playlists();
-                            self.reload_videos();
+                            let t1 = self.reload_playlists();
+                            let t2 = self.reload_videos();
                             self.status_banner = Some((
                                 format!("Đã xóa playlist '{ptitle}' khỏi SQLite Database."),
                                 false,
                             ));
+                            return Task::batch([t1, t2]);
                         }
                         Err(e) => {
                             self.status_banner = Some((e, true));
                         }
                     }
                 }
+            }
+            Message::ThumbnailLoaded(url, bytes) => {
+                self.thumbnails.on_thumbnail_fetched(url, bytes);
             }
         }
         Task::none()

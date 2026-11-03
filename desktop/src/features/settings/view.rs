@@ -13,11 +13,15 @@ impl App {
         let left_nav: Element<'_, Message> =
             if let Some(ref pl) = self.playlists_state.selected_playlist {
                 let pl_title = pl.title.as_deref().unwrap_or(&pl.playlist_id);
+                let pl_thumb =
+                    self.thumbnails
+                        .view_thumbnail(pl.thumbnails.as_deref(), 48.0, 27.0);
                 row![
                     button("Danh sách Playlist")
                         .variant(button::Variant::Outline)
                         .icon(lucide::ARROW_LEFT)
                         .on_press(Message::BackToPlaylists),
+                    pl_thumb,
                     text(pl_title).size(18),
                     badge(format!("{} videos", self.videos_state.total_videos))
                         .variant(badge::Variant::Secondary),

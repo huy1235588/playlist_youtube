@@ -3,7 +3,7 @@ use crate::core::utils::{format_duration, format_short_date, format_view_count};
 use crate::features::videos::PAGE_SIZE;
 use crate::features::videos::model::{SortColumn, SortOrder};
 use iced::widget::{Column, center, column, container, row, space, text};
-use iced::{Alignment, Element, Length};
+use iced::{Alignment, Element, Length, Theme};
 use shadcn_iced::alert_dialog::alert_dialog;
 use shadcn_iced::badge::{self, badge};
 use shadcn_iced::button::{self, button};
@@ -16,6 +16,7 @@ use shadcn_iced::prelude::*;
 use shadcn_iced::scroll_area::scroll_area;
 use shadcn_iced::select::select;
 use shadcn_iced::spinner::spinner;
+use shadcn_iced::{font, style, tokens};
 
 impl App {
     pub fn view_playlist_videos(&self) -> Element<'_, Message> {
@@ -145,6 +146,23 @@ impl App {
 
                 let watch_url = format!("https://www.youtube.com/watch?v={}", v.video_id);
 
+                let thumbnail_el =
+                    self.thumbnails
+                        .view_thumbnail(v.thumbnails.as_deref(), 128.0, 72.0);
+
+                let titles_col = column![
+                    text(title_str.clone())
+                        .size(style::text::SM)
+                        .font(font::heading(iced::font::Weight::Medium)),
+                    text(meta_text)
+                        .size(style::text::SM)
+                        .style(|theme: &Theme| text::Style {
+                            color: Some(tokens(theme).palette.muted_foreground),
+                        }),
+                ]
+                .spacing(4)
+                .width(Length::Fill);
+
                 let actions_row = row![
                     duration_badge,
                     button("Mở YouTube")
@@ -171,11 +189,14 @@ impl App {
                 .spacing(6)
                 .align_y(Alignment::Center);
 
+                let video_row = row![thumbnail_el, titles_col, actions_row]
+                    .spacing(14)
+                    .align_y(Alignment::Center)
+                    .width(Length::Fill);
+
                 let video_card = card()
                     .size(shadcn_iced::card::Size::Sm)
-                    .title(title_str)
-                    .description(meta_text)
-                    .action(actions_row);
+                    .content(video_row);
 
                 rows_col = rows_col.push(video_card);
             }
