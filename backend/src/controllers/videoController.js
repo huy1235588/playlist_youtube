@@ -97,6 +97,22 @@ const updatePlaylist = async (req, res) => {
         // Lấy playlistId từ input
         const playlistId = req.query.playlistId;
         const currentVideoId = req.query.currentVideoId
+
+        // Kiểm tra xem có tồn tại playlistId hay chưa
+        if (!playlistId) {
+            return await res.json({
+                isUpdated: false,
+                message: 'Missing playlistId'
+            });
+        }
+
+        // Nếu không có cuurrentVideoId thì trả về lỗi
+        if (!currentVideoId) {
+            return await res.json({
+                isUpdated: false,
+                message: 'Missing current video ID'
+            });
+        }
         
         // Lấy thông tin chi tiết của playlist
         const playlist = await youtubeService.getPlaylistDetails(playlistId);

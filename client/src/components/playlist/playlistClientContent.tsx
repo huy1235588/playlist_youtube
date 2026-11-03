@@ -409,9 +409,9 @@ function PlaylistClientContent({
 
                 {/* Menu */}
                 <PlaylistMenu
-                   setVideos={setVideos}
-                   setLoading={setLoading}
-                   setError={setCurrentError} // Truyền hàm setError để cập nhật lỗi
+                    playlistId={playlistId}
+                    getVideos={getVideos}
+                    sort={sort}
                 />
             </div>
 

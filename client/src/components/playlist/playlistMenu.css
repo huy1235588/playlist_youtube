@@ -84,7 +84,7 @@
 /* Popup */
 .popup-content {
     width: 400px;
-    height: 100px;
+    height: 120px;
 }
 
 .popup-content .popup-message {
@@ -120,4 +120,18 @@
 }
 .popup-actions button.confirm-button:hover {
     background-color: #1e7a31; /* Màu đỏ đậm hơn khi hover */
+}
+
+.popup-content .popup-response-message {
+    font-size: 18px;
+    color: #ffffff; /* Màu chữ trắng */
+    padding: 20px 0;
+    user-select: none;
+}
+
+.popup-content .popup-response-message.error {
+    color: #ff0000; /* Màu chữ đỏ cho thông báo lỗi */
+}
+.popup-content .popup-response-message.success {
+    color: #00ff00; /* Màu chữ xanh lá cho thông báo thành công */
 }

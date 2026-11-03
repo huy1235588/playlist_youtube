@@ -6,7 +6,7 @@ import { BiHide } from "react-icons/bi";
 import { GrAdd, GrUpdate } from "react-icons/gr";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { usePopup } from "@/contexts/PopupContext";
-import { Video } from "@/types/youtube";
+import axios from "@/config/axios";
 
 // Định nghĩa kiểu cho một mục trong menu playlist
 interface PlaylistItem {
@@ -17,18 +17,33 @@ interface PlaylistItem {
     action: () => void; // Hàm sẽ được gọi khi mục được nhấp
 }
 
+// Định nghĩa kiểu cho các thuộc tính của video
+type Sort = {
+    column: string; // Cột để sắp xếp
+    order: string; // Thứ tự sắp xếp (asc/desc)
+}
+
 // Định nghĩa Props cho PlaylistMenu, bao gồm các hàm callback
 interface PlaylistMenuProps {
-    setVideos: Dispatch<SetStateAction<Video[]>>; // Hàm để cập nhật danh sách video
-    setLoading?: Dispatch<SetStateAction<boolean>>; // Hàm để cập nhật trạng thái loading (tùy chọn)
-    setError?: Dispatch<SetStateAction<string | null>>; // Hàm để cập nhật trạng thái lỗi (tùy chọn)
+    playlistId: string; // ID của playlist
+    getVideos: ({ column, order, }: Sort) => Promise<void>; // Hàm lấy video từ server
+    sort: Sort; // Đối tượng chứa thông tin sắp xếp
 }
 
 const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
-    setVideos, // Hàm để cập nhật danh sách video
-    setLoading, // Hàm để cập nhật trạng thái loading (tùy chọn)
-    setError, // Hàm để cập nhật trạng thái lỗi (tùy chọn)
+    playlistId,
+    getVideos,
+    sort
 }) => {
+    const [message, setMessage] = useState<{
+        type: 'success' | 'error' | 'warning' | null;
+        text: string | null;
+        timestamp?: number;
+    }>({
+        type: null,
+        text: null,
+        timestamp: undefined
+    }); // Trạng thái thông báo
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -36,6 +51,17 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
         openPopup,
         closePopup,
     } = usePopup();
+
+    // Hàm xử lý đóng popup
+    const onClosePopup = useCallback(() => {
+        setMessage({
+            type: null,
+            text: null,
+            timestamp: undefined
+        });
+        closePopup();
+
+    }, [closePopup]);
 
     // Hàm xử lý thêm playlist mới
     const handleAddPlaylist = useCallback(() => {
@@ -50,56 +76,96 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
     }, []);
 
 
+    // Hàm xử lý cập nhật playlist
     const updatePlaylist = useCallback(async () => {
         try {
-            setLoading && setLoading(true);
+            // Gọi api để cập nhật playlist
+            const response = await axios.get('/api/video/update', {
+                // Dữ liệu cần gửi lên server
+                params: {
+                    playlistId: playlistId,
+                    currentVideoId: null,
+                }
+            });
 
-            await new Promise((resolve) => setTimeout(resolve, 2000)); // Giả lập thời gian tải dữ liệu
+            // Kiểm tra xem có video nào được cập nhật hay không
+            if (!response.data.isUpdated) {
+                setMessage({
+                    type: 'error',
+                    text: response.data.message || "Không có video nào được cập nhật.",
+                    timestamp: Date.now()
+                });
+                return;
+            }
 
+            // Gọi hàm getVideos để lấy danh sách video từ server
+            await getVideos({
+                column: sort.column,
+                order: sort.order,
+            });
+
+            // Đóng popup sau khi cập nhật thành công
+            onClosePopup();
+
+            // Hiển thị thông báo thành công
+            setMessage({
+                type: 'success',
+                text: response.data.message || "Cập nhật playlist thành công.",
+                timestamp: Date.now()
+            });
 
         } catch (error) {
             console.error("Error updating playlist:", error);
-            if (setError) {
-                setError("Có lỗi xảy ra khi cập nhật playlist.");
-            }
-        } finally {
-            if (setLoading) {
-                setLoading(false); // Đặt trạng thái loading về false sau khi hoàn thành
-            }
+            setMessage({
+                type: 'error',
+                text: "Đã xảy ra lỗi khi cập nhật playlist.",
+                timestamp: Date.now()
+            });
         }
     }, []);
+
+    // Hàm render popup thông báo
+    const renderPopupUpdate = useCallback(() => {
+        return (
+            <div className="popup-content">
+                <p className="popup-message">
+                    Bạn có muốn cập nhật playlist không?
+                </p>
+
+                <div className="popup-actions">
+                    <button
+                        className="confirm-button"
+                        onClick={updatePlaylist}
+                    >
+                        Có
+                    </button>
+
+                    <button
+                        className="cancel-button"
+                        onClick={onClosePopup}
+                    >
+                        Hủy bỏ
+                    </button>
+                </div>
+
+                {message.text &&
+                    <div className={`popup-response-message ${message.type}`}>
+                        {message.text}
+                    </div>
+                }
+            </div>
+        );
+    }, [updatePlaylist, onClosePopup]);
 
     // Hàm xử lý cập nhật playlist
     const handleUpdatePlaylist = useCallback(async () => {
         // Mở popup khi nhấn vào "Update playlist"
         openPopup(
-            (
-                <div className="popup-content">
-                    <p className="popup-message">
-                        Bạn có muốn cập nhật playlist không?
-                    </p>
-
-                    <div className="popup-actions">
-                        <button
-                            className="confirm-button"
-                            onClick={updatePlaylist}
-                        >
-                            Có
-                        </button>
-
-                        <button
-                            className="cancel-button"
-                            onClick={closePopup}
-                        >
-                            Hủy bỏ
-                        </button>
-                    </div>
-                </div>
-            ),
+            renderPopupUpdate(),
             "Cập nhật playlist"
         );
 
-    }, []);
+    }, [renderPopupUpdate, openPopup]);
 
     // Hàm xử lý xóa playlist
     const handleDeletePlaylist = useCallback(() => {
@@ -153,6 +219,14 @@ const PlaylistMenu: React.FC<PlaylistMenuProps> = ({
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    // Hiển thị thông báo khi có thay đổi trong trạng thái message
+    useEffect(() => {
+        openPopup(
+            renderPopupUpdate(),
+            "Cập nhật playlist",
+        );
+    }, [message.text, message.timestamp]);
 
     // Hàm xử lý khi một mục menu được nhấp
     const handleItemClick = (itemAction: () => void) => {
